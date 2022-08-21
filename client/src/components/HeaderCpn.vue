@@ -1,8 +1,8 @@
 <template>
-    <div class="header h-9rem flex align-items-center">
-        <div class="h-6rem">
+    <div class="header flex align-items-center">
+        <router-link class="h-6rem cursor-pointer" to="/">
             <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
-        </div>
+        </router-link>
         <div class="mx-8 flex flex-wrap">
             <router-link
                 class="item-menu"
@@ -65,9 +65,15 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .header {
+    position: fixed;
+    height: var(--height-header);
+    width: 100vw;
+    top: 0;
+    z-index: 2;
     padding: 0 5rem;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
+    background-color: var(--white-color);
 }
 
 @keyframes fill-color {
@@ -86,8 +92,8 @@ export default defineComponent({
     border-radius: 50px;
     padding: 8px 18px;
     text-decoration: none;
-    font-size: 1.4rem;
-    font-weight: 800;
+    font-size: 1.5rem;
+    font-weight: 600;
     margin: 0 0.4rem;
     color: var(--black-color);
     background-color: transparent;
@@ -109,6 +115,7 @@ export default defineComponent({
     border-radius: 40px;
     font-size: 1.3rem;
     padding-left: 20px !important;
+    padding-right: 30px !important;
 }
 .input:focus {
     box-shadow: none !important;

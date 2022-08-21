@@ -1,17 +1,20 @@
 <template>
     <div>
-        <HeaderCpnVue />
+        <HeaderCpn />
         <router-view />
+        <FooterCpn />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import HeaderCpnVue from "@/components/HeaderCpn.vue";
+import HeaderCpn from "@/components/HeaderCpn.vue";
+import FooterCpn from "@/components/FooterCpn.vue";
 
 export default defineComponent({
     components: {
-        HeaderCpnVue,
+        HeaderCpn,
+        FooterCpn,
     },
     setup() {
         return {};

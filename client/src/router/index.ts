@@ -16,12 +16,24 @@ const routes: Array<RouteRecordRaw> = [
                 component: HomeView,
             },
             {
-                path: "/order",
-                component: OrderView,
-            },
-            {
                 path: "/nike",
                 component: ProductTypeView,
+            },
+            {
+                path: "/adidas",
+                component: ProductTypeView,
+            },
+            {
+                path: "/jordan",
+                component: ProductTypeView,
+            },
+            {
+                path: "/yeezy",
+                component: ProductTypeView,
+            },
+            {
+                path: "/order",
+                component: OrderView,
             },
         ],
     },

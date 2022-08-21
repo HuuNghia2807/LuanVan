@@ -5,9 +5,10 @@
 }
 
 :root {
-    --white-color: #f3f3f3;
+    --white-color: #fff;
     --black-color: #212121;
     --primary-color: #fed700;
+    --height-header: 9rem;
     --font: 'Montserrat', sans-serif;
 }
 
