@@ -12,7 +12,7 @@
 import { defineComponent, reactive, ref } from "vue";
 import SliderCpn from "@/components/SliderCpn.vue";
 import IntroduceCpn from "@/components/IntroduceCpn.vue";
-import ProductCategoryCpn from "@/components/ProductCategoryCpn.vue";
+import ProductCategoryCpn from "@/components/Product/ProductCategoryCpn.vue";
 
 export default defineComponent({
     name: "HomeView",

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main-layout">
         <HeaderCpn />
         <router-view />
         <FooterCpn />
@@ -22,4 +22,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.main-layout {
+    margin-top: var(--height-header);
+}
+</style>

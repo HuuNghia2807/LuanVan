@@ -32,6 +32,14 @@ const routes: Array<RouteRecordRaw> = [
                 component: ProductTypeView,
             },
             {
+                path: "/day-giay",
+                component: ProductTypeView,
+            },
+            {
+                path: "/contact",
+                component: ProductTypeView,
+            },
+            {
                 path: "/order",
                 component: OrderView,
             },
