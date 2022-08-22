@@ -1,9 +1,5 @@
 <template>
-    <router-link
-        class="product no-underline"
-        to="/"
-        :style="`width: ${type ? '20' : '25'}%`"
-    >
+    <router-link class="product no-underline" to="/">
         <div class="wrap">
             <img :src="product?.img" :alt="product?.name" class="img-product" />
             <div class="product-context">
@@ -18,20 +14,8 @@
                 </div>
                 <div class="product-price">
                     <span class="price">{{ product?.price }}</span>
-                    <span v-if="product?.sale.length > 0" class="price-sale">{{
-                        product?.price
-                    }}</span>
                 </div>
             </div>
-        </div>
-        <div class="tag" v-if="type">
-            <span class="text-tag">{{ type }}</span>
-        </div>
-        <div
-            class="tag tag-sale"
-            v-if="product?.sale.length > 0 || type === 'Sale'"
-        >
-            <span class="text-tag">{{ product?.sale }}</span>
         </div>
     </router-link>
 </template>
@@ -41,9 +25,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
     props: {
-        none: { type: Boolean, default: false },
         product: { type: Object },
-        type: { type: String },
     },
     components: {},
     setup() {
@@ -55,40 +37,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 .product {
     position: relative;
-    height: 40rem;
-    padding-left: 1.2rem;
-    padding-right: 1.2rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1rem;
     color: var(--black-color);
 
-    .tag {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 7.5rem;
-        height: 3rem;
-        position: absolute;
-        top: 0;
-        left: 1.2rem;
-        background-color: var(--primary-color);
-    }
-
-    .tag-sale {
-        position: absolute;
-        top: 10%;
-        background-color: #cf5050;
-    }
-    .text-tag {
-        display: block;
-        font-size: 1.4rem;
-        color: var(--white-color);
-    }
-
     .product-context {
-        margin-left: 1rem;
+        margin-left: 1.4rem;
     }
 
     .wrap {
+        display: flex;
         border: 1px solid transparent;
         height: 100%;
     }
@@ -98,18 +55,19 @@ export default defineComponent({
 
     .img-product {
         width: 100%;
-        height: 26rem;
+        height: 10rem;
+        width: 10rem;
         object-fit: contain;
     }
 
     .name-product {
         display: block;
-        margin-top: 1rem;
-        font-size: 1.6rem;
+        margin-top: 1.5rem;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #5b5b5b;
-        line-height: 2rem;
-        height: 3.6rem;
+        line-height: 1.4rem;
+        height: 2.8rem;
         overflow: hidden;
 
         &:hover {
@@ -118,28 +76,27 @@ export default defineComponent({
     }
 
     .list-rate {
-        margin-top: 2rem;
+        margin-top: 0.5rem;
     }
 
     .icon {
-        width: 1.8rem;
-        padding-right: 0.4rem;
+        width: 1.4rem;
     }
 
     .product-price {
-        margin: 0.6rem 0 2rem 0;
+        margin: 0.6rem 0 1rem 0;
     }
 
     .price {
         display: block;
-        font-size: 1.6rem;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #5b5b5b;
     }
 
     .price-sale {
         display: block;
-        font-size: 1.6rem;
+        font-size: 1.4rem;
         font-weight: 700;
         margin-top: 0.1rem;
         text-decoration: line-through;
