@@ -4,6 +4,7 @@ import MainLayout from "@/Layout/MainLayout.vue";
 import HomeView from "@/views/HomeView.vue";
 import OrderView from "@/views/OrderView.vue";
 import ProductTypeView from "@/views/ProductTypeView.vue";
+import ProductDetail from "@/views/ProductDetail.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -42,6 +43,11 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: "/order",
                 component: OrderView,
+            },
+            {
+                path: "/san-pham/:id",
+                name: "showDetail",
+                component: ProductDetail,
             },
         ],
     },

@@ -24,6 +24,7 @@ export default defineComponent({
             supTitle: "Product",
             product: [
                 {
+                    id: 1,
                     img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
                     name: "AIR FORCE 1",
                     rate: [1, 1, 1, 1, 1],
@@ -31,6 +32,7 @@ export default defineComponent({
                     sale: "",
                 },
                 {
+                    id: 1,
                     img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
                     name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
                     rate: [1, 1, 1, 1, 1],
@@ -38,6 +40,7 @@ export default defineComponent({
                     sale: "8.000.000 đ",
                 },
                 {
+                    id: 2,
                     img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
                     name: "AIR FORCE 1",
                     rate: [1, 1, 1, 1, 1],
@@ -45,6 +48,7 @@ export default defineComponent({
                     sale: "",
                 },
                 {
+                    id: 3,
                     img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
                     name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
                     rate: [1, 1, 1, 1, 1],
@@ -52,6 +56,7 @@ export default defineComponent({
                     sale: "8.000.000 đ",
                 },
                 {
+                    id: 4,
                     img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
                     name: "AIR FORCE 1",
                     rate: [1, 1, 1, 1, 1],
@@ -59,6 +64,7 @@ export default defineComponent({
                     sale: "",
                 },
                 {
+                    id: 5,
                     img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
                     name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
                     rate: [1, 1, 1, 1, 1],
