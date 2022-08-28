@@ -21,11 +21,11 @@
                 class="p-inputtext-lg input"
             />
         </div>
-        <div class="icon-cart mx-4">
+        <router-link to="/gio-hang" class="icon-cart mx-4">
             <i class="icon pi pi-shopping-cart" style="font-size: 2.2rem">
                 <span class="badge-icon-cart">6</span>
             </i>
-        </div>
+        </router-link>
         <div class="account flex-1">
             <div class="flex align-items-center justify-content-center">
                 <span class="login">Đăng nhập</span>

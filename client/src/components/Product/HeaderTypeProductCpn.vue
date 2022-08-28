@@ -130,6 +130,14 @@ export default defineComponent({
         line-height: 1.4rem !important;
         padding: 1rem;
     }
+
+    :deep(.p-button.p-button-lg) {
+        padding: 1rem 2rem;
+        font-size: 2rem;
+        font-weight: 550;
+        margin-right: 2rem;
+        border-radius: 5rem;
+    }
 }
 .option-item {
     font-size: 1.6rem !important;

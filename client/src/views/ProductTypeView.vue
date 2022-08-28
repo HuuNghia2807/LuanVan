@@ -19,7 +19,7 @@
                     <div class="list-new-product">
                         <span class="title">SẢN PHẨM MỚI</span>
                         <div class="list-new">
-                            <ProductHorizontal
+                            <ProductHorizontalCpn
                                 v-for="(product, i) in newProducts"
                                 :key="i"
                                 :product="product"
@@ -36,13 +36,13 @@
 import { defineComponent, ref } from "vue";
 import HeaderTypeProductCpn from "@/components/Product/HeaderTypeProductCpn.vue";
 import ListProductCpn from "@/components/Product/ListProductCpn.vue";
-import ProductHorizontal from "@/components/Product/ProductHorizontal.vue";
+import ProductHorizontalCpn from "@/components/Product/ProductHorizontalCpn.vue";
 
 export default defineComponent({
     components: {
         HeaderTypeProductCpn,
         ListProductCpn,
-        ProductHorizontal,
+        ProductHorizontalCpn,
     },
     setup() {
         const listProduct = ref([

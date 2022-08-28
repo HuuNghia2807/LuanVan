@@ -50,9 +50,68 @@
                     <span class="product-price">7,800,000 đ</span>
                 </div>
                 <div class="product-size">
-                    <span>42</span>
+                    <div
+                        v-for="(size, i) of sizes"
+                        :key="i"
+                        class="field-radiobutton"
+                    >
+                        <RadioButton
+                            :inputId="size.name"
+                            name="size"
+                            :value="size.name"
+                            v-model="selectedSize"
+                            :disabled="size.name === '42'"
+                        />
+                        <label :for="size.name">{{ size.name }}</label>
+                    </div>
                 </div>
-                <div>btn</div>
+                <div>
+                    <div class="mt-4">
+                        <InputNumber
+                            inputId="horizontal"
+                            v-model="quantity"
+                            mode="decimal"
+                            showButtons
+                            buttonLayout="horizontal"
+                            :min="0"
+                            :max="40"
+                            decrementButtonClass="p-button-secondary"
+                            incrementButtonClass="p-button-secondary"
+                            incrementButtonIcon="pi pi-plus"
+                            decrementButtonIcon="pi pi-minus"
+                        />
+                    </div>
+                    <div class="mt-5">
+                        <Button
+                            label="Thêm vào giỏ hàng"
+                            icon="pi pi-shopping-cart"
+                            class="p-button-lg p-button-warning p-button-rounded"
+                        />
+                        <Button
+                            label="Mua Ngay"
+                            icon="pi pi-chevron-right"
+                            class="p-button-lg p-button-danger p-button-rounded"
+                            iconPos="right"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="other mb-8">
+            <div class="my-3">
+                ⚡️ KINGSHOES.VN
+                <span class="font-normal">
+                    ✓15 Ngày Đổi Hàng ✓Giao Hàng Miễn Phí ✓Thanh Toán Khi Nhận
+                    Hàng ✓Bảo Hành Hàng Chính Hãng Trọn Đời.!!!</span
+                >
+            </div>
+            <div class="my-3">KINGSHOES.VN "You're King In Your Way".!!!</div>
+            <router-link to="/" class="linkCheck my-3"
+                >KING'S & QUEEN'S Check in Tại KINGSHOES.VN</router-link
+            >
+            <div class="my-3">
+                192/2 Nguyễn Thái Bình, phường 12, quận Tân Bình, thành phố Hồ
+                Chí Minh
             </div>
         </div>
     </div>
@@ -61,16 +120,34 @@
 import { defineComponent, ref } from "vue";
 import HeaderTypeProductCpn from "@/components/Product/HeaderTypeProductCpn.vue";
 import Rating from "primevue/rating";
+import RadioButton from "primevue/radiobutton";
+import InputNumber from "primevue/inputnumber";
+import Button from "primevue/button";
 
 export default defineComponent({
     components: {
         HeaderTypeProductCpn,
         Rating,
+        RadioButton,
+        InputNumber,
+        Button,
     },
     setup() {
         const rate = ref(3);
+        const sizes = ref([
+            { name: "40", value: 40 },
+            { name: "41", value: 41 },
+            { name: "42", value: 42 },
+            { name: "43", value: 43 },
+            { name: "44", value: 44 },
+        ]);
+        const selectedSize = ref<number>();
+        const quantity = ref(1);
         return {
             rate,
+            sizes,
+            selectedSize,
+            quantity,
         };
     },
 });
@@ -85,7 +162,7 @@ export default defineComponent({
         display: flex;
 
         .list-img-wrap {
-            width: 10%;
+            width: 15%;
         }
         .list-img {
             display: flex;
@@ -102,16 +179,16 @@ export default defineComponent({
         }
 
         .show-img {
-            width: 50%;
+            width: 46%;
 
             .img {
-                width: 62rem;
-                height: 62rem;
+                width: 59rem;
+                height: 59rem;
             }
         }
 
         .content {
-            width: 40%;
+            width: 49%;
             padding-left: 4rem;
 
             .img-star {
@@ -148,17 +225,73 @@ export default defineComponent({
             .product-size {
                 border-top: 1px solid #ccc;
                 border-bottom: 1px solid #ccc;
+                display: flex;
+                flex-wrap: wrap;
+                padding: 3rem 0;
+                font-size: 2rem;
             }
+        }
+
+        :deep(.p-rating-icon) {
+            font-size: 2.5rem;
+            color: yellow !important;
+        }
+
+        :deep(.p-rating-icon.pi-star-fill) {
+            color: yellow !important;
+        }
+
+        :deep(.field-radiobutton) {
+            flex-direction: column;
+            justify-content: center;
+            margin: 0 1.2rem;
+            font-size: 2rem;
+        }
+
+        :deep(.p-radiobutton) {
+            margin-bottom: 0.5rem;
+        }
+
+        :deep(.p-inputtext) {
+            font-size: 2rem;
+            width: 6rem;
+            text-align: center;
+        }
+
+        :deep(.p-button-icon-only) {
+            padding: 1rem 2rem;
+        }
+
+        :deep(.p-button.p-button-lg) {
+            padding: 1rem 2rem;
+            font-size: 2rem;
+            font-weight: 550;
+            margin-right: 2rem;
+            border-radius: 5rem;
+        }
+
+        :deep(.p-button.p-button-lg .p-button-icon) {
+            font-size: 2rem;
         }
     }
 
-    :deep(.p-rating-icon) {
-        font-size: 2.5rem;
-        color: yellow !important;
-    }
+    .other {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: #5b5b5b;
+        font-weight: 600;
 
-    :deep(.p-rating-icon.pi-star-fill) {
-        color: yellow !important;
+        .linkCheck {
+            text-decoration: none;
+            color: #5b5b5b;
+
+            &:hover {
+                color: var(--primary-color);
+            }
+        }
     }
 }
 </style>

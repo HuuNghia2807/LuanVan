@@ -5,6 +5,8 @@ import HomeView from "@/views/HomeView.vue";
 import OrderView from "@/views/OrderView.vue";
 import ProductTypeView from "@/views/ProductTypeView.vue";
 import ProductDetail from "@/views/ProductDetail.vue";
+import CartView from "@/views/CartView.vue";
+import CheckoutsView from "@/views/CheckoutsView.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -49,7 +51,16 @@ const routes: Array<RouteRecordRaw> = [
                 name: "showDetail",
                 component: ProductDetail,
             },
+            {
+                path: "/gio-hang",
+                component: CartView,
+            },
         ],
+    },
+    {
+        path: "/checkouts",
+        name: "checkouts",
+        component: CheckoutsView,
     },
     // {
     //   path: '/about',
