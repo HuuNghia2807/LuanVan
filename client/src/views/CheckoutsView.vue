@@ -2,7 +2,9 @@
   <div class="checkouts">
     <div class="left">
       <div class="wrap">
-        <img class="img" src="@/assets/img/logo.png" alt="" />
+        <router-link to="/">
+          <img class="img" src="@/assets/img/logo.png" alt="" />
+        </router-link>
         <div class="breadcrumb">
           <router-link class="text text-cart" to="/gio-hang"
             >Giỏ hàng</router-link
@@ -83,6 +85,7 @@
                   <Dropdown
                     id="city"
                     v-model="v$.city.$model"
+                    :filter="true"
                     :options="city"
                     optionLabel="name"
                     optionValue="code"
