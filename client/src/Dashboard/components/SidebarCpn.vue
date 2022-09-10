@@ -48,7 +48,7 @@ export default defineComponent({
       {
         name: "Products",
         icon: "pi pi-shopping-bag",
-        link: "/dashboard/product",
+        link: "/dashboard/products",
       },
       {
         name: "Orders",

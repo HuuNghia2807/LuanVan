@@ -5,9 +5,11 @@
     </div>
     <div class="container">
       <div>
-        <!--header  -->
+        <HeaderAdminCpn />
       </div>
-      <div class="content"></div>
+      <div class="content">
+        <router-view />
+      </div>
     </div>
   </div>
 </template>
@@ -15,10 +17,12 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SidebarCpn from "@/Dashboard/components/SidebarCpn.vue";
+import HeaderAdminCpn from "@/Dashboard/components/HeaderAdminCpn.vue";
 
 export default defineComponent({
   components: {
     SidebarCpn,
+    HeaderAdminCpn,
   },
   setup() {
     return {};

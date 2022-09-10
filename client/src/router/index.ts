@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+// client
 import MainLayout from "@/Layout/MainLayout.vue";
 
 import HomeView from "@/views/HomeView.vue";
@@ -8,7 +9,11 @@ import ProductDetail from "@/views/ProductDetail.vue";
 import CartView from "@/views/CartView.vue";
 import CheckoutsView from "@/views/CheckoutsView.vue";
 
+// admin
 import AdminMainLayout from "@/Dashboard/layout/AdminMainLayout.vue";
+
+import HomeDashboardView from "@/Dashboard/views/HomeDashboardView.vue";
+import ProductDashboardView from "@/Dashboard/views/ProductDashboardView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -68,6 +73,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/dashboard",
     name: "dashboard",
     component: AdminMainLayout,
+    children: [
+      {
+        path: "",
+        component: HomeDashboardView,
+      },
+      {
+        path: "products",
+        component: ProductDashboardView,
+      },
+    ],
   },
   // {
   //   path: '/about',
