@@ -43,7 +43,6 @@ export default defineComponent({
 
   .container {
     flex: 1;
-    background-color: aquamarine;
   }
 }
 </style>

@@ -39,13 +39,10 @@
                   </label>
                 </div>
                 <small
-                  v-if="
-                    (v$.name.$invalid && submitted) ||
-                    v$.name.$pending.$response
-                  "
+                  v-if="(v$.name.$invalid && submitted) || v$.name.$pending"
                   class="p-error"
                 >
-                  {{ v$.name.required.$message.replace("Value", "Họ và tên") }}
+                  {{ v$.name.required.$message }}
                 </small>
               </div>
               <div class="field w-5 ml-3">
@@ -68,10 +65,7 @@
                   </label>
                 </div>
                 <small
-                  v-if="
-                    (v$.phone.$invalid && submitted) ||
-                    v$.phone.$pending.$response
-                  "
+                  v-if="(v$.phone.$invalid && submitted) || v$.phone.$pending"
                   class="p-error"
                 >
                   {{ v$.phone.required.$message }}
@@ -108,10 +102,7 @@
                   </label>
                 </div>
                 <small
-                  v-if="
-                    (v$.city.$invalid && submitted) ||
-                    v$.city.$pending.$response
-                  "
+                  v-if="(v$.city.$invalid && submitted) || v$.city.$pending"
                   class="p-error"
                 >
                   {{ v$.city.required.$message }}
@@ -145,8 +136,7 @@
                 </div>
                 <small
                   v-if="
-                    (v$.district.$invalid && submitted) ||
-                    v$.district.$pending.$response
+                    (v$.district.$invalid && submitted) || v$.district.$pending
                   "
                   class="p-error"
                 >
@@ -180,10 +170,7 @@
                   </label>
                 </div>
                 <small
-                  v-if="
-                    (v$.ward.$invalid && submitted) ||
-                    v$.ward.$pending.$response
-                  "
+                  v-if="(v$.ward.$invalid && submitted) || v$.ward.$pending"
                   class="p-error"
                 >
                   {{ v$.ward.required.$message }}
@@ -213,8 +200,7 @@
                 </div>
                 <small
                   v-if="
-                    (v$.address.$invalid && submitted) ||
-                    v$.address.$pending.$response
+                    (v$.address.$invalid && submitted) || v$.address.$pending
                   "
                   class="p-error"
                 >
@@ -251,8 +237,7 @@
                 </span>
                 <small
                   v-else-if="
-                    (v$.email.$invalid && submitted) ||
-                    v$.email.$pending.$response
+                    (v$.email.$invalid && submitted) || v$.email.$pending
                   "
                   class="p-error"
                   >{{ v$.email.required.$message }}</small

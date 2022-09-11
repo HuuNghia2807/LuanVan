@@ -4,20 +4,20 @@
       :value="products"
       :layout="layout"
       :paginator="true"
-      :rows="9"
+      :rows="6"
       :sortOrder="sortOrder"
       :sortField="sortField"
     >
       <template #header>
         <div
-          class="grid grid-nogutter justify-content-between align-items-center"
+          class="header grid grid-nogutter justify-content-between align-items-center"
         >
           <div class="flex align-items-center" style="text-align: left">
             <my-dropdown
               v-model="sortKey"
               :options="sortOptions"
               optionLabel="label"
-              placeholder="Sort By Price"
+              placeholder="Sắp xếp theo giá"
               @change="onSortChange($event)"
             />
             <div class="ml-4">
@@ -33,6 +33,7 @@
                 label="Thêm sản phẩm"
                 icon="pi pi-plus"
                 class="p-button-success"
+                @click="openModal"
               />
             </div>
             <DataViewLayoutOptions v-model="layout" />
@@ -50,25 +51,28 @@
             />
             <div class="product-list-detail">
               <div class="product-name">{{ slotProps.data.name }}</div>
-              <Rating
-                :modelValue="slotProps.data.rating"
-                :readonly="true"
-                :cancel="false"
-              ></Rating>
-              <i class="pi pi-tag product-category-icon"></i
+              <div class="product-code">
+                Mã SP: <span class="font-bold text-orange-500">5177 89</span>
+              </div>
+              <div>
+                <Rating
+                  :modelValue="slotProps.data.rating"
+                  :cancel="false"
+                  :disabled="true"
+                  :readonly="true"
+                ></Rating>
+              </div>
+              <i
+                class="pi pi-tag product-category-icon"
+                style="font-size: 1.6rem"
+              ></i
               ><span class="product-category">Nike</span>
             </div>
             <div class="product-list-action">
               <span class="product-price">{{ slotProps.data.price }}</span>
-              <!-- <my-button
-                icon="pi pi-shopping-cart"
-                label="Add to Cart"
-                :disabled="slotProps.data.inventoryStatus === 'OUTOFSTOCK'"
-              ></my-button>
-              <span :class="'product-badge status-'">{{
-                slotProps.data.inventoryStatus
-              }}</span> -->
-              <span>Số lượng: 1000</span>
+              <span class="product-quantity"
+                >Số lượng: <span class="sl">1000</span></span
+              >
             </div>
           </div>
         </div>
@@ -79,12 +83,12 @@
           <div class="product-grid-item card">
             <div class="product-grid-item-top">
               <div>
-                <i class="pi pi-tag product-category-icon"></i>
+                <i
+                  class="pi pi-tag product-category-icon"
+                  style="font-size: 1.6rem"
+                ></i>
                 <span class="product-category">Nike</span>
               </div>
-              <!-- <span :class="'product-badge status-'">{{
-                slotProps.data.inventoryStatus
-              }}</span> -->
               <div class="action-top">
                 <div class="mr-2">
                   <my-button
@@ -106,36 +110,51 @@
                 :src="slotProps.data.img"
                 :alt="slotProps.data.name"
               />
+              <div class="product-code">
+                Mã SP: <span class="font-bold text-orange-500">5177 89</span>
+              </div>
               <div class="product-name">{{ slotProps.data.name }}</div>
-              <Rating
-                :modelValue="slotProps.data.rating"
-                :readonly="true"
-                :cancel="false"
-              ></Rating>
+              <div class="rating">
+                <Rating
+                  :modelValue="slotProps.data.rating"
+                  :readonly="true"
+                  :cancel="false"
+                  :disabled="true"
+                ></Rating>
+              </div>
             </div>
             <div class="product-grid-item-bottom">
               <span class="product-price">{{ slotProps.data.price }}</span>
-              <!-- <my-button
-                icon="pi pi-shopping-cart"
-                :disabled="slotProps.data.inventoryStatus === 'OUTOFSTOCK'"
-              ></my-button> -->
-              <span>Số lượng: 1000</span>
+              <span class="product-quantity"
+                >Số lượng: <span class="sl">1000</span></span
+              >
             </div>
           </div>
         </div>
       </template>
     </DataView>
   </div>
+  <my-dialog
+    header="ACTIONS"
+    v-model:visible="isActions"
+    :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+    :style="{ width: '60vw', fontSize: '2rem' }"
+    :modal="true"
+  >
+    <AddOrEditProductCpn />
+  </my-dialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import AddOrEditProductCpn from "@/Dashboard/components/product/AddOrEditProductCpn.vue";
 import Rating from "primevue/rating";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import InputText from "primevue/inputtext";
 
 export default defineComponent({
   components: {
+    AddOrEditProductCpn,
     InputText,
     Rating,
     DataViewLayoutOptions,
@@ -228,14 +247,15 @@ export default defineComponent({
         sale: "8.000.000 đ",
       },
     ]);
+    const isActions = ref(false);
     const layout = ref("grid");
     const sortKey = ref(null);
-    const sortOrder = ref(null);
-    const sortField = ref(null);
+    const sortOrder = ref(0);
+    const sortField = ref(0);
     const search = ref("");
     const sortOptions = ref([
-      { label: "Price High to Low", value: "!price" },
-      { label: "Price Low to High", value: "price" },
+      { label: "Giá thấp đến cao", value: "!price" },
+      { label: "Giá cao đến thấp", value: "price" },
     ]);
 
     const onSortChange = (event: any) => {
@@ -252,6 +272,12 @@ export default defineComponent({
         sortKey.value = sortValue;
       }
     };
+    const openModal = () => {
+      isActions.value = true;
+    };
+    const closeModal = () => {
+      isActions.value = false;
+    };
     return {
       products,
       layout,
@@ -260,7 +286,10 @@ export default defineComponent({
       sortField,
       sortOptions,
       search,
+      isActions,
       onSortChange,
+      openModal,
+      closeModal,
     };
   },
 });
@@ -273,8 +302,12 @@ export default defineComponent({
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
     0 1px 3px 0 rgba(0, 0, 0, 0.12);
   border-radius: 4px;
-  margin-bottom: 2rem;
+  padding: 2rem;
   font-size: 1.6rem;
+
+  .header {
+    height: 5rem;
+  }
 }
 .p-dropdown {
   width: 14rem;
@@ -293,10 +326,9 @@ export default defineComponent({
   object-fit: contain;
 }
 
-.product-name {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
+.rating {
+  display: flex;
+  justify-content: flex-start;
 }
 
 .product-description {
@@ -309,6 +341,7 @@ export default defineComponent({
 }
 
 .product-category {
+  font-size: 1.6rem;
   font-weight: 600;
   vertical-align: middle;
 }
@@ -326,6 +359,12 @@ export default defineComponent({
 
   .product-list-detail {
     flex: 1 1 0;
+    .product-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #495057;
+      overflow: hidden;
+    }
   }
 
   .p-rating {
@@ -333,10 +372,11 @@ export default defineComponent({
   }
 
   .product-price {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     align-self: flex-end;
+    color: red;
   }
 
   .product-list-action {
@@ -354,6 +394,12 @@ export default defineComponent({
   align-items: center;
 }
 
+.product-code {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+  color: #495050;
+}
+
 .product-grid-item:hover .action-top {
   display: flex;
 }
@@ -361,6 +407,7 @@ export default defineComponent({
 ::v-deep(.product-grid-item) {
   margin: 0.5rem;
   border: 1px solid var(--surface-border);
+  height: 40rem;
 
   .product-grid-item-top,
   .product-grid-item-bottom {
@@ -380,15 +427,45 @@ export default defineComponent({
 
   .product-grid-item-content {
     text-align: center;
+    .product-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      color: #495057;
+      height: 4.2rem;
+      overflow: hidden;
+    }
   }
 
   .product-price {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 600;
+    color: red;
+    margin: 1rem 0;
   }
+}
+.product-quantity {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.sl {
+  color: #000;
+  font-size: 1.7rem;
+  font-weight: 800;
+  font-style: italic;
 }
 :deep(.p-rating-icon.pi-star-fill) {
   color: yellow !important;
+}
+
+:deep(.p-rating .p-rating-icon) {
+  font-size: 1.8rem;
+}
+
+.modal-container {
+  font-size: 1.8rem;
 }
 
 @media screen and (max-width: 576px) {
