@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('comment_rating');
             $table->foreignId('customer_id');
             $table->foreignId('product_id');
+            $table->timestamps();
         });
     }
 

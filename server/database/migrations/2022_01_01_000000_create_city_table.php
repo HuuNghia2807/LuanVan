@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('city_name',100);
             $table->string('city_type',100);
             $table->integer('transport_fee');
+            $table->timestamps();
         });
     }
 

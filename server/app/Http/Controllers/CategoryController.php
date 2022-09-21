@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
@@ -21,9 +23,20 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        // DB::transaction();
+        try {
+            $category = new Category();
+            $category->category_name = $request->input('name');
+            $category->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            // DB::rollBack();
+            return response()->json('error',500);
+        }
+        
+        return response()->json($category);
     }
 
     /**

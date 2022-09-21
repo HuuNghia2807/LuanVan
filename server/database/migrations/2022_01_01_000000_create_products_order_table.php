@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id("product_order_id");
             $table->integer('product_order_quantity');
             $table->foreignId('product_size_id');
+            $table->timestamps();
         });
     }
 

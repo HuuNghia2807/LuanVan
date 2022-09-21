@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('customer_birth',20);
             $table->string('customer_gender',20);
             $table->string('customer_avata',100);
+            $table->timestamps();
         });
     }
 

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->id("user_id");
             $table->integer('user_email')->unique();
             $table->string('user_password')->unique();
-            $table->string('user_status')->unique();
-            $table->string('user_type')->unique();
+            $table->string('user_status');
+            $table->string('user_type');
+            $table->timestamps();
         });
     }
 

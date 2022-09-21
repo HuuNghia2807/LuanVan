@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('ward_name',100);
             $table->string('ward_type',100);
             $table->foreignId('district_id');
+            $table->timestamps();
         });
     }
 

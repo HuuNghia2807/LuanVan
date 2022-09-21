@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('address_id');
             $table->foreignId('payment_id');
             $table->foreignId('user_id');
+            $table->timestamps();
         });
     }
 

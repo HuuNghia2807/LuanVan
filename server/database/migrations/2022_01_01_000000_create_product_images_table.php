@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('product_image_name',100);
             $table->string('product_image_link',200);
             $table->foreignId('product_id');
+            $table->timestamps();
         });
     }
 

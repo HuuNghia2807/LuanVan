@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('address',100);
             $table->foreignId('customer_id');
             $table->foreignId('ward_id');
+            $table->timestamps();
         });
     }
 

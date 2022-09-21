@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('district_name',100);
             $table->string('district_type',100);
             $table->foreignId('city_id');
+            $table->timestamps();
         });
     }
 

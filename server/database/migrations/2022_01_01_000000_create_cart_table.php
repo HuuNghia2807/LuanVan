@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('cart_quantity');
             $table->foreignId('product_size_id');
             $table->foreignId('customer_id');
+            $table->timestamps();
         });
     }
 
