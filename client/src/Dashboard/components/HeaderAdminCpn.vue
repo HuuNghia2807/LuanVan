@@ -56,6 +56,7 @@ export default defineComponent({
   height: 6rem;
   background-color: #fff;
   padding: 0 2rem;
+  border-bottom: 1px solid #ccc;
 
   .title {
     display: flex;

@@ -2,7 +2,7 @@
   <div class="header-type">
     <div class="option-search">
       <span class="title">Chọn Size Giày</span>
-      <Dropdown
+      <my-dropdown
         :filter="true"
         v-model="size"
         :options="sizes"
@@ -13,11 +13,11 @@
         <template #option="slotProps">
           <div class="option-item">{{ slotProps.option.name }}</div>
         </template>
-      </Dropdown>
+      </my-dropdown>
     </div>
     <div class="option-search">
       <span class="title">Khoảng Giá</span>
-      <Dropdown
+      <my-dropdown
         :filter="true"
         v-model="price"
         :options="prices"
@@ -28,11 +28,11 @@
         <template #option="slotProps">
           <div class="option-item">{{ slotProps.option.name }}</div>
         </template>
-      </Dropdown>
+      </my-dropdown>
     </div>
     <div class="option-search">
       <span class="title">Sắp Xếp Theo</span>
-      <Dropdown
+      <my-dropdown
         :filter="true"
         v-model="sort"
         :options="sorts"
@@ -43,7 +43,7 @@
         <template #option="slotProps">
           <div class="option-item">{{ slotProps.option.name }}</div>
         </template>
-      </Dropdown>
+      </my-dropdown>
     </div>
     <div class="option-search">
       <Button
@@ -61,12 +61,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 
 export default defineComponent({
   components: {
-    Dropdown,
     Button,
   },
   setup() {
@@ -125,7 +123,7 @@ export default defineComponent({
     margin-bottom: 1rem;
   }
 
-  :deep(.p-dropdown-label) {
+  :deep(.p-my-dropdown-label) {
     font-size: 1.6rem !important;
     line-height: 1.4rem !important;
     padding: 1rem;
