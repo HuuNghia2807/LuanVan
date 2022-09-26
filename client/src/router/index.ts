@@ -15,6 +15,7 @@ import AdminMainLayout from "@/Dashboard/layout/AdminMainLayout.vue";
 import HomeDashboardView from "@/Dashboard/views/HomeDashboardView.vue";
 import ProductDashboardView from "@/Dashboard/views/ProductDashboardView.vue";
 import ReportDashboardView from "@/Dashboard/views/ReportDashboardView.vue";
+import OrderDashboardView from "@/Dashboard/views/OrderDashboardView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -86,6 +87,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "report",
         component: ReportDashboardView,
+      },
+      {
+        path: "order",
+        component: OrderDashboardView,
       },
     ],
   },
