@@ -7,9 +7,13 @@ import PrimeVue from "primevue/config";
 import BadgeDirective from "primevue/badgedirective";
 import Dropdown from "primevue/dropdown";
 import DataView from "primevue/dataview";
+import DataTable from "primevue/datatable";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
+import Toast from "primevue/toast";
+import ToastService from "primevue/toastservice";
+import Image from "primevue/image";
 
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -21,9 +25,13 @@ const app = createApp(App);
 app.use(store);
 app.use(router);
 app.use(PrimeVue);
+app.use(ToastService);
 
 app.directive("badge", BadgeDirective);
 app.component("DataView", DataView);
+app.component("DataTable", DataTable);
+app.component("my-image", Image);
+app.component("my-toast", Toast);
 app.component("my-dropdown", Dropdown);
 app.component("my-button", Button);
 app.component("my-dialog", Dialog);

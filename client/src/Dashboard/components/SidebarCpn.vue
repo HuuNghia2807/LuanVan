@@ -10,7 +10,7 @@
     <div class="line" />
     <div class="user">
       <Avatar
-        image="https://scontent.fsgn5-3.fna.fbcdn.net/v/t39.30808-6/300157793_1158720588043739_3953508199066744814_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=DKWhLanMPM8AX8TWEXp&_nc_ht=scontent.fsgn5-3.fna&oh=00_AT_SV4OvgAZuT4Z3mJI1jP9ni8JygrnmdCobyCyTlt6Y0g&oe=6318B0C4"
+        image="https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.6435-9/180041959_1021589654914677_1918695516674184677_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=GAZqmffjXJAAX_LTr5B&_nc_ht=scontent.fsgn5-8.fna&oh=00_AT_yu1G92NwRXDPNOSeU6mLpSBtyirIhPevgqVX-L3sidg&oe=635C3CB9"
         class="avatar"
         shape="circle"
       />

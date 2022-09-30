@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue";
+import { defineComponent, onMounted, reactive } from "vue";
 import { useStore } from "vuex";
 import SliderCpn from "@/components/SliderCpn.vue";
 import IntroduceCpn from "@/components/IntroduceCpn.vue";

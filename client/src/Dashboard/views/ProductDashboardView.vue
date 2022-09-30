@@ -1,295 +1,391 @@
 <template>
-  <div class="card">
-    <DataView
-      :value="products"
-      :layout="layout"
-      :paginator="true"
-      :rows="6"
-      :sortOrder="sortOrder"
-      :sortField="sortField"
-    >
-      <template #header>
-        <div
-          class="header grid grid-nogutter justify-content-between align-items-center"
-        >
-          <div class="flex align-items-center" style="text-align: left">
-            <my-dropdown
-              v-model="sortKey"
-              :options="sortOptions"
-              optionLabel="label"
-              placeholder="Sắp xếp theo giá"
-              @change="onSortChange($event)"
-            />
-            <div class="ml-4">
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText type="text" v-model="search" placeholder="Search" />
-              </span>
-            </div>
-          </div>
-          <div class="flex align-items-center" style="text-align: right">
-            <div class="mr-4">
-              <my-button
-                label="Thêm sản phẩm"
-                icon="pi pi-plus"
-                class="p-button-success"
-                @click="openModal"
-              />
-            </div>
-            <DataViewLayoutOptions v-model="layout" />
-          </div>
-        </div>
-      </template>
+  <div class="container-product">
+    <div class="card">
+      <Toolbar class="mb-4">
+        <template #start>
+          <my-button
+            label="Thêm sản phẩm"
+            icon="pi pi-plus"
+            class="p-button-success mr-2"
+          />
+          <my-button
+            label="Xóa Sản Phẩm"
+            icon="pi pi-trash"
+            class="p-button-danger"
+            @click="confirmDeleteSelected"
+            :disabled="!selectedProducts || !selectedProducts.length"
+          />
+        </template>
 
-      <template #list="slotProps">
-        <div class="col-12">
-          <div class="product-list-item">
-            <img
-              class="image-col12"
+        <!-- <template #end>
+          <FileUpload
+            mode="basic"
+            accept="image/*"
+            :maxFileSize="1000000"
+            label="Import"
+            chooseLabel="Import"
+            class="mr-2 inline-block"
+          />
+          <my-button
+            label="Export"
+            icon="pi pi-upload"
+            class="p-button-help"
+            @click="exportCSV($event)"
+          />
+        </template> -->
+      </Toolbar>
+
+      <DataTable
+        :value="products"
+        v-model:selection="selectedProducts"
+        dataKey="id"
+        :paginator="true"
+        :rows="10"
+        :filters="filters"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+        responsiveLayout="scroll"
+      >
+        <template #header>
+          <div
+            class="table-header flex flex-column md:flex-row md:justiify-content-between"
+          >
+            <h5 class="mb-2 md:m-0 p-as-md-center">Quản Lý Sản Phẩm</h5>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="Search..."
+              />
+            </span>
+          </div>
+        </template>
+
+        <Column
+          selectionMode="multiple"
+          style="width: 3rem"
+          :exportable="false"
+        ></Column>
+        <Column
+          field="id"
+          header="Mã Sản Phẩm"
+          :sortable="true"
+          style="width: 10rem"
+        ></Column>
+        <Column
+          field="name"
+          header="Tên Sản Phẩm"
+          :sortable="true"
+          style="width: 20rem"
+        ></Column>
+        <Column header="Ảnh Sản Phẩm">
+          <template #body="slotProps">
+            <my-image
               :src="slotProps.data.img"
-              :alt="slotProps.data.name"
+              :alt="slotProps.data.img"
+              width="80"
             />
-            <div class="product-list-detail">
-              <div class="product-name">{{ slotProps.data.name }}</div>
-              <div class="product-code">
-                Mã SP: <span class="font-bold text-orange-500">5177 89</span>
-              </div>
-              <div>
-                <Rating
-                  :modelValue="slotProps.data.rating"
-                  :cancel="false"
-                  :disabled="true"
-                  :readonly="true"
-                ></Rating>
-              </div>
-              <i
-                class="pi pi-tag product-category-icon"
-                style="font-size: 1.6rem"
-              ></i
-              ><span class="product-category">Nike</span>
-            </div>
-            <div class="product-list-action">
-              <span class="product-price">{{ slotProps.data.price }}</span>
-              <span class="product-quantity"
-                >Số lượng: <span class="sl">1000</span></span
-              >
-            </div>
-          </div>
-        </div>
-      </template>
-
-      <template #grid="slotProps">
-        <div class="col-12 md:col-4">
-          <div class="product-grid-item card">
-            <div class="product-grid-item-top">
-              <div>
-                <i
-                  class="pi pi-tag product-category-icon"
-                  style="font-size: 1.6rem"
-                ></i>
-                <span class="product-category">Nike</span>
-              </div>
-              <div class="action-top">
-                <div class="mr-2">
-                  <my-button
-                    icon="pi pi-pencil"
-                    class="p-button-rounded p-button-success"
-                  />
-                </div>
-                <div>
-                  <my-button
-                    icon="pi pi-times"
-                    class="p-button-rounded p-button-danger"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="product-grid-item-content">
-              <img
-                class="image-col4"
-                :src="slotProps.data.img"
-                :alt="slotProps.data.name"
-              />
-              <div class="product-code">
-                Mã SP: <span class="font-bold text-orange-500">5177 89</span>
-              </div>
-              <div class="product-name">{{ slotProps.data.name }}</div>
-              <div class="rating">
-                <Rating
-                  :modelValue="slotProps.data.rating"
-                  :readonly="true"
-                  :cancel="false"
-                  :disabled="true"
-                ></Rating>
-              </div>
-            </div>
-            <div class="product-grid-item-bottom">
-              <span class="product-price">{{ slotProps.data.price }}</span>
-              <span class="product-quantity"
-                >Số lượng: <span class="sl">1000</span></span
-              >
-            </div>
-          </div>
-        </div>
-      </template>
-    </DataView>
+          </template>
+        </Column>
+        <Column
+          field="price"
+          header="Giá Sản Phẩm"
+          :sortable="true"
+          style="min-width: 8rem"
+        >
+          <template #body="slotProps">
+            {{ slotProps.data.price }}
+          </template>
+        </Column>
+        <Column
+          field="category"
+          header="Loại Sản Phẩm"
+          :sortable="true"
+          style="min-width: 12rem"
+        >
+          <template #body="slotProps">
+            <span
+              :class="
+                'product-badge status-' +
+                (slotProps.data.category
+                  ? slotProps.data.category.toLowerCase()
+                  : '')
+              "
+              >{{ slotProps.data.category }}</span
+            >
+          </template>
+        </Column>
+        <Column field="rating" header="Đánh giá" style="min-width: 12rem">
+          <template #body="slotProps">
+            <Rating
+              :modelValue="slotProps.data.rating"
+              :readonly="true"
+              :cancel="false"
+            />
+          </template>
+        </Column>
+        <Column :exportable="false" style="min-width: 8rem">
+          <template #body="slotProps">
+            <my-button
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-success mr-2"
+              @click="editProduct(slotProps.data)"
+            />
+            <my-button
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-warning"
+              @click="confirmDeleteProduct(slotProps.data)"
+            />
+          </template>
+        </Column>
+      </DataTable>
+    </div>
   </div>
+
+  <my-dialog
+    v-model:visible="deleteProductDialog"
+    :style="{ width: '450px' }"
+    header="Confirm"
+    :modal="true"
+  >
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 3rem" />
+      <span v-if="product" style="font-size: 1.6rem"
+        >Are you sure you want to delete <b>{{ product.name }}</b
+        >?</span
+      >
+    </div>
+    <template #footer>
+      <my-button
+        label="No"
+        icon="pi pi-times"
+        class="p-button-text"
+        style="font-size: 1.6rem"
+        @click="deleteProductDialog = false"
+      />
+      <my-button
+        label="Yes"
+        icon="pi pi-check"
+        class="p-button-text"
+        style="font-size: 1.6rem"
+        @click="deleteProduct"
+      />
+    </template>
+  </my-dialog>
+
   <my-dialog
     header="ACTIONS"
-    v-model:visible="isActions"
+    v-model:visible="productDialog"
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
     :style="{ width: '60vw', fontSize: '2rem' }"
     :modal="true"
   >
     <AddOrEditProductCpn />
   </my-dialog>
+  <my-toast position="top-right" group="tr" />
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import AddOrEditProductCpn from "@/Dashboard/components/product/AddOrEditProductCpn.vue";
 import Rating from "primevue/rating";
-import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import InputText from "primevue/inputtext";
+import { FilterMatchMode } from "primevue/api";
+import { useToast } from "primevue/usetoast";
+import Toolbar from "primevue/toolbar";
+import Column from "primevue/column";
 
 export default defineComponent({
   components: {
     AddOrEditProductCpn,
     InputText,
     Rating,
-    DataViewLayoutOptions,
+    Toolbar,
+    Column,
   },
   setup() {
     const products = ref([
       {
+        id: 1,
         img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
         name: "AIR FORCE 1",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "2.200.000 đ",
         sale: "",
-        rating: 3,
       },
       {
+        id: 2,
         img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
         name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        rate: [1, 1, 1, 1, 1],
+        category: "JORDAN",
+        rating: 5,
         price: "9.500.000 đ",
         sale: "8.000.000 đ",
       },
       {
+        id: 3,
         img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
         name: "AIR FORCE 1",
-        rate: [1, 1, 1, 1, 1],
+        category: "PUMA",
+        rating: 5,
         price: "2.200.000 đ",
         sale: "",
       },
       {
+        id: 4,
         img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
         name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "9.500.000 đ",
         sale: "8.000.000 đ",
       },
       {
+        id: 5,
         img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
         name: "AIR FORCE 1",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "2.200.000 đ",
         sale: "",
       },
       {
+        id: 6,
         img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
         name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "9.500.000 đ",
         sale: "8.000.000 đ",
       },
       {
+        id: 7,
         img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
         name: "AIR FORCE 1",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "2.200.000 đ",
         sale: "",
       },
       {
+        id: 8,
         img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
         name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "9.500.000 đ",
         sale: "8.000.000 đ",
       },
       {
+        id: 9,
         img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
         name: "AIR FORCE 1",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "2.200.000 đ",
         sale: "",
       },
       {
+        id: 10,
         img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
         name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
+        rating: 5,
         price: "9.500.000 đ",
         sale: "8.000.000 đ",
       },
       {
+        id: 11,
         img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
         name: "AIR FORCE 1",
-        rate: [1, 1, 1, 1, 1],
+        category: "NIKE",
         price: "2.200.000 đ",
         sale: "",
       },
       {
+        id: 12,
         img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
         name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        rate: [1, 1, 1, 1, 1],
+        rating: 5,
         price: "9.500.000 đ",
         sale: "8.000.000 đ",
       },
     ]);
-    const isActions = ref(false);
-    const layout = ref("grid");
-    const sortKey = ref(null);
-    const sortOrder = ref(0);
-    const sortField = ref(0);
-    const search = ref("");
-    const sortOptions = ref([
-      { label: "Giá thấp đến cao", value: "!price" },
-      { label: "Giá cao đến thấp", value: "price" },
+    const selectedProducts = ref([] as any[]);
+    const filters = ref({
+      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    });
+    const deleteProductDialog = ref(false);
+    const productDialog = ref(false);
+    const product = ref<any>({});
+    const toast = useToast();
+    const deleteProductsDialog = ref(false);
+    const statuses = ref([
+      { label: "NIKE", value: "nike" },
+      { label: "JORDAN", value: "jordan" },
+      { label: "PUMA", value: "puma" },
     ]);
 
-    const onSortChange = (event: any) => {
-      const value = event.value.value;
-      const sortValue = event.value;
-
-      if (value.indexOf("!") === 0) {
-        sortOrder.value = -1;
-        sortField.value = value.substring(1, value.length);
-        sortKey.value = sortValue;
-      } else {
-        sortOrder.value = 1;
-        sortField.value = value;
-        sortKey.value = sortValue;
+    const confirmDeleteSelected = () => {
+      deleteProductDialog.value = true;
+    };
+    const editProduct = (prod: any) => {
+      product.value = { ...prod };
+      productDialog.value = true;
+    };
+    const deleteProduct = () => {
+      if (selectedProducts.value.length) {
+        deleteSelectedProducts();
       }
+
+      products.value = products.value.filter(
+        (val) => val.id !== product.value.id
+      );
+      deleteProductDialog.value = false;
+      product.value = {};
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "Product Deleted",
+        group: "tr",
+        life: 3000,
+      });
     };
-    const openModal = () => {
-      isActions.value = true;
+    const deleteSelectedProducts = () => {
+      products.value = products.value.filter(
+        (val) => !selectedProducts.value.includes(val)
+      );
+      deleteProductsDialog.value = false;
+      selectedProducts.value = [];
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "Products Deleted",
+        group: "tr",
+        life: 3000,
+      });
     };
-    const closeModal = () => {
-      isActions.value = false;
+
+    const confirmDeleteProduct = (prod: any) => {
+      product.value = prod;
+      deleteProductDialog.value = true;
     };
+
     return {
       products,
-      layout,
-      sortKey,
-      sortOrder,
-      sortField,
-      sortOptions,
-      search,
-      isActions,
-      onSortChange,
-      openModal,
-      closeModal,
+      filters,
+      deleteProductDialog,
+      productDialog,
+      product,
+      deleteProductsDialog,
+      selectedProducts,
+      statuses,
+      confirmDeleteSelected,
+      editProduct,
+      deleteProduct,
+      deleteSelectedProducts,
+      confirmDeleteProduct,
     };
   },
 });
@@ -297,205 +393,65 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .card {
-  background: #ffffff;
+  background: var(--surface-card);
   padding: 2rem;
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-    0 1px 3px 0 rgba(0, 0, 0, 0.12);
-  border-radius: 4px;
-  padding: 2rem;
-  font-size: 1.6rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
 
-  .header {
-    height: 5rem;
+:deep(.p-component),
+h5 {
+  font-size: 1.4rem !important;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(165, 165, 165, 0.1);
+  }
+  50% {
+    background-color: rgba(165, 165, 165, 0.3);
+  }
+  100% {
+    background-color: rgba(165, 165, 165, 0.1);
   }
 }
-.p-dropdown {
-  width: 14rem;
-  font-weight: normal;
+
+.product-badge.status-nike {
+  background: #c8e6c9;
+  color: #256029;
 }
 
-.image-col12 {
-  width: 12rem;
-  height: 10rem;
-  object-fit: contain;
+.product-badge.status-jordan {
+  background: #ffcdd2;
+  color: #c63737;
 }
 
-.image-col4 {
-  width: 20rem;
-  height: 16rem;
-  object-fit: contain;
+.product-badge.status-puma {
+  background: #feedaf;
+  color: #8a5340;
 }
 
-.rating {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.product-description {
-  margin: 0 0 1rem 0;
-}
-
-.product-category-icon {
-  vertical-align: middle;
-  margin-right: 0.5rem;
-}
-
-.product-category {
-  font-size: 1.6rem;
-  font-weight: 600;
-  vertical-align: middle;
-}
-
-::v-deep(.product-list-item) {
+.table-header {
   display: flex;
   align-items: center;
-  padding: 1rem;
-  width: 100%;
+  justify-content: space-between;
 
-  img {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    margin-right: 2rem;
-  }
-
-  .product-list-detail {
-    flex: 1 1 0;
-    .product-name {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #495057;
-      overflow: hidden;
-    }
-  }
-
-  .p-rating {
-    margin: 0 0 0.5rem 0;
-  }
-
-  .product-price {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    align-self: flex-end;
-    color: red;
-  }
-
-  .product-list-action {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .p-button {
-    margin-bottom: 0.5rem;
+  @media screen and (max-width: 960px) {
+    align-items: start;
   }
 }
 
-.action-top {
-  display: none;
-  align-items: center;
-}
-
-.product-code {
-  font-size: 1.5rem;
-  margin: 0.5rem 0;
-  color: #495050;
-}
-
-.product-grid-item:hover .action-top {
+.confirmation-content {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
+@media screen and (max-width: 960px) {
+  ::v-deep(.p-toolbar) {
+    flex-wrap: wrap;
 
-::v-deep(.product-grid-item) {
-  margin: 0.5rem;
-  border: 1px solid var(--surface-border);
-  height: 40rem;
-
-  .product-grid-item-top,
-  .product-grid-item-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .product-grid-item-top {
-    height: 2rem;
-  }
-
-  img {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    margin: 2rem 0;
-  }
-
-  .product-grid-item-content {
-    text-align: center;
-    .product-name {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin: 0 0 1rem 0;
-      color: #495057;
-      height: 4.2rem;
-      overflow: hidden;
-    }
-  }
-
-  .product-price {
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: red;
-    margin: 1rem 0;
-  }
-}
-.product-quantity {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #495057;
-}
-
-.sl {
-  color: #000;
-  font-size: 1.7rem;
-  font-weight: 800;
-  font-style: italic;
-}
-:deep(.p-rating-icon.pi-star-fill) {
-  color: yellow !important;
-}
-
-:deep(.p-rating .p-rating-icon) {
-  font-size: 1.8rem;
-}
-
-.modal-container {
-  font-size: 1.8rem;
-}
-
-@media screen and (max-width: 576px) {
-  .product-list-item {
-    flex-direction: column;
-    align-items: center;
-
-    img {
-      margin: 2rem 0;
-    }
-
-    .product-list-detail {
-      text-align: center;
-    }
-
-    .product-price {
-      align-self: center;
-    }
-
-    .product-list-action {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .product-list-action {
-      margin-top: 2rem;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
+    .p-button {
+      margin-bottom: 0.25rem;
     }
   }
 }
