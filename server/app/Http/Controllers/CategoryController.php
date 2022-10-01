@@ -5,17 +5,34 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
+use App\Repositories\Category\CategoryRepositoryInterface;
+use Illuminate\Http\JsonResponse;
 
-class CategoryController extends Controller
+class CategoryController extends AbstractApiController
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
+
+    protected $categoryRepo;
+
+    public function __construct(CategoryRepositoryInterface $categoryRepo)
+    {
+        $this->categoryRepo = $categoryRepo;
+    }
+
     public function index()
     {
         //
+        $category = $this->categoryRepo->getAll();
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Get categories success');
+        $this->setData($category);
+        return $this->respond();
     }
 
     /**
@@ -23,20 +40,8 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        // DB::transaction();
-        try {
-            $category = new Category();
-            $category->category_name = $request->input('name');
-            $category->save();
-            DB::commit();
-        } catch (\Throwable $th) {
-            // DB::rollBack();
-            return response()->json('error',500);
-        }
-        
-        return response()->json($category);
     }
 
     /**
@@ -48,6 +53,21 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         //
+        $data = $request->all();
+        DB::beginTransaction();
+        try {
+            $category = $this->categoryRepo->create($data);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json('error', 500);
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_CREATED);
+        $this->setStatus('success');
+        $this->setMessage('Create category success');
+        $this->setData($data);
+        return $this->respond();
     }
 
     /**
@@ -70,6 +90,12 @@ class CategoryController extends Controller
     public function edit($id)
     {
         //
+        $category = $this->categoryRepo->find($id);
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Get category success');
+        $this->setData($category);
+        return $this->respond();
     }
 
     /**
@@ -82,6 +108,21 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $data = $request->all();
+        DB::beginTransaction();
+        try {
+            $category = $this->categoryRepo->update($id, $data);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json('error', 500);
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_CREATED);
+        $this->setStatus('success');
+        $this->setMessage('Update category success');
+        $this->setData($category);
+        return $this->respond();
     }
 
     /**
@@ -93,5 +134,18 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         //
+        DB::beginTransaction();
+        try {
+            $category = $this->categoryRepo->delete($id);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json('error', 500);
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_CREATED);
+        $this->setStatus('success');
+        $this->setMessage('Delete category success');
+        return $this->respond();
     }
 }
