@@ -9,6 +9,8 @@ import ProductDetail from "@/views/ProductDetail.vue";
 import CartView from "@/views/CartView.vue";
 import CheckoutsView from "@/views/CheckoutsView.vue";
 
+import AccountView from "@/views/AccountView.vue";
+
 // admin
 import AdminMainLayout from "@/Dashboard/layout/AdminMainLayout.vue";
 
@@ -71,6 +73,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/checkouts",
     name: "checkouts",
     component: CheckoutsView,
+  },
+  {
+    path: "/account",
+    name: "account",
+    component: AccountView,
   },
   {
     path: "/dashboard",

@@ -28,35 +28,26 @@
     </router-link>
     <div class="account flex-1">
       <div class="flex align-items-center justify-content-center">
-        <span class="login" @click="handleLogin('login')">Đăng nhập</span>
+        <router-link to="/account" class="login no-underline"
+          >Đăng nhập</router-link
+        >
         <span class="line" />
-        <span class="login" @click="handleLogin('register')">Đăng ký</span>
+        <router-link to="/account" class="login no-underline"
+          >Đăng ký</router-link
+        >
       </div>
       <div class="user">user</div>
     </div>
   </div>
-  <Dialog
-    header="Header"
-    v-model:visible="isModal"
-    :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-    :style="{ width: '50vw', marginTop: '10rem' }"
-    position="top"
-    :modal="true"
-  >
-    <AccountCpn />
-  </Dialog>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
 import Dialog from "primevue/dialog";
-import AccountCpn from "./User/AccountCpn.vue";
 
 export default defineComponent({
   components: {
     InputText,
-    AccountCpn,
-    Dialog,
   },
   setup() {
     const isModal = ref(false);
