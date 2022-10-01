@@ -14,6 +14,8 @@ import InputText from "primevue/inputtext";
 import Toast from "primevue/toast";
 import ToastService from "primevue/toastservice";
 import Image from "primevue/image";
+import Avatar from "primevue/avatar";
+import Calendar from "primevue/calendar";
 
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -31,6 +33,8 @@ app.directive("badge", BadgeDirective);
 app.component("DataView", DataView);
 app.component("DataTable", DataTable);
 app.component("my-image", Image);
+app.component("my-calender", Calendar);
+app.component("my-avatar", Avatar);
 app.component("my-toast", Toast);
 app.component("my-dropdown", Dropdown);
 app.component("my-button", Button);

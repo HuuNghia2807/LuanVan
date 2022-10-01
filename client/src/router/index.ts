@@ -16,6 +16,7 @@ import HomeDashboardView from "@/Dashboard/views/HomeDashboardView.vue";
 import ProductDashboardView from "@/Dashboard/views/ProductDashboardView.vue";
 import ReportDashboardView from "@/Dashboard/views/ReportDashboardView.vue";
 import OrderDashboardView from "@/Dashboard/views/OrderDashboardView.vue";
+import UserDashboardView from "@/Dashboard/views/UserDashboardView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -91,6 +92,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "order",
         component: OrderDashboardView,
+      },
+      {
+        path: "user",
+        component: UserDashboardView,
       },
     ],
   },

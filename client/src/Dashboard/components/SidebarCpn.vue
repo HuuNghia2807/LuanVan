@@ -51,6 +51,11 @@ export default defineComponent({
         link: "/dashboard/products",
       },
       {
+        name: "Users",
+        icon: "pi pi-user",
+        link: "/dashboard/user",
+      },
+      {
         name: "Orders",
         icon: "pi pi-money-bill",
         link: "/dashboard/order",
