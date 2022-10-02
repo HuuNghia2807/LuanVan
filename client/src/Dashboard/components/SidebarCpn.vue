@@ -16,7 +16,13 @@
       />
       <div class="name">
         <span>NGUYEN NGHIA</span>
-        <i class="pi pi-cog" style="font-size: 1.6rem"></i>
+        <router-link to="personal" class="no-underline">
+          <i
+            class="pi pi-cog text-white"
+            style="font-size: 1.6rem"
+            v-tooltip="'Chỉnh sửa thông tin cá nhân'"
+          ></i>
+        </router-link>
       </div>
     </div>
     <div class="line -mx-5" />

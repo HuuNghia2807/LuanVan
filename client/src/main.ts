@@ -18,6 +18,7 @@ import Avatar from "primevue/avatar";
 import Calendar from "primevue/calendar";
 import Password from "primevue/password";
 import Checkbox from "primevue/checkbox";
+import Tooltip from "primevue/tooltip";
 
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -32,11 +33,12 @@ app.use(PrimeVue);
 app.use(ToastService);
 
 app.directive("badge", BadgeDirective);
+app.directive("tooltip", Tooltip);
 app.component("DataView", DataView);
 app.component("DataTable", DataTable);
 app.component("my-checkbox", Checkbox);
 app.component("my-image", Image);
-app.component("my-calender", Calendar);
+app.component("my-calendar", Calendar);
 app.component("my-password", Password);
 app.component("my-avatar", Avatar);
 app.component("my-toast", Toast);
