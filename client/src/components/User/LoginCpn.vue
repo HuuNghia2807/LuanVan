@@ -64,6 +64,7 @@ import { useStore } from "vuex";
 
 export default defineComponent({
   setup() {
+    const store = useStore();
     const state = reactive({
       phone: "",
       password: "",
@@ -87,14 +88,13 @@ export default defineComponent({
     const handleSubmit = async (isFormValid: any) => {
       submitted.value = true;
 
-      // const name = useStore().getters("auth/getUserName");
-      console.log("---- name", useStore());
-
-      await useStore().dispatch("auth/login", {
-        userName: "nguyen huu nghia",
-        password: "123456",
-      });
       if (!isFormValid) {
+        await store.dispatch("auth/login", {
+          userName: "nguyen huu nghia",
+          password: "123456",
+        });
+        const name = store.getters["auth/getUserName"];
+        console.log("---- name", name);
         return;
       }
     };

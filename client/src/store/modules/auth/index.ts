@@ -40,11 +40,11 @@ const mutations: MutationTree<IAuthentication> = {
 const actions: ActionTree<IAuthentication, IAuthentication> = {
   async login({ commit }, user: ILoginParams) {
     try {
+      commit("setUser", { userId: 1, userName: user.userName, role: "admin" });
       const u = await authServices.login(user);
       commit("setError", { error: null });
       console.log(u);
       //call api
-      commit("setUser", { userId: 1, userName: user.userName, role: "admin" });
     } catch (error) {
       commit("setError", { error });
     }

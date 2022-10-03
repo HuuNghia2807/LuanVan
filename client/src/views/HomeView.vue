@@ -9,8 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from "vue";
-import { useStore } from "vuex";
+import { defineComponent, reactive } from "vue";
 import SliderCpn from "@/components/SliderCpn.vue";
 import IntroduceCpn from "@/components/IntroduceCpn.vue";
 import ProductCategoryCpn from "@/components/Product/ProductCategoryCpn.vue";
@@ -142,13 +141,6 @@ export default defineComponent({
           sale: "-15%",
         },
       ],
-    });
-    onMounted(async () => {
-      await useStore().dispatch("auth/login", {
-        userName: "nguyen huu nghia",
-        password: "123456",
-      });
-      console.log("zzzzzzzzzzz", useStore());
     });
     return {
       newProduct,
