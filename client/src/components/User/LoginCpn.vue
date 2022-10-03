@@ -50,7 +50,7 @@
           }}</small>
         </div>
 
-        <my-button type="submit" label="Submit" class="mt-2" />
+        <my-button type="submit" label="Đăng Nhập" class="mt-2" />
       </form>
     </div>
   </div>
@@ -60,6 +60,7 @@
 import { defineComponent, reactive, ref } from "vue";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import { useStore } from "vuex";
 
 export default defineComponent({
   setup() {
@@ -83,9 +84,16 @@ export default defineComponent({
 
     const v$ = useVuelidate(rules, state);
 
-    const handleSubmit = (isFormValid: any) => {
+    const handleSubmit = async (isFormValid: any) => {
       submitted.value = true;
 
+      // const name = useStore().getters("auth/getUserName");
+      console.log("---- name", useStore());
+
+      await useStore().dispatch("auth/login", {
+        userName: "nguyen huu nghia",
+        password: "123456",
+      });
       if (!isFormValid) {
         return;
       }

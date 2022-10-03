@@ -1,3 +1,3 @@
-import * as authentication from "./auth/authentication.state";
+import * as authentication from "./auth/authentication.interface";
 
 export default { authentication };

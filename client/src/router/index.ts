@@ -8,6 +8,7 @@ import ProductTypeView from "@/views/ProductTypeView.vue";
 import ProductDetail from "@/views/ProductDetail.vue";
 import CartView from "@/views/CartView.vue";
 import CheckoutsView from "@/views/CheckoutsView.vue";
+import CustomerView from "@/views/CustomerView.vue";
 
 import AccountView from "@/views/AccountView.vue";
 
@@ -67,6 +68,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/gio-hang",
         component: CartView,
+      },
+      {
+        path: "/customer",
+        component: CustomerView,
       },
     ],
   },

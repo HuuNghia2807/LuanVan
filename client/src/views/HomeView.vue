@@ -148,6 +148,7 @@ export default defineComponent({
         userName: "nguyen huu nghia",
         password: "123456",
       });
+      console.log("zzzzzzzzzzz", useStore());
     });
     return {
       newProduct,

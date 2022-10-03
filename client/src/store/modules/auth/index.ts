@@ -3,7 +3,8 @@
 import {
   IAuthentication,
   ILoginParams,
-} from "@/interface/auth/authentication.state";
+} from "@/interface/auth/authentication.interface";
+import authServices from "@/services/auth.services";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 
 const initDefaultState = (): IAuthentication => {
@@ -39,8 +40,9 @@ const mutations: MutationTree<IAuthentication> = {
 const actions: ActionTree<IAuthentication, IAuthentication> = {
   async login({ commit }, user: ILoginParams) {
     try {
+      const u = await authServices.login(user);
       commit("setError", { error: null });
-      console.log(user);
+      console.log(u);
       //call api
       commit("setUser", { userId: 1, userName: user.userName, role: "admin" });
     } catch (error) {
