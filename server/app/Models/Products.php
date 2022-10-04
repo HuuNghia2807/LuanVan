@@ -17,9 +17,7 @@ class Products extends Model
         'product_name',
         'product_price',
         'product_rating',
-        'category_id',
-        'created_at',
-        'update_at',
+        'category_id'
     ];
 
     public function get_category(){

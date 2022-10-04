@@ -24,6 +24,11 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
     public function createImage($product_id,$images){
         foreach($images as $img){
+            $dir = 'img';
+            $absolutePath = $img->product_image_link->getClientOriginalName();
+            $img->move($dir, $absolutePath);
+            $image_src = $dir . '/' . $absolutePath;
+            $img['product_image_link'] = $image_src;
             $image = ProductImages::create([
                 'product_id' => $product_id,
                 'product_image_name' => $img->product_image_name,
