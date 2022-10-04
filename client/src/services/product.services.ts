@@ -6,7 +6,7 @@ class ProductServices {
   async getSizes() {
     try {
       // const loginParams = translateLoginParams(credential);
-      const response = await http.get("sizes");
+      const response = await http.get("size");
       if (response.data.data) {
         return response.data.data;
       } else {

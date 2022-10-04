@@ -1,5 +1,6 @@
 // import axios from "axios"
 
+import { IAuthentication } from "@/interface/auth/authentication.state";
 import { IProduct } from "@/interface/product/product.state";
 import productServices from "@/services/product.services";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
@@ -14,10 +15,10 @@ const initDefaultState = (): IProduct => {
 };
 
 const state = initDefaultState();
-const getters: GetterTree<IProduct, IProduct> = {
+const getters: GetterTree<IProduct, IAuthentication> = {
   getUserId: (state) => state.productId,
   getUserName: (state) => state.productName,
-  getError: (state) => state.productRating,
+  getError: (state) => state.error,
 };
 
 const mutations: MutationTree<IProduct> = {
@@ -25,7 +26,7 @@ const mutations: MutationTree<IProduct> = {
     state.error = payload.error;
   },
 };
-const actions: ActionTree<IProduct, IProduct> = {
+const actions: ActionTree<IProduct, IAuthentication> = {
   async getSizes({ commit }) {
     try {
       const s = await productServices.getSizes();

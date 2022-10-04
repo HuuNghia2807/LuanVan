@@ -98,7 +98,7 @@
                   v-model="size.sizeId"
                   :options="sizes"
                   optionLabel="size"
-                  optionValue="id"
+                  optionValue="size_id"
                   placeholder="Select a Size"
                 >
                   <template #option="slotProps">
@@ -216,20 +216,7 @@ export default defineComponent({
       category: "",
       price: "",
     });
-    const sizes = ref([
-      {
-        id: 1,
-        size: 36,
-      },
-      {
-        id: 2,
-        size: 37,
-      },
-      {
-        id: 3,
-        size: 38,
-      },
-    ]);
+    const sizes = ref([]);
     const sizeData = ref([
       {
         sizeId: null,
@@ -315,7 +302,8 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      await store.dispatch("product/getSizes");
+      sizes.value = await store.dispatch("product/getSizes");
+      console.log(sizes.value);
     });
     return {
       v$,
@@ -373,7 +361,7 @@ form {
       padding-right: 2rem;
 
       .size {
-        width: 50%;
+        width: 40%;
         padding-right: 1rem;
       }
 
@@ -382,7 +370,13 @@ form {
       }
 
       .size-quantity {
-        width: 50%;
+        width: 60%;
+
+        :deep(.p-inputtext) {
+          width: 100%;
+          background-color: rgb(206, 206, 206);
+          font-weight: 600;
+        }
       }
       .option-item {
         font-size: 1.6rem !important;
