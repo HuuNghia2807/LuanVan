@@ -7,6 +7,7 @@
             label="Thêm sản phẩm"
             icon="pi pi-plus"
             class="p-button-success mr-2"
+            @click="editProduct"
           />
           <my-button
             label="Xóa Sản Phẩm"
@@ -330,7 +331,7 @@ export default defineComponent({
     const confirmDeleteSelected = () => {
       deleteProductDialog.value = true;
     };
-    const editProduct = (prod: any) => {
+    const editProduct = (prod?: any) => {
       product.value = { ...prod };
       productDialog.value = true;
     };

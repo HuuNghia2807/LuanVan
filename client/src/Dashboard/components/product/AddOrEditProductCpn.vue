@@ -90,37 +90,35 @@
           >
         </div>
         <div class="field">
-          <div class="p-float-label">
-            <my-inputText
-              id="quantity"
-              v-model="v$.quantity.$model"
-              :class="{ 'p-invalid': v$.quantity.$invalid && submitted }"
-              aria-describedby="quantity-error"
-            />
-            <label
-              for="quantity"
-              class="label"
-              :class="{ 'p-error': v$.quantity.$invalid && submitted }"
-            >
-              Số lượng sản phẩm
-            </label>
+          <div class="size-container">
+            <div class="size-wrap" v-for="(size, i) in sizeData" :key="i">
+              <div class="size">
+                <label>Size</label>
+                <my-dropdown
+                  v-model="size.sizeId"
+                  :options="sizes"
+                  optionLabel="size"
+                  optionValue="id"
+                  placeholder="Select a Size"
+                >
+                  <template #option="slotProps">
+                    <div class="option-item">{{ slotProps.option.size }}</div>
+                  </template></my-dropdown
+                >
+              </div>
+              <div class="size-quantity">
+                <label>Số Lượng</label>
+                <my-inputText v-model="size.sizeQuantity" type="number" />
+              </div>
+            </div>
           </div>
-          <span v-if="v$.quantity.$error && submitted">
-            <span
-              id="quantity-error"
-              v-for="(error, index) of v$.quantity.$errors"
-              :key="index"
-            >
-              <small class="p-error">{{ error.$message }}</small>
-            </span>
-          </span>
-          <small
-            v-else-if="
-              (v$.quantity.$invalid && submitted) || v$.quantity.$pending
-            "
-            class="p-error"
-            >{{ v$.quantity.required.$message }}</small
-          >
+        </div>
+        <div class="btn-add-size">
+          <my-button
+            icon="pi pi-plus"
+            class="p-button-rounded p-button-success p-button-outlined"
+            @click="handleAddSize"
+          />
         </div>
       </div>
       <div class="modal-right">
@@ -170,13 +168,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 
 import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import AutoComplete from "primevue/autocomplete";
 import Galleria from "primevue/galleria";
 import Image from "primevue/image";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
@@ -185,6 +184,7 @@ export default defineComponent({
     Image,
   },
   setup() {
+    const store = useStore();
     const submitted = ref(false);
     const category = ref([
       {
@@ -215,8 +215,27 @@ export default defineComponent({
       name: "",
       category: "",
       price: "",
-      quantity: "",
     });
+    const sizes = ref([
+      {
+        id: 1,
+        size: 36,
+      },
+      {
+        id: 2,
+        size: 37,
+      },
+      {
+        id: 3,
+        size: 38,
+      },
+    ]);
+    const sizeData = ref([
+      {
+        sizeId: null,
+        sizeQuantity: null,
+      },
+    ]);
     const rules = {
       name: {
         required: helpers.withMessage("Vui lòng nhập tên sản phẩm", required),
@@ -229,12 +248,6 @@ export default defineComponent({
       },
       price: {
         required: helpers.withMessage("Vui lòng nhập giá sản phẩm", required),
-      },
-      quantity: {
-        required: helpers.withMessage(
-          "Vui lòng nhập số lượng sản phẩm",
-          required
-        ),
       },
     };
 
@@ -251,6 +264,8 @@ export default defineComponent({
 
     const v$ = useVuelidate(rules, state);
     const handleSubmit = (isFormValid: any) => {
+      console.log("======", sizeData.value);
+
       submitted.value = true;
 
       if (!isFormValid) {
@@ -291,6 +306,17 @@ export default defineComponent({
       });
       console.log("check", target, imageDemo, images.value);
     };
+
+    const handleAddSize = () => {
+      sizeData.value.push({
+        sizeId: null,
+        sizeQuantity: null,
+      });
+    };
+
+    onMounted(async () => {
+      await store.dispatch("product/getSizes");
+    });
     return {
       v$,
       state,
@@ -299,9 +325,12 @@ export default defineComponent({
       filterCategory,
       images,
       responsiveOptions,
+      sizes,
+      sizeData,
       handleSubmit,
       searchCategory,
       onUpload,
+      handleAddSize,
     };
   },
 });
@@ -330,6 +359,38 @@ form {
 
     .field {
       margin-bottom: 2.5rem;
+    }
+
+    .size-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .size-wrap {
+      width: 50%;
+      display: flex;
+      align-items: center;
+      padding-right: 2rem;
+
+      .size {
+        width: 50%;
+        padding-right: 1rem;
+      }
+
+      label {
+        font-weight: 600;
+      }
+
+      .size-quantity {
+        width: 50%;
+      }
+      .option-item {
+        font-size: 1.6rem !important;
+      }
+    }
+
+    .btn-add-size {
+      margin-bottom: 1rem;
     }
 
     :deep(.p-float-label input:focus ~ label) {

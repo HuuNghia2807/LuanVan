@@ -19,4 +19,7 @@ html {
 
 body {
     font-size: 1.6rem;
+    :deep(.p-component) {
+        font-size: 1.6rem !important;
+    }
 }

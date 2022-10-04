@@ -1,7 +1,7 @@
-import { Axios, AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { http } from "@/api/axiosClient";
 import { handleError } from "@/function/common";
-import { ILoginParams } from "@/interface/auth/authentication.interface";
+import { ILoginParams } from "@/interface/auth/authentication.state";
 
 export interface ICredential {
   username: string;

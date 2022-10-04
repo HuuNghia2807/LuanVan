@@ -3,7 +3,7 @@
 import {
   IAuthentication,
   ILoginParams,
-} from "@/interface/auth/authentication.interface";
+} from "@/interface/auth/authentication.state";
 import authServices from "@/services/auth.services";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 

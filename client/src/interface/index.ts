@@ -1,3 +1,4 @@
-import * as authentication from "./auth/authentication.interface";
+import * as authentication from "./auth/authentication.state";
+import * as product from "./product/product.state";
 
-export default { authentication };
+export default { authentication, product };
