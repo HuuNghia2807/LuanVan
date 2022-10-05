@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('city', function (Blueprint $table) {
-            $table->id("city_id");
-            $table->string('city_name',100);
-            $table->string('city_type',100);
-            $table->integer('transport_fee');
+        Schema::create('sizes', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('size');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('city');
+        Schema::dropIfExists('sizes');
     }
 };

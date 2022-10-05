@@ -14,15 +14,21 @@ return new class extends Migration
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id("order_id");
+            $table->increments('id');
             $table->integer('order_total_price');
             $table->string('order_status');
             $table->string('order_note', 200);
             $table->string('order_time_order', 200);
             $table->string('order_time_receive', 200);
-            $table->foreignId('address_id');
-            $table->foreignId('payment_id');
-            $table->foreignId('user_id');
+            // $table->foreignId('address_id');
+            $table->integer('address_id')->unsigned();
+            $table->foreign('address_id')->references('id')->on('address');
+            // $table->foreignId('payment_id');
+            $table->integer('payment_id')->unsigned();
+            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade')->onUpdate('cascade');
+            // $table->foreignId('user_id');
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

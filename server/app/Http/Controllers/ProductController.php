@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Repositories\Product\ProductRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-class ProductController extends Controller
+
+class ProductController extends AbstractApiController
 {
     /**
      * Display a listing of the resource.
@@ -57,24 +58,28 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $data = $request->all();
         DB::beginTransaction();
         try {
-            $product = $this->productRepo->create($data);
-            $image['product_image_name'] = $request->product_image_name;
-            $image['product_image_link']= $request->product_image_link;
-            $product_image = $this->productRepo->createImage($product->id,$image);
+            $product = $this->productRepo->create([
+                'product_name' => $request->product_name,
+                'product_price' => $request->product_price,
+                'category_id' => $request->category_id,
+                'product_rating' => 5
+            ]);
+            $this->productRepo->createImage($product->id, $request->images);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json('error', 500);
+            $this->setStatusCode(JsonResponse::HTTP_FORBIDDEN);
+            $this->setStatus('failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
+            // response()->json('error', 500);
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
         $this->setStatus('success');
         $this->setMessage('Create product success');
-        $this->setData($product);
         return $this->respond();
     }
 
@@ -120,11 +125,11 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $product = $this->productRepo->update($id, $data);
-            $product_image = $this->productRepo->updateImage($request->product_image_id,$request->product_image_link);
+            $product_image = $this->productRepo->updateImage($request->product_image_id, $request->product_image_link);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json('error', 500);
+            return response()->json('error dada', 500);
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
@@ -140,16 +145,16 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
         DB::beginTransaction();
         try {
-            $product = $this->productRepo->delete($id);
+            $arrId = $request->product_ids;
+            $this->productRepo->deleteProduct($arrId);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json('error', 500);
+            return response()->json($th->getMessage(), 500);
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);

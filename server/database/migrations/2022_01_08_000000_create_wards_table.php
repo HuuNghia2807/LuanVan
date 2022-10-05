@@ -14,10 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('wards', function (Blueprint $table) {
-            $table->id("ward_id");
-            $table->string('ward_name',100);
-            $table->string('ward_type',100);
-            $table->foreignId('district_id');
+            $table->increments('id');
+            $table->string('ward_name', 100);
+            $table->string('ward_type', 100);
+            // $table->foreignId('district_id');
+            $table->integer('district_id')->unsigned();
+            $table->foreign('district_id')->references('id')->on('districts')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -60,13 +60,13 @@ class CategoryController extends AbstractApiController
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json('error', 500);
+            return response()->json($th->getMessage(), 500);
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
         $this->setStatus('success');
         $this->setMessage('Create category success');
-        $this->setData($data);
+        $this->setData($category);
         return $this->respond();
     }
 
