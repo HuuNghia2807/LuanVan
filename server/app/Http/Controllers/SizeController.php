@@ -6,6 +6,7 @@ use App\Http\Resources\SizeResource;
 use App\Repositories\Size\SizeRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SizeController extends AbstractApiController
 {
@@ -49,7 +50,28 @@ class SizeController extends AbstractApiController
      */
     public function store(Request $request)
     {
-        //
+        $sizes = $request->sizes;
+        DB::beginTransaction();
+        try {
+            foreach ($sizes as $size) {
+                $this->sizeRepo->create([
+                    'size' => $size
+                ]);
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->setStatusCode(JsonResponse::HTTP_FORBIDDEN);
+            $this->setStatus('fail');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Add size success');
+        $this->setData($sizes);
+        return $this->respond();
     }
 
     /**

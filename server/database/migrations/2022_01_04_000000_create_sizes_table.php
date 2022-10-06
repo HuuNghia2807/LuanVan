@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('sizes', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('size');
+            $table->integer('size')->unique();
             $table->timestamps();
         });
     }

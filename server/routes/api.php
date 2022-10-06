@@ -36,4 +36,5 @@ Route::group(['prefix' => 'product'], function () {
 
 Route::group(['prefix' => 'size'], function () {
     Route::get('', [SizeController::class, 'index'])->name('size.index');
+    Route::post('/add', [SizeController::class, 'store'])->name('size.store');
 });
