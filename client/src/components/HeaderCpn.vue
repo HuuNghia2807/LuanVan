@@ -1,5 +1,5 @@
 <template>
-  <div class="header flex align-items-center">
+  <div class="header flex align-items-center justify-content-center">
     <router-link class="h-6rem cursor-pointer" to="/">
       <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
     </router-link>

@@ -1,0 +1,12 @@
+
+:deep(.p-float-label label) {
+    line-height: 0.7 !important;
+  }
+
+:deep(.p-float-label input.p-filled ~ label),
+:deep(.p-float-label input:focus ~ label),
+:deep(.p-float-label .p-inputwrapper-filled ~ label),
+:deep(.p-float-label .p-inputwrapper-focus ~ label) {
+  font-size: 1.5rem;
+  top: -1rem;
+}

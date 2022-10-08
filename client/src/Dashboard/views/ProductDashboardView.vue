@@ -322,11 +322,6 @@ export default defineComponent({
     const product = ref<any>({});
     const toast = useToast();
     const deleteProductsDialog = ref(false);
-    const statuses = ref([
-      { label: "NIKE", value: "nike" },
-      { label: "JORDAN", value: "jordan" },
-      { label: "PUMA", value: "puma" },
-    ]);
 
     const confirmDeleteSelected = () => {
       deleteProductDialog.value = true;
@@ -381,7 +376,6 @@ export default defineComponent({
       product,
       deleteProductsDialog,
       selectedProducts,
-      statuses,
       confirmDeleteSelected,
       editProduct,
       deleteProduct,

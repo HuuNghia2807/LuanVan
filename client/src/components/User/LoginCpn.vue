@@ -61,6 +61,7 @@ import { defineComponent, reactive, ref } from "vue";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
+import { ILoginParams } from "@/interface/auth/authentication.state";
 
 export default defineComponent({
   setup() {
@@ -87,14 +88,14 @@ export default defineComponent({
 
     const handleSubmit = async (isFormValid: any) => {
       submitted.value = true;
+      const user: ILoginParams = {
+        userName: state.phone,
+        password: state.password,
+      };
 
       if (!isFormValid) {
-        await store.dispatch("auth/login", {
-          userName: "nguyen huu nghia",
-          password: "123456",
-        });
+        await store.dispatch("auth/login", user);
         const name = store.getters["auth/getUserName"];
-        console.log("---- name", name);
         return;
       }
     };
@@ -110,6 +111,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/styles/deepInput.scss";
 .login {
   width: 100%;
 }
@@ -118,17 +120,6 @@ export default defineComponent({
   width: 100%;
   margin: 0 2rem;
 
-  :deep(.p-float-label label) {
-    line-height: 0.7 !important;
-  }
-
-  :deep(.p-float-label input.p-filled ~ label),
-  :deep(.p-float-label input:focus ~ label),
-  :deep(.p-float-label .p-inputwrapper-filled ~ label),
-  :deep(.p-float-label .p-inputwrapper-focus ~ label) {
-    font-size: 1.5rem;
-    top: -1rem;
-  }
   form {
     margin-top: 4rem;
   }
