@@ -22,13 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::group(['prefix' => 'category'], function () {
-    Route::post('', [CategoryController::class, 'store'])->name('category.store');
+    Route::get('', [CategoryController::class, 'index'])->name('category.index');
+    Route::post('/add', [CategoryController::class, 'store'])->name('category.store');
     Route::post('/{id}', [CategoryController::class, 'update'])->name('category.update');
     Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
 });
 
 Route::group(['prefix' => 'product'], function () {
-    Route::get('', [ProductController::class, 'index']);
+    Route::get('', [ProductController::class, 'index'])->name('product.index');
     Route::post('/delete', [ProductController::class, 'destroy'])->name('product.destroy');
     Route::post('/add', [ProductController::class, 'store'])->name('product.store');
     Route::post('/{id}', [ProductController::class, 'update'])->name('product.update');

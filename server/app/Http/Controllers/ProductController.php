@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Repositories\Product\ProductRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -58,12 +59,22 @@ class ProductController extends AbstractApiController
      */
     public function store(Request $request)
     {
+        // dd($request->all());
+        // die();
         DB::beginTransaction();
         try {
+            $category = Category::where('category_name', $request['category'])->get();
+            if (!$category) {
+                $category = Category::create([
+                    'category_name' => $request['category'],
+                ]);
+            };
+            dd($category);
+            die();
             $product = $this->productRepo->create([
                 'product_name' => $request->product_name,
                 'product_price' => $request->product_price,
-                'category_id' => $request->category_id,
+                'category_id' => $category->id,
                 'product_rating' => 5
             ]);
             $this->productRepo->createImage($product->id, $request->images);
