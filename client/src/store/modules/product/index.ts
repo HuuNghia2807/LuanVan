@@ -1,7 +1,9 @@
 // import axios from "axios"
 
+import { translateCategoryResponse } from "@/function/translateCategory";
+import { translateSizeResponse } from "@/function/translateSize";
 import { IAuthentication } from "@/interface/auth/authentication.state";
-import { IProduct } from "@/interface/product/product.state";
+import { IProduct, IProductParams } from "@/interface/product/product.state";
 import productServices from "@/services/product.services";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 
@@ -30,7 +32,27 @@ const actions: ActionTree<IProduct, IAuthentication> = {
   async getSizes({ commit }) {
     try {
       const s = await productServices.getSizes();
-      return s;
+      const sizeRes = translateSizeResponse(s);
+      return sizeRes;
+
+      //call api
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getCategories({ commit }) {
+    try {
+      const c = await productServices.getCategories();
+      const cateRes = translateCategoryResponse(c);
+      return cateRes;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async addProduct({ commit }, payload: IProductParams) {
+    try {
+      const res = await productServices.addProduct(payload);
+      return res;
       //call api
     } catch (error) {
       commit("setError", { error });

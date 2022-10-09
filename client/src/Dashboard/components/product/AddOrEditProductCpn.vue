@@ -36,7 +36,6 @@
               v-model="v$.category.$model"
               :suggestions="filterCategory"
               @complete="searchCategory($event)"
-              optionLabel="name"
               :class="{
                 'p-invalid': v$.category.$invalid && submitted,
               }"
@@ -93,22 +92,17 @@
           <div class="size-container">
             <div class="size-wrap" v-for="(size, i) in sizeData" :key="i">
               <div class="size">
-                <label>Size</label>
-                <my-dropdown
-                  v-model="size.sizeId"
-                  :options="sizes"
-                  optionLabel="size"
-                  optionValue="size_id"
-                  placeholder="Select a Size"
-                >
-                  <template #option="slotProps">
-                    <div class="option-item">{{ slotProps.option.size }}</div>
-                  </template></my-dropdown
-                >
+                <label for="size">Size</label>
+                <AutoComplete
+                  id="size"
+                  v-model="size.size"
+                  :suggestions="filterSize"
+                  @complete="searchSize($event)"
+                />
               </div>
               <div class="size-quantity">
                 <label>Số Lượng</label>
-                <my-inputText v-model="size.sizeQuantity" type="number" />
+                <my-inputText v-model="size.size_quantity" type="number" />
               </div>
             </div>
           </div>
@@ -176,6 +170,7 @@ import AutoComplete from "primevue/autocomplete";
 import Galleria from "primevue/galleria";
 import Image from "primevue/image";
 import { useStore } from "vuex";
+import { IProductParams, ISizeParams } from "@/interface/product/product.state";
 
 export default defineComponent({
   components: {
@@ -185,18 +180,11 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const fileImages = ref();
     const submitted = ref(false);
-    const category = ref([
-      {
-        name: "Nike",
-        code: "nike",
-      },
-      {
-        name: "Adidas",
-        code: "adidas",
-      },
-    ]);
+    const category = ref([]);
     const filterCategory = ref([] as any[]);
+    const filterSize = ref([] as ISizeParams[]);
     const responsiveOptions = ref([
       {
         breakpoint: "1024px",
@@ -214,15 +202,16 @@ export default defineComponent({
     const state = reactive({
       name: "",
       category: "",
-      price: "",
+      price: 0,
     });
     const sizes = ref([]);
-    const sizeData = ref([
+    const sizeData = ref<ISizeParams[]>([
       {
-        sizeId: null,
-        sizeQuantity: null,
+        size: 0,
+        size_quantity: 0,
       },
     ]);
+
     const rules = {
       name: {
         required: helpers.withMessage("Vui lòng nhập tên sản phẩm", required),
@@ -238,24 +227,26 @@ export default defineComponent({
       },
     };
 
-    const images = ref([
-      {
-        itemImageSrc:
-          "https://www.primefaces.org/primevue/demo/images/galleria/galleria1.jpg",
-        thumbnailImageSrc:
-          "https://www.primefaces.org/primevue/demo/images/galleria/galleria1.jpg",
-        alt: "Description for Image 1",
-        title: "Title 1",
-      },
-    ]);
+    const images = ref([] as any[]);
 
     const v$ = useVuelidate(rules, state);
-    const handleSubmit = (isFormValid: any) => {
-      console.log("======", sizeData.value);
-
+    const handleSubmit = async (isFormValid: any) => {
       submitted.value = true;
 
-      if (!isFormValid) {
+      if (isFormValid && sizeData.value[0].size != 0) {
+        const formData = new FormData();
+        formData.append("files", fileImages.value);
+        formData.set("files", fileImages.value);
+        const product: IProductParams = {
+          product_name: state.name,
+          product_price: state.price,
+          category: state.category,
+          sizes: sizeData.value,
+          file_images: formData,
+        };
+
+        await store.dispatch("product/addProduct", product);
+
         return;
       }
     };
@@ -266,9 +257,20 @@ export default defineComponent({
           filterCategory.value = [...category.value];
         } else {
           filterCategory.value = category.value.filter((category) => {
-            return category.name
+            return (category as string)
               .toLowerCase()
               .startsWith(event.query.toLowerCase());
+          });
+        }
+      }, 250);
+    };
+    const searchSize = (event: any) => {
+      setTimeout(() => {
+        if (!event.query.trim().length) {
+          filterSize.value = [...sizes.value];
+        } else {
+          filterSize.value = sizes.value.filter((size) => {
+            return size;
           });
         }
       }, 250);
@@ -276,34 +278,29 @@ export default defineComponent({
 
     const onUpload = (e: any) => {
       // this.$toast.add({severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000});
-      console.log("toast", e.target.files);
       const target = [...e.target.files];
-
-      const imageDemo = target.map((ele) => {
+      fileImages.value = e.target.files as FileList;
+      target.forEach((ele) => {
         const img = URL.createObjectURL(ele);
-        return {
+        images.value.push({
           itemImageSrc: img,
           thumbnailImageSrc: img,
           alt: "Description for Image 5",
           title: "Title 5",
-        };
+        });
       });
-      imageDemo.forEach((ele) => {
-        images.value.push(ele);
-      });
-      console.log("check", target, imageDemo, images.value);
     };
 
     const handleAddSize = () => {
       sizeData.value.push({
-        sizeId: null,
-        sizeQuantity: null,
+        size: 0,
+        size_quantity: 0,
       });
     };
 
     onMounted(async () => {
       sizes.value = await store.dispatch("product/getSizes");
-      console.log(sizes.value);
+      category.value = await store.dispatch("product/getCategories");
     });
     return {
       v$,
@@ -315,6 +312,8 @@ export default defineComponent({
       responsiveOptions,
       sizes,
       sizeData,
+      filterSize,
+      searchSize,
       handleSubmit,
       searchCategory,
       onUpload,
