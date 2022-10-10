@@ -164,13 +164,13 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from "vue";
 
+import { useStore } from "vuex";
+import { IProductParams, ISizeParams } from "@/interface/product/product.state";
 import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import AutoComplete from "primevue/autocomplete";
 import Galleria from "primevue/galleria";
 import Image from "primevue/image";
-import { useStore } from "vuex";
-import { IProductParams, ISizeParams } from "@/interface/product/product.state";
 
 export default defineComponent({
   components: {
@@ -180,7 +180,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const fileImages = ref();
+    const fileImages = ref([] as any[]);
     const submitted = ref(false);
     const category = ref([]);
     const filterCategory = ref([] as any[]);
@@ -234,19 +234,14 @@ export default defineComponent({
       submitted.value = true;
 
       if (isFormValid && sizeData.value[0].size != 0) {
-        const formData = new FormData();
-        formData.append("files", fileImages.value);
-        formData.set("files", fileImages.value);
         const product: IProductParams = {
           product_name: state.name,
           product_price: state.price,
           category: state.category,
           sizes: sizeData.value,
-          file_images: formData,
+          file_images: fileImages.value,
         };
-
         await store.dispatch("product/addProduct", product);
-
         return;
       }
     };
@@ -276,10 +271,21 @@ export default defineComponent({
       }, 250);
     };
 
+    const convertToBase64 = (file: any) => {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      });
+    };
+
     const onUpload = (e: any) => {
-      // this.$toast.add({severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000});
       const target = [...e.target.files];
-      fileImages.value = e.target.files as FileList;
       target.forEach((ele) => {
         const img = URL.createObjectURL(ele);
         images.value.push({
@@ -287,6 +293,9 @@ export default defineComponent({
           thumbnailImageSrc: img,
           alt: "Description for Image 5",
           title: "Title 5",
+        });
+        convertToBase64(ele).then((res) => {
+          fileImages.value.push(res);
         });
       });
     };
@@ -313,6 +322,7 @@ export default defineComponent({
       sizes,
       sizeData,
       filterSize,
+      fileImages,
       searchSize,
       handleSubmit,
       searchCategory,

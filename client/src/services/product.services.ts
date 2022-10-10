@@ -31,8 +31,7 @@ class ProductServices {
   async addProduct(product: IProductParams) {
     try {
       const path = "product/add";
-      const params = product;
-      const response = await http.post(path, params);
+      const response = await http.post(path, product);
       if (response.data.data) {
         return response.data.data;
       } else {
