@@ -10,6 +10,8 @@ interface ProductRepositoryInterface extends RepositoryInterface
     public function getProduct();
     public function getCategoryAll();
     public function createImage($product_id, $images);
+    public function checkIdCategory($cate);
+    public function createProductSize($product_id, $sizes);
     public function updateImage($product_image_id, $product_image_link);
     public function deleteProduct($arrId);
 }

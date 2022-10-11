@@ -15,6 +15,7 @@ class ProductSize extends Model
 
     protected $fillable = [
         'product_size_quantity',
-        'size_id'
+        'size_id',
+        'product_id'
     ];
 }

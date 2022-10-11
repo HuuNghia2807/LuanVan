@@ -6,6 +6,8 @@ use App\Repositories\BaseRepository;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
+use App\Models\Size;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface
 {
@@ -35,8 +37,35 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             // $img['product_image_link'] = $image_src;
             ProductImage::create([
                 'product_id' => $product_id,
-                'product_image_name' => $img['product_image_name'],
-                'product_image_link' => $img['product_image_link']
+                'product_image_name' => 'king shoes',
+                'product_image_link' => $img
+            ]);
+        }
+        return true;
+    }
+    public function checkIdCategory($cate)
+    {
+        $category = Category::where('category_name', '=', $cate)->first();
+        if (!$category) {
+            $category = Category::create([
+                'category_name' => $cate,
+            ]);
+        };
+        return $category->id;
+    }
+    public function createProductSize($product_id, $sizes)
+    {
+        foreach ($sizes as $sz) {
+            $size = Size::where('size', '=', $sz['size'])->first();
+            if (!$size) {
+                $size = Size::create([
+                    'size' => $sz['size'],
+                ]);
+            };
+            ProductSize::create([
+                'size_id' => $size->id,
+                'product_size_quantity' => $sz['size_quantity'],
+                'product_id' => $product_id,
             ]);
         }
         return true;

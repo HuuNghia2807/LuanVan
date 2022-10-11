@@ -59,24 +59,18 @@ class ProductController extends AbstractApiController
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        // var_dump($request->all());
         // die();
         DB::beginTransaction();
         try {
-            $category = Category::where('category_name', $request['category'])->get();
-            if (!$category) {
-                $category = Category::create([
-                    'category_name' => $request['category'],
-                ]);
-            };
-            dd($category);
-            die();
+            $category_id = $this->productRepo->checkIdCategory($request->category);
             $product = $this->productRepo->create([
                 'product_name' => $request->product_name,
                 'product_price' => $request->product_price,
-                'category_id' => $category->id,
+                'category_id' => $category_id,
                 'product_rating' => 5
             ]);
+            $this->productRepo->createProductSize($product->id, $request->sizes);
             $this->productRepo->createImage($product->id, $request->images);
             DB::commit();
         } catch (\Throwable $th) {
