@@ -1,4 +1,5 @@
 <template>
+  <my-toast />
   <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
     <div class="title">THÊM SẢN PHẨM</div>
     <div class="container">
@@ -59,8 +60,8 @@
         </div>
         <div class="field">
           <div class="p-float-label">
-            <my-inputText
-              id="price"
+            <my-inputNumber
+              inputId="integeronly"
               v-model="v$.price.$model"
               :class="{ 'p-invalid': v$.price.$invalid && submitted }"
               aria-describedby="price-error"
@@ -116,6 +117,9 @@
         </div>
       </div>
       <div class="modal-right">
+        <small v-if="messageImageValid" class="p-error">
+          {{ messageImageValid }}
+        </small>
         <div class="review-images">
           <Galleria
             :value="images"
@@ -162,7 +166,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref } from "vue";
 
 import { useStore } from "vuex";
 import { IProductParams, ISizeParams } from "@/interface/product/product.state";
@@ -171,6 +175,8 @@ import useVuelidate from "@vuelidate/core";
 import AutoComplete from "primevue/autocomplete";
 import Galleria from "primevue/galleria";
 import Image from "primevue/image";
+import { convertToBase64 } from "@/function/convertImage";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   components: {
@@ -179,6 +185,7 @@ export default defineComponent({
     Image,
   },
   setup() {
+    const toast = useToast();
     const store = useStore();
     const fileImages = ref([] as any[]);
     const submitted = ref(false);
@@ -202,13 +209,13 @@ export default defineComponent({
     const state = reactive({
       name: "",
       category: "",
-      price: 0,
+      price: null,
     });
     const sizes = ref([]);
     const sizeData = ref<ISizeParams[]>([
       {
-        size: 0,
-        size_quantity: 0,
+        size: null,
+        size_quantity: null,
       },
     ]);
 
@@ -227,23 +234,64 @@ export default defineComponent({
       },
     };
 
+    const messageImageValid = ref("");
+
     const images = ref([] as any[]);
 
     const v$ = useVuelidate(rules, state);
-    const handleSubmit = async (isFormValid: any) => {
+    const handleSubmit = (isFormValid: any) => {
       submitted.value = true;
-
+      if (fileImages.value.length < 1) {
+        messageImageValid.value = "Vui lòng thêm ít nhất 1 ảnh sản phẩm";
+        return;
+      }
       if (isFormValid && sizeData.value[0].size != 0) {
         const product: IProductParams = {
           product_name: state.name,
           product_price: state.price,
           category: state.category,
           sizes: sizeData.value,
-          file_images: fileImages.value,
+          images: fileImages.value,
         };
-        await store.dispatch("product/addProduct", product);
+        addProduct(product);
         return;
       }
+    };
+
+    const addProduct = async (product: IProductParams) => {
+      await store.dispatch("product/addProduct", product);
+      if (store.getters["product/getError"]) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Thêm sản phẩm bị lỗi vui lòng kiểm tra và thử lại",
+          life: 3000,
+        });
+        return;
+      }
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Thêm sản phẩm thành công",
+        life: 3000,
+      });
+      resetForm();
+    };
+
+    const resetForm = () => {
+      state.name = "";
+      state.category = "";
+      state.price = null;
+      submitted.value = false;
+      fileImages.value = [];
+      images.value = [];
+      sizeData.value = [
+        {
+          size: null,
+          size_quantity: null,
+        },
+      ];
+      messageImageValid.value = "";
     };
 
     const searchCategory = (event: any) => {
@@ -271,20 +319,8 @@ export default defineComponent({
       }, 250);
     };
 
-    const convertToBase64 = (file: any) => {
-      return new Promise((resolve, reject) => {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-        fileReader.onload = () => {
-          resolve(fileReader.result);
-        };
-        fileReader.onerror = (error) => {
-          reject(error);
-        };
-      });
-    };
-
     const onUpload = (e: any) => {
+      images.value = [];
       const target = [...e.target.files];
       target.forEach((ele) => {
         const img = URL.createObjectURL(ele);
@@ -302,8 +338,8 @@ export default defineComponent({
 
     const handleAddSize = () => {
       sizeData.value.push({
-        size: 0,
-        size_quantity: 0,
+        size: null,
+        size_quantity: null,
       });
     };
 
@@ -323,6 +359,7 @@ export default defineComponent({
       sizeData,
       filterSize,
       fileImages,
+      messageImageValid,
       searchSize,
       handleSubmit,
       searchCategory,
@@ -335,9 +372,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 form {
-  margin-bottom: 2rem;
   font-size: 1.6rem;
-  min-height: 50rem;
+  min-height: 35rem;
 
   .title {
     font-size: 2.5rem;

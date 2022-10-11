@@ -11,6 +11,7 @@ enum StatusCode {
 
 const headers: Readonly<Record<string, string>> = {
   Accept: "application/json",
+  AccessControlallowOrigin: "http://localhost:8000",
 };
 
 class Http {

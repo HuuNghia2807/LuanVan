@@ -9,70 +9,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { computed, defineComponent, onMounted, reactive } from "vue";
 import SliderCpn from "@/components/SliderCpn.vue";
 import IntroduceCpn from "@/components/IntroduceCpn.vue";
 import ProductCategoryCpn from "@/components/Product/ProductCategoryCpn.vue";
+import { useStore } from "vuex";
+import { IOptionProduct } from "@/interface/product/product.state";
 
 export default defineComponent({
   name: "HomeView",
   components: { SliderCpn, IntroduceCpn, ProductCategoryCpn },
   setup() {
-    const newProduct = reactive({
-      type: "New",
-      title: "Sản phẩm mới",
-      supTitle: "Product",
-      product: [
-        {
-          id: 1,
-          img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-          name: "AIR FORCE 1",
-          rate: [1, 1, 1, 1, 1],
-          price: "2.200.000 đ",
-          sale: "",
-        },
-        {
-          id: 1,
-          img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-          name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-          rate: [1, 1, 1, 1, 1],
-          price: "9.500.000 đ",
-          sale: "8.000.000 đ",
-        },
-        {
-          id: 2,
-          img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-          name: "AIR FORCE 1",
-          rate: [1, 1, 1, 1, 1],
-          price: "2.200.000 đ",
-          sale: "",
-        },
-        {
-          id: 3,
-          img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-          name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-          rate: [1, 1, 1, 1, 1],
-          price: "9.500.000 đ",
-          sale: "8.000.000 đ",
-        },
-        {
-          id: 4,
-          img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-          name: "AIR FORCE 1",
-          rate: [1, 1, 1, 1, 1],
-          price: "2.200.000 đ",
-          sale: "",
-        },
-        {
-          id: 5,
-          img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-          name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-          rate: [1, 1, 1, 1, 1],
-          price: "9.500.000 đ",
-          sale: "8.000.000 đ",
-        },
-      ],
+    const store = useStore();
+    const newProduct = computed(() => {
+      const products = store.getters["product/getProducts"] || [];
+      return {
+        type: "new",
+        title: "Sản phẩm mới",
+        supTitle: "Product",
+        products,
+      } as IOptionProduct;
     });
+
     const hotProduct = reactive({
       type: "Hot",
       title: "Sản phẩm hot",
@@ -141,6 +99,9 @@ export default defineComponent({
           sale: "-15%",
         },
       ],
+    });
+    onMounted(async () => {
+      await store.dispatch("product/getProducts");
     });
     return {
       newProduct,

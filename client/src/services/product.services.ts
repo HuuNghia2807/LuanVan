@@ -32,7 +32,20 @@ class ProductServices {
     try {
       const path = "product/add";
       const response = await http.post(path, product);
-      if (response.data.data) {
+      if (response.data) {
+        return response.data;
+      } else {
+        throw new Error("Don't get");
+      }
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async getProducts() {
+    try {
+      const path = "product";
+      const response = await http.get(path);
+      if (response.data) {
         return response.data.data;
       } else {
         throw new Error("Don't get");

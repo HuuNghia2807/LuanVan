@@ -1,15 +1,19 @@
 // import axios from "axios"
 
 import { translateCategoryResponse } from "@/function/translateCategory";
+import { translateProductsResponse } from "@/function/translateProduct";
 import { translateSizeResponse } from "@/function/translateSize";
 import { IAuthentication } from "@/interface/auth/authentication.state";
-import { IProduct, IProductParams } from "@/interface/product/product.state";
+import {
+  IStateProduct,
+  IProductParams,
+} from "@/interface/product/product.state";
 import productServices from "@/services/product.services";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 
-const initDefaultState = (): IProduct => {
+const initDefaultState = (): IStateProduct => {
   return {
-    productId: null,
+    products: null,
     productName: "",
     productRating: null,
     error: null,
@@ -17,24 +21,26 @@ const initDefaultState = (): IProduct => {
 };
 
 const state = initDefaultState();
-const getters: GetterTree<IProduct, IAuthentication> = {
-  getUserId: (state) => state.productId,
+const getters: GetterTree<IStateProduct, IAuthentication> = {
+  getProducts: (state) => state.products,
   getUserName: (state) => state.productName,
   getError: (state) => state.error,
 };
 
-const mutations: MutationTree<IProduct> = {
+const mutations: MutationTree<IStateProduct> = {
   setError(state, payload) {
     state.error = payload.error;
   },
+  setProducts(state, payload) {
+    state.products = payload;
+  },
 };
-const actions: ActionTree<IProduct, IAuthentication> = {
+const actions: ActionTree<IStateProduct, IAuthentication> = {
   async getSizes({ commit }) {
     try {
       const s = await productServices.getSizes();
       const sizeRes = translateSizeResponse(s);
       return sizeRes;
-
       //call api
     } catch (error) {
       commit("setError", { error });
@@ -51,9 +57,20 @@ const actions: ActionTree<IProduct, IAuthentication> = {
   },
   async addProduct({ commit }, payload: IProductParams) {
     try {
+      commit("setError", {});
       const res = await productServices.addProduct(payload);
       return res;
-      //call api
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getProducts({ commit }) {
+    try {
+      commit("setError", {});
+      const res = await productServices.getProducts();
+      const products = translateProductsResponse(res);
+      commit("setProducts", products);
+      return res;
     } catch (error) {
       commit("setError", { error });
     }

@@ -19,6 +19,7 @@ import Calendar from "primevue/calendar";
 import Password from "primevue/password";
 import Checkbox from "primevue/checkbox";
 import Tooltip from "primevue/tooltip";
+import InputNumber from "primevue/inputnumber";
 
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -37,6 +38,7 @@ app.directive("tooltip", Tooltip);
 app.component("DataView", DataView);
 app.component("DataTable", DataTable);
 app.component("my-checkbox", Checkbox);
+app.component("my-inputNumber", InputNumber);
 app.component("my-image", Image);
 app.component("my-calendar", Calendar);
 app.component("my-password", Password);
