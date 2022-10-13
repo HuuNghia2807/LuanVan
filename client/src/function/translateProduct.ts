@@ -1,4 +1,5 @@
 import { IProduct, IProductResponse } from "@/interface/product/product.state";
+import { translateSize } from "./translateSize";
 
 export const translateProductsResponse = (
   product_list: IProductResponse[]
@@ -10,7 +11,7 @@ export const translateProductsResponse = (
       productName: prd.product_name,
       productPrice: prd.product_price,
       productRating: prd.product_rating,
-      sizes: prd.sizes,
+      sizes: translateSize(prd.sizes),
       images: prd.product_image,
     };
   });

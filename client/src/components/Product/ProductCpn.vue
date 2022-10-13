@@ -1,7 +1,7 @@
 <template>
   <router-link
     class="product no-underline"
-    :to="{ name: 'showDetail', params: { id: 1 } }"
+    :to="{ name: 'showDetail', params: { id: productDetail?.productId } }"
     :style="`width: ${type ? '20' : '25'}%`"
   >
     <div class="wrap">

@@ -16,7 +16,7 @@ export interface IProduct {
   productPrice: number | null;
   productRating: number;
   categoryId: number;
-  sizes: ISizeResponse[];
+  sizes: ISize[];
   images: IProductImageResponse[];
 }
 
@@ -56,9 +56,14 @@ export interface IProductImageResponse {
 export interface ISizeResponse {
   size_id: number;
   size: number;
+  product_size_id: number;
+  product_size_quantity: number;
 }
 
 export interface ISize {
+  sizeId: number;
+  productSizeId: number;
+  productSizeQuantity: number;
   size: number;
 }
 
