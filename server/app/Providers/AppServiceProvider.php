@@ -28,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Size\SizeRepositoryInterface::class,
             \App\Repositories\Size\SizeRepository::class
         );
+
+        $this->app->singleton(
+            \App\Repositories\Cart\CartRepositoryInterface::class,
+            \App\Repositories\Cart\CartRepository::class
+        );
     }
 
     /**

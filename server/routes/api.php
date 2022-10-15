@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
+use App\Http\Controllers\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +39,9 @@ Route::group(['prefix' => 'product'], function () {
 Route::group(['prefix' => 'size'], function () {
     Route::get('', [SizeController::class, 'index'])->name('size.index');
     Route::post('/add', [SizeController::class, 'store'])->name('size.store');
+});
+
+Route::group(['prefix' => 'cart'], function () {
+    Route::get('', [CartController::class, 'index']);
+    Route::post('/add', [CartController::class, 'store']);
 });
