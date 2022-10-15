@@ -1,4 +1,5 @@
 <template>
+  <my-toast />
   <div class="product-detail">
     <HeaderTypeProductCpn />
     <div class="container">
@@ -27,16 +28,18 @@
           <span class="product-code">
             Mã SP: <span class="sup-code">280700{{ product?.productId }}</span>
           </span>
-          <span class="product-price">{{ product?.productPrice }} đ</span>
+          <span class="product-price">{{
+            formatPrice(product?.productPrice || 9999999999)
+          }}</span>
         </div>
         <div class="product-size">
           <div v-for="(size, i) of sizes" :key="i" class="field-radiobutton">
             <RadioButton
               :inputId="size.name"
               name="size"
-              :value="size.name"
+              :value="size.value"
               v-model="selectedSize"
-              :disabled="size.name === '42'"
+              :disabled="size.quantity == 0"
             />
             <label :for="size.name">{{ size.name }}</label>
           </div>
@@ -62,6 +65,7 @@
               label="Thêm vào giỏ hàng"
               icon="pi pi-shopping-cart"
               class="p-button-lg p-button-warning p-button-rounded"
+              @click="handleAddCart"
             />
             <Button
               label="Mua Ngay"
@@ -101,6 +105,9 @@ import Button from "primevue/button";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { IProduct } from "@/interface/product/product.state";
+import { formatPrice } from "@/function/common";
+import router from "@/router";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   components: {
@@ -113,6 +120,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
+    const toast = useToast();
     const rate = ref(3);
     const product = ref<IProduct>();
     const sizes = ref([
@@ -125,6 +133,34 @@ export default defineComponent({
     const selectedSize = ref<number>();
     const quantity = ref(1);
 
+    const handleAddCart = () => {
+      const isLogged = store.getters["auth/getIslogged"];
+      if (!isLogged) {
+        addCart();
+      } else {
+        router.push("/account");
+      }
+    };
+
+    const addCart = async () => {
+      const sizeId = selectedSize.value;
+      if (!sizeId) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Vui lòng chọn size khi thêm vào giỏ hàng",
+          life: 3000,
+        });
+        return;
+      }
+      const data = {
+        user_id: store.getters["auth/userId"] || 1,
+        size_quantity: quantity.value,
+        product_size_id: sizeId,
+      };
+      await store.dispatch("auth/addCart", data);
+    };
+
     onMounted(async () => {
       await store.dispatch("product/getProducts");
       const list = store.getters["product/getProducts"] as IProduct[];
@@ -133,11 +169,10 @@ export default defineComponent({
       sizes.value = product.value?.sizes.map((ele) => {
         return {
           name: ele.size,
-          value: ele.sizeId,
+          value: ele.productSizeId,
           quantity: ele.productSizeQuantity,
         };
       });
-      console.log("----", sizes.value);
     });
     return {
       rate,
@@ -145,6 +180,8 @@ export default defineComponent({
       selectedSize,
       quantity,
       product,
+      formatPrice,
+      handleAddCart,
     };
   },
 });

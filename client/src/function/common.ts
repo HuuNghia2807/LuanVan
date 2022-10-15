@@ -8,3 +8,10 @@ export const handleError = (error: AxiosError) => {
     name: error.code || "",
   };
 };
+
+export const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(price);
+};

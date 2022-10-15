@@ -10,7 +10,8 @@ import { ActionTree, GetterTree, MutationTree } from "vuex";
 const initDefaultState = (): IAuthentication => {
   return {
     userId: null,
-    userName: "",
+    isLogged: false,
+    userInfo: null,
     role: null,
     error: null,
   };
@@ -19,7 +20,8 @@ const initDefaultState = (): IAuthentication => {
 const state = initDefaultState();
 const getters: GetterTree<IAuthentication, IAuthentication> = {
   getUserId: (state) => state.userId,
-  getUserName: (state) => state.userName,
+  getIslogged: (state) => state.isLogged,
+  getUserName: (state) => state.userInfo,
   getError: (state) => state.error,
 };
 
@@ -44,6 +46,15 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       const u = await authServices.login(user);
       commit("setError", { error: null });
       console.log(u);
+      //call api
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async addCart({ commit }, data: any) {
+    try {
+      commit("setError", {});
+      const u = await authServices.addCart(data);
       //call api
     } catch (error) {
       commit("setError", { error });

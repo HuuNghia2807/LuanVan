@@ -1,15 +1,16 @@
 import { Nullable } from "primevue/ts-helpers";
 
 export interface IAuthentication {
+  isLogged: boolean;
   userId: Nullable<number>;
-  userName: string;
+  userInfo: any;
   role: Nullable<Role>;
   error: Nullable<any>;
 }
 
 export interface ILoginParams {
-    userName: string;
-    password: string;
+  userName: string;
+  password: string;
 }
 
 export type Role = "admin" | "user";

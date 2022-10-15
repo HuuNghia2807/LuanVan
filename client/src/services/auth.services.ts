@@ -23,6 +23,18 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async addCart(data: any) {
+    try {
+      const response = await http.post("cart/add", data);
+      if (response.data.data) {
+        return response.data.data;
+      } else {
+        throw new Error("Wrong credential");
+      }
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();
