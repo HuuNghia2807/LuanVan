@@ -33,6 +33,10 @@ const routes: Array<RouteRecordRaw> = [
         component: HomeView,
       },
       {
+        path: "/san-pham",
+        component: ProductTypeView,
+      },
+      {
         path: "/nike",
         component: ProductTypeView,
       },

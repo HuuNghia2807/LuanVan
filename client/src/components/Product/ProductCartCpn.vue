@@ -1,17 +1,21 @@
 <template>
   <div class="product no-underline" to="/">
     <div class="wrap">
-      <router-link to="/">
+      <div>
         <img :src="product?.img" :alt="product?.name" class="img-product" />
-      </router-link>
+      </div>
       <div class="product-context">
-        <router-link to="/" class="name-product">{{
-          product?.name
-        }}</router-link>
-        <span class="cart-size mt-1">Size giay: 41</span>
+        <router-link
+          :to="{ name: 'showDetail', params: { id: product?.productId } }"
+          class="name-product"
+          >{{ product?.name }}</router-link
+        >
+        <span class="cart-size mt-1">Size giày: {{ product?.size }}</span>
         <span class="cart-code-product mt-1"
           >Mã SP:
-          <span class="font-normal text-black-alpha-80">CW2288 111</span></span
+          <span class="font-normal text-black-alpha-80"
+            >280700{{ product?.productId }}</span
+          ></span
         >
         <div class="cart-quantity mt-3">
           <InputNumber
@@ -28,25 +32,37 @@
             decrementButtonIcon="pi pi-minus"
           />
           <i class="pi pi-times mx-2" style="font-size: 1.3rem"></i>
-          <span class="price price-red">{{ product?.price }} đ</span>
+          <span class="price price-red">{{ formatPrice(product?.price) }}</span>
         </div>
         <div class="total-price mt-4">
           Thành tiền:
-          <span class="price-red">{{ totalPrice }} đ</span>
+          <span class="price-red">{{ formatPrice(totalPrice) }}</span>
         </div>
       </div>
       <div class="btn-cart-remove">
-        <Button icon="pi pi-times" class="p-button-rounded p-button-danger" />
+        <Button
+          icon="pi pi-times"
+          class="p-button-rounded p-button-danger"
+          @click="handleRemove(product?.productSizeId)"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import Button from "primevue/button";
 
 import InputNumber from "primevue/inputnumber";
+import { formatPrice } from "@/function/common";
+import {
+  addProductToCart,
+  removeProductToCart,
+  setStateCart,
+} from "@/function/handleLocalStorage";
+import { ICart } from "@/interface/product/product.state";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -57,14 +73,34 @@ export default defineComponent({
     Button,
   },
   setup(props) {
-    const quantity = ref(1);
+    const store = useStore();
+    const quantity = ref(props.product?.quantity);
 
     const totalPrice = computed(() => {
-      return quantity.value * (props.product?.price as number);
+      return props.product?.quantity * (props.product?.price as number);
+    });
+
+    const handleRemove = (id: number) => {
+      console.log("here");
+
+      removeProductToCart(id);
+      setStateCart(store);
+    };
+
+    watch(quantity, () => {
+      const item: ICart = {
+        productId: props.product?.productId,
+        productSizeId: props.product?.productSizeId,
+        quantity: quantity.value,
+      };
+      addProductToCart(item, true);
+      setStateCart(store);
     });
     return {
       quantity,
       totalPrice,
+      formatPrice,
+      handleRemove,
     };
   },
 });

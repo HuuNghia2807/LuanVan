@@ -12,6 +12,7 @@ const initDefaultState = (): IAuthentication => {
     userId: null,
     isLogged: false,
     userInfo: null,
+    cart: null,
     role: null,
     error: null,
   };
@@ -22,12 +23,16 @@ const getters: GetterTree<IAuthentication, IAuthentication> = {
   getUserId: (state) => state.userId,
   getIslogged: (state) => state.isLogged,
   getUserName: (state) => state.userInfo,
+  getCart: (state) => state.cart,
   getError: (state) => state.error,
 };
 
 const mutations: MutationTree<IAuthentication> = {
   setError(state, payload) {
     state.error = payload.error;
+  },
+  setCart(state, payload) {
+    state.cart = payload;
   },
   setUser(state, payload) {
     Object.assign(state, {
@@ -53,8 +58,7 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
   },
   async addCart({ commit }, data: any) {
     try {
-      commit("setError", {});
-      const u = await authServices.addCart(data);
+      commit("setCart", data);
       //call api
     } catch (error) {
       commit("setError", { error });

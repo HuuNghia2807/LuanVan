@@ -1,5 +1,5 @@
 <template>
-  <div class="header flex align-items-center justify-content-center">
+  <div class="header flex align-items-center justify-content-between">
     <router-link class="h-6rem cursor-pointer" to="/">
       <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
     </router-link>
@@ -21,12 +21,59 @@
         class="p-inputtext-lg input"
       />
     </div>
-    <router-link to="/gio-hang" class="icon-cart mx-4">
+    <router-link
+      to="/gio-hang"
+      class="icon-cart mx-4"
+      aria-controls="overlay_panel"
+      aria-haspopup="true"
+      @mouseover="showCart"
+    >
       <i class="icon pi pi-shopping-cart" style="font-size: 2.2rem">
-        <span class="badge-icon-cart">6</span>
+        <span class="badge-icon-cart">{{ cartQuantity.length }}</span>
       </i>
+      <OverlayPanel
+        ref="op"
+        appendTo="body"
+        id="overlay_panel"
+        style="width: 450px"
+        :breakpoints="{ '960px': '75vw' }"
+        @mouseleave="showCart"
+      >
+        <DataTable
+          :value="cartList"
+          selectionMode="single"
+          :rows="6"
+          responsiveLayout="scroll"
+        >
+          <Column field="name" header="Tên" style="width: 20%"></Column>
+          <Column header="Ảnh" style="width: 20%">
+            <template #body="slotProps">
+              <img
+                :src="slotProps.data.img"
+                :alt="slotProps.data.name"
+                class="product-image"
+              />
+            </template>
+          </Column>
+          <Column header="Size" style="width: 20%">
+            <template #body="slotProps">
+              {{ slotProps.data.size }}
+            </template>
+          </Column>
+          <Column header="Giá" sortable style="width: 20%">
+            <template #body="slotProps">
+              {{ formatPrice(slotProps.data.price) }}
+            </template>
+          </Column>
+          <Column header="Số lượng" style="width: 20%">
+            <template #body="slotProps">
+              {{ slotProps.data.quantity }}
+            </template>
+          </Column>
+        </DataTable>
+      </OverlayPanel>
     </router-link>
-    <div class="account flex-1">
+    <div class="account">
       <div class="flex align-items-center justify-content-center">
         <router-link to="/account" class="login no-underline"
           >Đăng nhập</router-link
@@ -41,16 +88,23 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
+import { useStore } from "vuex";
 import InputText from "primevue/inputtext";
-import Dialog from "primevue/dialog";
+import OverlayPanel from "primevue/overlaypanel";
+import Column from "primevue/column";
+import { ICart, IProduct } from "@/interface/product/product.state";
+import { getCartList } from "@/function/getCartList";
+import { formatPrice } from "@/function/common";
 
 export default defineComponent({
   components: {
     InputText,
+    OverlayPanel,
+    Column,
   },
   setup() {
-    const isModal = ref(false);
+    const store = useStore();
     const listMenu = ref([
       { name: "NIKE", link: "nike" },
       { name: "ADIDAS", link: "adidas" },
@@ -60,22 +114,40 @@ export default defineComponent({
       { name: "DÂY GIÀY", link: "day-giay" },
       { name: "LIÊN HỆ", link: "contact" },
     ]);
+    const op = ref();
+    const cartList = computed(() => {
+      const listProduct: IProduct[] =
+        store.getters["product/getProducts"] || [];
+      const cartItem: ICart[] = store.getters["auth/getCart"] || [];
 
-    const handleLogin = (option: string) => {
-      console.log(option);
-      isModal.value = true;
+      return getCartList(listProduct, cartItem);
+    });
+
+    const cartQuantity = computed(() => {
+      return store.getters["auth/getCart"] || [];
+    });
+
+    const showCart = (e: any) => {
+      op.value.toggle(e);
     };
 
     return {
       listMenu,
-      isModal,
-      handleLogin,
+      cartQuantity,
+      cartList,
+      op,
+      showCart,
+      formatPrice,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+.product-image {
+  width: 6rem;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
 .header {
   position: fixed;
   height: var(--height-header);
@@ -86,6 +158,10 @@ export default defineComponent({
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   background-color: var(--white-color);
+
+  :deep(.p-overlaypanel) {
+    font-size: 1.6rem !important;
+  }
 }
 
 @keyframes fill-color {

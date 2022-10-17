@@ -97,17 +97,18 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import { ICart, IProduct } from "@/interface/product/product.state";
+import { formatPrice } from "@/function/common";
+import { useToast } from "primevue/usetoast";
+import { addProductToCart, setStateCart } from "@/function/handleLocalStorage";
+import router from "@/router";
 import HeaderTypeProductCpn from "@/components/Product/HeaderTypeProductCpn.vue";
 import Rating from "primevue/rating";
 import RadioButton from "primevue/radiobutton";
 import InputNumber from "primevue/inputnumber";
 import Button from "primevue/button";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-import { IProduct } from "@/interface/product/product.state";
-import { formatPrice } from "@/function/common";
-import router from "@/router";
-import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   components: {
@@ -132,14 +133,8 @@ export default defineComponent({
     ] as any);
     const selectedSize = ref<number>();
     const quantity = ref(1);
-
     const handleAddCart = () => {
-      const isLogged = store.getters["auth/getIslogged"];
-      if (!isLogged) {
-        addCart();
-      } else {
-        router.push("/account");
-      }
+      addCart();
     };
 
     const addCart = async () => {
@@ -153,12 +148,19 @@ export default defineComponent({
         });
         return;
       }
-      const data = {
-        user_id: store.getters["auth/userId"] || 1,
-        size_quantity: quantity.value,
-        product_size_id: sizeId,
+      const item: ICart = {
+        productId: product.value?.productId || undefined,
+        productSizeId: sizeId,
+        quantity: quantity.value,
       };
-      await store.dispatch("auth/addCart", data);
+      addProductToCart(item);
+      setStateCart(store);
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Thêm thành công",
+        life: 3000,
+      });
     };
 
     onMounted(async () => {

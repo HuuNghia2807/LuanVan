@@ -8,9 +8,10 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
+import { useStore } from "vuex";
+import { setStateCart } from "@/function/handleLocalStorage";
 import HeaderCpn from "@/components/HeaderCpn.vue";
 import FooterCpn from "@/components/FooterCpn.vue";
-import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
@@ -21,6 +22,7 @@ export default defineComponent({
     const store = useStore();
     onMounted(async () => {
       await store.dispatch("product/getProducts");
+      setStateCart(store);
     });
     return {};
   },

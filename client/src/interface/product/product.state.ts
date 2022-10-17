@@ -78,3 +78,11 @@ export interface ICategoryResponse {
   id: number;
   category_name: string;
 }
+
+// cart interface
+
+export interface ICart {
+  productId: number | undefined;
+  productSizeId: number;
+  quantity: number;
+}
