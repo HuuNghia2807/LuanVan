@@ -159,7 +159,10 @@ class ProductController extends AbstractApiController
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json($th->getMessage(), 500);
+            $this->setStatusCode(JsonResponse::HTTP_FORBIDDEN);
+            $this->setStatus('failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);

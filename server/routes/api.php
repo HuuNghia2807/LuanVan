@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +20,15 @@ use App\Http\Controllers\CartController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix' => 'customer'], function () {
+    Route::post('/register', [CustomerController::class, 'store'])->name('customer.store');
+    // Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
+    // Route::post('refresh-token', [AuthController::class, 'refresh'])->name('auth.refresh');
+    // Route::get('me', [AuthController::class, 'userProfile'])->name('auth.userProfile');
+    // Route::post('newpassword', [AuthController::class, 'changePassword'])->name('auth.changePassword');
+    // Route::get('', [AuthController::class, 'getAllUser'])->name('auth.getAllUser');
 });
+
 Route::group(['prefix' => 'category'], function () {
     Route::get('', [CategoryController::class, 'index'])->name('category.index');
     Route::post('/add', [CategoryController::class, 'store'])->name('category.store');
