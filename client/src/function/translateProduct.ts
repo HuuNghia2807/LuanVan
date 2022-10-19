@@ -13,6 +13,7 @@ export const translateProductsResponse = (
       productRating: prd.product_rating,
       sizes: translateSize(prd.sizes),
       images: prd.product_image,
+      category: prd.category,
     };
   });
 };

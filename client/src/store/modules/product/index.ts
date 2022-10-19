@@ -70,6 +70,14 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       const res = await productServices.getProducts();
       const products = translateProductsResponse(res);
       commit("setProducts", products);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async deleteProduct({ commit }, listId: number[]) {
+    try {
+      commit("setError", {});
+      const res = await productServices.deleteProduct(listId);
       return res;
     } catch (error) {
       commit("setError", { error });

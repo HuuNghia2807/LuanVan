@@ -59,6 +59,15 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
   async addCart({ commit }, data: any) {
     try {
       commit("setCart", data);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async register({ commit }, newCustomer: any) {
+    try {
+      commit("setError", {});
+      const res = await authServices.register(newCustomer);
+      return res;
       //call api
     } catch (error) {
       commit("setError", { error });

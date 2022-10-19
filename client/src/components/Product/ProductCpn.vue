@@ -21,7 +21,9 @@
           />
         </div>
         <div class="product-price">
-          <span class="price">{{ productDetail?.productPrice }}</span>
+          <span class="price">{{
+            formatPrice(productDetail?.productPrice)
+          }}</span>
           <!-- <span v-if="productDetail?.sale.length > 0" class="price-sale">{{
             productDetail?.productPrice
           }}</span> -->
@@ -41,6 +43,7 @@
 </template>
 
 <script lang="ts">
+import { formatPrice } from "@/function/common";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -51,7 +54,9 @@ export default defineComponent({
   },
   components: {},
   setup() {
-    return {};
+    return {
+      formatPrice,
+    };
   },
 });
 </script>

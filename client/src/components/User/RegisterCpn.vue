@@ -107,9 +107,12 @@ import { defineComponent, reactive, ref } from "vue";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
-import { ILoginParams } from "@/interface/auth/authentication.state";
+import Divider from "primevue/divider";
 
 export default defineComponent({
+  components: {
+    Divider,
+  },
   setup() {
     const store = useStore();
     const state = reactive({
@@ -143,15 +146,14 @@ export default defineComponent({
 
     const handleSubmit = async (isFormValid: any) => {
       submitted.value = true;
-      const user: ILoginParams = {
-        userName: state.phone,
-        password: state.password,
-      };
-
-      if (!isFormValid) {
-        await store.dispatch("auth/login", user);
-        const name = store.getters["auth/getUserName"];
-        return;
+      if (isFormValid) {
+        const customer = {
+          name: state.name,
+          phone: state.phone,
+          email: state.email,
+          password: state.password,
+        };
+        await store.dispatch("auth/register", customer);
       }
     };
 

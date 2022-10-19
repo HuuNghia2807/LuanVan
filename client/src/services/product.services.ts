@@ -54,6 +54,20 @@ class ProductServices {
       throw handleError(error as AxiosError);
     }
   }
+  async deleteProduct(listId: number[]) {
+    try {
+      const path = "product/delete";
+      const body = { product_ids: listId };
+      const response = await http.post(path, body);
+      if (response.data) {
+        return response.data.data;
+      } else {
+        throw new Error("Don't get");
+      }
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new ProductServices();

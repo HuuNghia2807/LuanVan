@@ -16,6 +16,7 @@ export interface IProduct {
   productPrice: number | null;
   productRating: number;
   categoryId: number;
+  category: string;
   sizes: ISize[];
   images: IProductImageResponse[];
 }
@@ -41,6 +42,7 @@ export interface IProductResponse {
   product_price: number;
   category_id: number;
   product_rating: number;
+  category: string;
   sizes: ISizeResponse[];
   product_image: IProductImageResponse[];
 }

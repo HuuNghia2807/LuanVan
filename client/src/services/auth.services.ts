@@ -23,9 +23,9 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
-  async addCart(data: any) {
+  async register(newCustomer: any) {
     try {
-      const response = await http.post("cart/add", data);
+      const response = await http.post("customer/register", newCustomer);
       if (response.data.data) {
         return response.data.data;
       } else {

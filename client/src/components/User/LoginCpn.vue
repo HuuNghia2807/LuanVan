@@ -8,14 +8,14 @@
         <div class="field">
           <div class="p-float-label">
             <my-inputText
-              id="phone"
-              v-model="v$.phone.$model"
-              :class="{ 'p-invalid': v$.phone.$invalid && submitted }"
+              id="userName"
+              v-model="v$.email.$model"
+              :class="{ 'p-invalid': v$.email.$invalid && submitted }"
             />
             <label
-              for="phone"
-              :class="{ 'p-error': v$.phone.$invalid && submitted }"
-              >Số điện thoại *</label
+              for="userName"
+              :class="{ 'p-error': v$.email.$invalid && submitted }"
+              >Email *</label
             >
           </div>
         </div>
@@ -39,14 +39,14 @@
         <div
           class="my-4 flex justify-content-center"
           v-if="
-            (v$.phone.$invalid && submitted) ||
-            v$.phone.$pending ||
+            (v$.email.$invalid && submitted) ||
+            v$.email.$pending ||
             (v$.password.$invalid && submitted) ||
             v$.password.$pending
           "
         >
           <small class="p-error">{{
-            v$.phone.required.$message || v$.password.required.$message
+            v$.email.required.$message || v$.password.required.$message
           }}</small>
         </div>
 
@@ -58,7 +58,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
+import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
 import { ILoginParams } from "@/interface/auth/authentication.state";
@@ -67,15 +67,13 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const state = reactive({
-      phone: "",
+      email: "",
       password: "",
     });
 
     const rules = {
-      phone: {
-        required: helpers.withMessage("Số điện thoại không đúng", required),
-        maxLength: maxLength(10),
-        minLengthValue: minLength(10),
+      email: {
+        required: helpers.withMessage("Email không đúng", required),
       },
       password: {
         required: helpers.withMessage("Vui lòng nhập password", required),
@@ -89,7 +87,7 @@ export default defineComponent({
     const handleSubmit = async (isFormValid: any) => {
       submitted.value = true;
       const user: ILoginParams = {
-        userName: state.phone,
+        userName: state.email,
         password: state.password,
       };
 

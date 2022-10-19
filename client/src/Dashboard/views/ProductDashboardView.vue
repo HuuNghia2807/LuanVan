@@ -37,9 +37,9 @@
       </Toolbar>
 
       <DataTable
-        :value="products"
+        :value="listProduct"
         v-model:selection="selectedProducts"
-        dataKey="id"
+        dataKey="productId"
         :paginator="true"
         :rows="10"
         :filters="filters"
@@ -68,13 +68,13 @@
           :exportable="false"
         ></Column>
         <Column
-          field="id"
+          field="productId"
           header="Mã Sản Phẩm"
           :sortable="true"
           style="width: 10rem"
         ></Column>
         <Column
-          field="name"
+          field="productName"
           header="Tên Sản Phẩm"
           :sortable="true"
           style="width: 20rem"
@@ -82,24 +82,18 @@
         <Column header="Ảnh Sản Phẩm">
           <template #body="slotProps">
             <my-image
-              :src="slotProps.data.img"
-              :alt="slotProps.data.img"
+              :src="slotProps.data.images[0].product_image_link"
+              :alt="slotProps.data.productName"
               width="80"
             />
           </template>
         </Column>
-        <Column
-          field="price"
-          header="Giá Sản Phẩm"
-          :sortable="true"
-          style="min-width: 8rem"
-        >
+        <Column header="Giá Sản Phẩm" :sortable="true" style="min-width: 8rem">
           <template #body="slotProps">
-            {{ slotProps.data.price }}
+            {{ formatPrice(slotProps.data.productPrice) }}
           </template>
         </Column>
         <Column
-          field="category"
           header="Loại Sản Phẩm"
           :sortable="true"
           style="min-width: 12rem"
@@ -116,10 +110,10 @@
             >
           </template>
         </Column>
-        <Column field="rating" header="Đánh giá" style="min-width: 12rem">
+        <Column header="Đánh giá" style="min-width: 12rem">
           <template #body="slotProps">
             <Rating
-              :modelValue="slotProps.data.rating"
+              :modelValue="slotProps.data.productRating"
               :readonly="true"
               :cancel="false"
             />
@@ -151,8 +145,8 @@
   >
     <div class="confirmation-content">
       <i class="pi pi-exclamation-triangle mr-3" style="font-size: 3rem" />
-      <span v-if="product" style="font-size: 1.6rem"
-        >Are you sure you want to delete <b>{{ product.name }}</b
+      <span style="font-size: 1.6rem"
+        >Are you sure you want to delete <b>{{ product?.productName }}</b
         >?</span
       >
     </div>
@@ -169,7 +163,7 @@
         icon="pi pi-check"
         class="p-button-text"
         style="font-size: 1.6rem"
-        @click="deleteProduct"
+        @click="deleteProduct(product?.productId)"
       />
     </template>
   </my-dialog>
@@ -187,7 +181,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import AddOrEditProductCpn from "@/Dashboard/components/product/AddOrEditProductCpn.vue";
 import Rating from "primevue/rating";
 import InputText from "primevue/inputtext";
@@ -195,6 +189,9 @@ import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import Toolbar from "primevue/toolbar";
 import Column from "primevue/column";
+import { IProduct } from "@/interface/product/product.state";
+import { useStore } from "vuex";
+import { formatPrice } from "@/function/common";
 
 export default defineComponent({
   components: {
@@ -205,121 +202,15 @@ export default defineComponent({
     Column,
   },
   setup() {
-    const products = ref([
-      {
-        id: 1,
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        category: "NIKE",
-        rating: 5,
-        price: "2.200.000 đ",
-        sale: "",
-      },
-      {
-        id: 2,
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        category: "JORDAN",
-        rating: 5,
-        price: "9.500.000 đ",
-        sale: "8.000.000 đ",
-      },
-      {
-        id: 3,
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        category: "PUMA",
-        rating: 5,
-        price: "2.200.000 đ",
-        sale: "",
-      },
-      {
-        id: 4,
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        category: "NIKE",
-        rating: 5,
-        price: "9.500.000 đ",
-        sale: "8.000.000 đ",
-      },
-      {
-        id: 5,
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        category: "NIKE",
-        rating: 5,
-        price: "2.200.000 đ",
-        sale: "",
-      },
-      {
-        id: 6,
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        category: "NIKE",
-        rating: 5,
-        price: "9.500.000 đ",
-        sale: "8.000.000 đ",
-      },
-      {
-        id: 7,
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        category: "NIKE",
-        rating: 5,
-        price: "2.200.000 đ",
-        sale: "",
-      },
-      {
-        id: 8,
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        category: "NIKE",
-        rating: 5,
-        price: "9.500.000 đ",
-        sale: "8.000.000 đ",
-      },
-      {
-        id: 9,
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        category: "NIKE",
-        rating: 5,
-        price: "2.200.000 đ",
-        sale: "",
-      },
-      {
-        id: 10,
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        category: "NIKE",
-        rating: 5,
-        price: "9.500.000 đ",
-        sale: "8.000.000 đ",
-      },
-      {
-        id: 11,
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        category: "NIKE",
-        price: "2.200.000 đ",
-        sale: "",
-      },
-      {
-        id: 12,
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        rating: 5,
-        price: "9.500.000 đ",
-        sale: "8.000.000 đ",
-      },
-    ]);
+    const listProduct = ref([] as IProduct[]);
+    const store = useStore();
     const selectedProducts = ref([] as any[]);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
     const deleteProductDialog = ref(false);
     const productDialog = ref(false);
-    const product = ref<any>({});
+    const product = ref<IProduct>();
     const toast = useToast();
     const deleteProductsDialog = ref(false);
 
@@ -330,29 +221,35 @@ export default defineComponent({
       product.value = { ...prod };
       productDialog.value = true;
     };
-    const deleteProduct = () => {
+    const deleteProduct = async (id?: number) => {
+      deleteProductDialog.value = false;
+      if (id) {
+        // products.value = products.value.filter(
+        //   (val) => val.id !== product.value.id
+        // );
+        await store.dispatch("product/deleteProduct", [id]);
+        product.value = undefined;
+        toast.add({
+          severity: "success",
+          summary: "Successful",
+          detail: "Product Deleted",
+          group: "tr",
+          life: 3000,
+        });
+        loadProduct();
+        return;
+      }
       if (selectedProducts.value.length) {
         deleteSelectedProducts();
       }
-
-      products.value = products.value.filter(
-        (val) => val.id !== product.value.id
-      );
-      deleteProductDialog.value = false;
-      product.value = {};
-      toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Deleted",
-        group: "tr",
-        life: 3000,
-      });
     };
-    const deleteSelectedProducts = () => {
-      products.value = products.value.filter(
-        (val) => !selectedProducts.value.includes(val)
-      );
-      deleteProductsDialog.value = false;
+
+    const deleteSelectedProducts = async () => {
+      const listId = selectedProducts.value.map((ele) => {
+        return ele.productId;
+      });
+
+      await store.dispatch("product/deleteProduct", listId);
       selectedProducts.value = [];
       toast.add({
         severity: "success",
@@ -361,6 +258,7 @@ export default defineComponent({
         group: "tr",
         life: 3000,
       });
+      loadProduct();
     };
 
     const confirmDeleteProduct = (prod: any) => {
@@ -368,19 +266,29 @@ export default defineComponent({
       deleteProductDialog.value = true;
     };
 
+    const loadProduct = async () => {
+      await store.dispatch("product/getProducts");
+      listProduct.value = store.getters["product/getProducts"] as IProduct[];
+    };
+
+    onMounted(() => {
+      loadProduct();
+    });
+
     return {
-      products,
       filters,
       deleteProductDialog,
       productDialog,
       product,
       deleteProductsDialog,
       selectedProducts,
+      listProduct,
       confirmDeleteSelected,
       editProduct,
       deleteProduct,
       deleteSelectedProducts,
       confirmDeleteProduct,
+      formatPrice,
     };
   },
 });
