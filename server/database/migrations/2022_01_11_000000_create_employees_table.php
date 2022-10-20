@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('customer_email', 100)->unique();
-            $table->string('customer_password', 100);
-            $table->integer('user_status_id')->unsigned();
-            $table->foreign('user_status_id')->references('id')->on('users_status');
+            $table->string('employee_email')->unique();
+            $table->string('employee_password');
+            $table->integer('role_id')->unsigned();
+            $table->foreign('role_id')->references('id')->on('roles');
             $table->integer('user_detail_id')->unsigned();
             $table->foreign('user_detail_id')->references('id')->on('users_detail');
             $table->timestamps();
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('employees');
     }
 };

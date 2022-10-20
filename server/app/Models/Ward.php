@@ -14,8 +14,7 @@ class Ward extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'ward_name',
-        'ward_type',
+        'ward',
         'district_id'
     ];
 }

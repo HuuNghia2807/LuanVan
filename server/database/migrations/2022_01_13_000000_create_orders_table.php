@@ -16,19 +16,18 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('order_total_price');
-            $table->string('order_status');
             $table->string('order_note', 200);
-            $table->string('order_time_order', 200);
-            $table->string('order_time_receive', 200);
-            // $table->foreignId('address_id');
-            $table->integer('address_id')->unsigned();
-            $table->foreign('address_id')->references('id')->on('address');
-            // $table->foreignId('payment_id');
+            $table->string('order_time', 200);
             $table->integer('payment_id')->unsigned();
             $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade')->onUpdate('cascade');
-            // $table->foreignId('user_id');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('address_id')->unsigned();
+            $table->foreign('address_id')->references('id')->on('address');
+            $table->integer('order_status_id')->unsigned();
+            $table->foreign('order_status_id')->references('id')->on('orders_status');
+            $table->integer('customer_id')->unsigned();
+            $table->foreign('customer_id')->references('id')->on('customers');
+            $table->integer('employee_id')->unsigned();
+            $table->foreign('employee_id')->references('id')->on('employees');
             $table->timestamps();
         });
     }

@@ -16,11 +16,13 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id');
             $table->string('product_name', 100);
+            $table->string('product_code', 8);
             $table->integer('product_price');
             $table->integer('product_rating');
-            // $table->foreignId('category_id');
             $table->integer('category_id')->unsigned();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('discount_id')->unsigned()->nullable();
+            $table->foreign('discount_id')->references('id')->on('discounts');
             $table->timestamps();
         });
     }

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Repositories\Product\ProductRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductController extends AbstractApiController
 {
@@ -64,9 +64,11 @@ class ProductController extends AbstractApiController
         DB::beginTransaction();
         try {
             $category_id = $this->productRepo->checkIdCategory($request->category);
+            $uuid = Str::uuid()->toString();
             $product = $this->productRepo->create([
                 'product_name' => $request->product_name,
                 'product_price' => $request->product_price,
+                'product_code' => substr($uuid, 0, 8),
                 'category_id' => $category_id,
                 'product_rating' => 5
             ]);

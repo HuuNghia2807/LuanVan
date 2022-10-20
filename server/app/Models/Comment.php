@@ -16,6 +16,7 @@ class Comment extends Model
     protected $fillable = [
         'comment',
         'comment_rating',
-        'customer_id'
+        'customer_id',
+        'product_id'
     ];
 }

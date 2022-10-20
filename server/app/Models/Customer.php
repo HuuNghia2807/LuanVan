@@ -14,12 +14,10 @@ class Customer extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'customer_name',
-        'customer_phone',
-        'customer_email	',
+        'customer_email',
         'customer_password',
-        'customer_birth',
-        'customer_gender',
-        'customer_avata',
+        'user_status_id',
+        'customer_password',
+        'user_detail_id',
     ];
 }

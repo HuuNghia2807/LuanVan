@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('product_images', function (Blueprint $table) {
+        Schema::create('users_detail', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('product_image_name', 100);
-            $table->longText('product_image_link');
-            $table->integer('product_id')->unsigned();
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('user_first_name', 50);
+            $table->string('user_last_name', 50);
+            $table->string('user_phone', 10);
+            $table->string('user_birth', 50);
+            $table->string('user_gender', 5);
+            $table->longText('user_avatar');
             $table->timestamps();
         });
     }
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_images');
+        Schema::dropIfExists('users_detail');
     }
 };

@@ -15,7 +15,6 @@ class City extends Model
 
     protected $fillable = [
         'city_name',
-        'city_type',
-        'transport_fee'
+        'fee'
     ];
 }

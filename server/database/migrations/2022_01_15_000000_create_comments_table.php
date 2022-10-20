@@ -17,10 +17,8 @@ return new class extends Migration
             $table->increments('id');
             $table->string('comment', 500);
             $table->integer('comment_rating');
-            // $table->foreignId('customer_id');
             $table->integer('customer_id')->unsigned();
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade')->onUpdate('cascade');
-            // $table->foreignId('product_id');
             $table->integer('product_id')->unsigned();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
