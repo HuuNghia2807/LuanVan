@@ -90,7 +90,6 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         foreach ($arrId as $id) {
             $product = Product::find($id);
             $product->delete();
-            // $this->productRepo->delete($id);
         }
         return true;
     }

@@ -22,7 +22,7 @@ use App\Http\Controllers\CustomerController;
 
 Route::group(['prefix' => 'customer'], function () {
     Route::post('/register', [CustomerController::class, 'store'])->name('customer.store');
-    // Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::post('/delete', [CustomerController::class, 'destroy'])->name('customer.destroy');
     // Route::post('refresh-token', [AuthController::class, 'refresh'])->name('auth.refresh');
     // Route::get('me', [AuthController::class, 'userProfile'])->name('auth.userProfile');
     // Route::post('newpassword', [AuthController::class, 'changePassword'])->name('auth.changePassword');

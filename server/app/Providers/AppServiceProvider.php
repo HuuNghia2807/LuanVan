@@ -33,6 +33,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Cart\CartRepositoryInterface::class,
             \App\Repositories\Cart\CartRepository::class
         );
+
+        $this->app->singleton(
+            \App\Repositories\Customer\CustomerRepositoryInterface::class,
+            \App\Repositories\Customer\CustomerRepository::class
+        );
     }
 
     /**

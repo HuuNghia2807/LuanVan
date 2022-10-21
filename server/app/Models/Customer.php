@@ -17,7 +17,6 @@ class Customer extends Model
         'customer_email',
         'customer_password',
         'user_status_id',
-        'customer_password',
         'user_detail_id',
     ];
 }
