@@ -2,18 +2,34 @@
   <div class="login flex justify-content-center">
     <div class="card">
       <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
-        <div class="field">
-          <div class="p-float-label">
-            <my-inputText
-              id="name"
-              v-model="v$.name.$model"
-              :class="{ 'p-invalid': v$.name.$invalid && submitted }"
-            />
-            <label
-              for="name"
-              :class="{ 'p-error': v$.name.$invalid && submitted }"
-              >Họ và tên *</label
-            >
+        <div class="flex align-items-center">
+          <div class="field">
+            <div class="p-float-label">
+              <my-inputText
+                id="first_name"
+                v-model="v$.first_name.$model"
+                :class="{ 'p-invalid': v$.first_name.$invalid && submitted }"
+              />
+              <label
+                for="first_name"
+                :class="{ 'p-error': v$.first_name.$invalid && submitted }"
+                >Họ *</label
+              >
+            </div>
+          </div>
+          <div class="field ml-4">
+            <div class="p-float-label">
+              <my-inputText
+                id="last_name"
+                v-model="v$.last_name.$model"
+                :class="{ 'p-invalid': v$.last_name.$invalid && submitted }"
+              />
+              <label
+                for="last_name"
+                :class="{ 'p-error': v$.last_name.$invalid && submitted }"
+                >Tên *</label
+              >
+            </div>
           </div>
         </div>
         <div class="field">
@@ -70,7 +86,7 @@
             >
           </div>
         </div>
-        <div
+        <!-- <div
           class="my-4 flex justify-content-center"
           v-if="
             (v$.name.$invalid && submitted) ||
@@ -89,7 +105,7 @@
             v$.email.required.$message ||
             v$.password.required.$message
           }}</small>
-        </div>
+        </div> -->
 
         <my-button
           type="submit"
@@ -116,14 +132,18 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const state = reactive({
-      name: "",
+      first_name: "",
+      last_name: "",
       phone: "",
       email: "",
       password: "",
     });
 
     const rules = {
-      name: {
+      first_name: {
+        required: helpers.withMessage("Vui lòng nhập họ tên", required),
+      },
+      last_name: {
         required: helpers.withMessage("Vui lòng nhập họ tên", required),
       },
       phone: {
@@ -148,7 +168,8 @@ export default defineComponent({
       submitted.value = true;
       if (isFormValid) {
         const customer = {
-          name: state.name,
+          first_name: state.first_name,
+          last_name: state.last_name,
           phone: state.phone,
           email: state.email,
           password: state.password,

@@ -7,7 +7,7 @@
             label="Thêm sản phẩm"
             icon="pi pi-plus"
             class="p-button-success mr-2"
-            @click="editProduct"
+            @click="addProduct"
           />
           <my-button
             label="Xóa Sản Phẩm"
@@ -122,7 +122,7 @@
         <Column :exportable="false" style="min-width: 8rem">
           <template #body="slotProps">
             <my-button
-              icon="pi pi-pencil"
+              icon="pi pi-cog"
               class="p-button-rounded p-button-success mr-2"
               @click="editProduct(slotProps.data)"
             />
@@ -175,7 +175,7 @@
     :style="{ width: '60vw', fontSize: '2rem' }"
     :modal="true"
   >
-    <AddOrEditProductCpn />
+    <AddOrEditProductCpn :product-action="product" />
   </my-dialog>
   <my-toast position="top-right" group="tr" />
 </template>
@@ -216,6 +216,10 @@ export default defineComponent({
 
     const confirmDeleteSelected = () => {
       deleteProductDialog.value = true;
+    };
+    const addProduct = () => {
+      product.value = undefined;
+      productDialog.value = true;
     };
     const editProduct = (prod?: any) => {
       product.value = { ...prod };
@@ -283,6 +287,7 @@ export default defineComponent({
       deleteProductsDialog,
       selectedProducts,
       listProduct,
+      addProduct,
       confirmDeleteSelected,
       editProduct,
       deleteProduct,
