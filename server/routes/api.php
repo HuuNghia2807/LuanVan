@@ -40,7 +40,7 @@ Route::group(['prefix' => 'product'], function () {
     Route::get('', [ProductController::class, 'index'])->name('product.index');
     Route::post('/add', [ProductController::class, 'store'])->name('product.store');
     Route::post('/delete', [ProductController::class, 'destroy'])->name('product.destroy');
-    Route::post('/{id}', [ProductController::class, 'update'])->name('product.update');
+    Route::put('/update', [ProductController::class, 'update'])->name('product.update');
 });
 
 Route::group(['prefix' => 'size'], function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Repositories\Product\ProductRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -125,24 +126,38 @@ class ProductController extends AbstractApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
-        $data = $request->all();
+        $validated = $request->validate([
+            'product_id' => 'required',
+            'product_body' => 'required',
+        ]);
+        $product_id = $request->product_id;
+        $data = $request->product_body;
         DB::beginTransaction();
         try {
-            $product = $this->productRepo->update($id, $data);
-            $product_image = $this->productRepo->updateImage($request->product_image_id, $request->product_image_link);
+            if ($validated) {
+                $this->productRepo->updateImage($product_id, $data);
+                $this->productRepo->updateSize($product_id, $data);
+                $category_id = $this->productRepo->checkIdCategory($data['category']);
+                Product::find($product_id)->update([
+                    'product_name' => $data['product_name'],
+                    'product_price' => $data['product_price'],
+                    'category_id' => $category_id,
+                ]);
+            }
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json('error dada', 500);
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('Failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
         }
 
-        $this->setStatusCode(JsonResponse::HTTP_CREATED);
-        $this->setStatus('success');
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('Success');
         $this->setMessage('Update product success');
-        $this->setData($product);
         return $this->respond();
     }
 
