@@ -135,9 +135,6 @@
         </div>
       </div>
       <div class="modal-right">
-        <small v-if="messageImageValid" class="p-error">
-          {{ messageImageValid }}
-        </small>
         <ScrollPanel
           style="width: 100%; height: 35rem"
           class="review-images custombar1"
@@ -145,7 +142,10 @@
         >
           <div class="image-edit" v-for="img in images" :key="img.title">
             <Image :src="img.itemImageSrc" :alt="img.alt" preview />
-            <span class="action-delete" v-if="isEdit"
+            <span
+              class="action-delete"
+              v-if="!productAction || isEdit"
+              @click="delImage(img.id, img.alt)"
               ><i class="pi pi-times" style="font-size: 1rem"></i
             ></span>
           </div>
@@ -190,6 +190,9 @@
       </div>
     </div>
     <div>
+      <small v-if="messageImageValid" class="p-error">
+        {{ messageImageValid }}
+      </small>
       <my-button
         :label="productAction ? 'LƯU' : 'THÊM SẢN PHẨM'"
         type="submit"
@@ -238,7 +241,6 @@ export default defineComponent({
   setup(props, { emit }) {
     const toast = useToast();
     const store = useStore();
-    const fileImages = ref([] as any[]);
     const submitted = ref(false);
     const category = ref([]);
     const filterCategory = ref([] as any[]);
@@ -268,6 +270,7 @@ export default defineComponent({
       return (
         props.productAction?.sizes.map((ele) => {
           return {
+            size_id: ele.productSizeId,
             size: ele.size,
             size_quantity: ele.productSizeQuantity,
           };
@@ -277,11 +280,13 @@ export default defineComponent({
     const sizeData = ref<ISizeParams[]>(
       sizeEdit.value || [
         {
+          size_id: null,
           size: null,
           size_quantity: null,
         },
       ]
     );
+    const imageDelete = ref([] as number[]);
 
     const rules = {
       name: {
@@ -302,6 +307,7 @@ export default defineComponent({
     const imageEdit = computed(() => {
       return props.productAction?.images.map((ele) => {
         return {
+          id: ele.product_image_id,
           itemImageSrc: ele.product_image_link,
           thumbnailImageSrc: ele.product_image_link,
           alt: ele.product_image_name,
@@ -312,22 +318,54 @@ export default defineComponent({
     const images = ref<any[]>(imageEdit.value || []);
 
     const v$ = useVuelidate(rules, state);
+
     const handleSubmit = (isFormValid: any) => {
       submitted.value = true;
-      if (fileImages.value.length < 1) {
+      if (images.value.length < 1) {
         messageImageValid.value = "Vui lòng thêm ít nhất 1 ảnh sản phẩm";
         return;
       }
-      if (isFormValid && sizeData.value[0].size != 0) {
-        const product: IProductParams = {
-          product_name: state.name,
-          product_price: state.price,
-          category: state.category,
-          sizes: sizeData.value,
-          images: fileImages.value,
-        };
-        addProduct(product);
-        return;
+
+      if (isFormValid) {
+        const sizeDel: number[] = [];
+        sizeData.value.forEach((ele) => {
+          if (ele.size == 0 || ele.size_quantity == 0)
+            sizeDel.push(ele.size_id as number);
+        });
+        sizeData.value = sizeData.value.filter(
+          (ele) => ele.size != 0 || ele.size_quantity != 0
+        );
+        if (sizeData.value[0].size == 0) {
+          messageImageValid.value = "Vui lòng thêm ít nhất 1 size";
+          return;
+        }
+        const fileImages = [] as string[];
+        images.value.forEach((ele) => {
+          if (!ele.id) {
+            fileImages.push(ele.imageLink);
+          }
+        });
+        if (props.productAction) {
+          const productUpdate = {
+            product_name: state.name,
+            product_price: state.price,
+            category: state.category,
+            sizes: sizeData.value,
+            size_delete: sizeDel,
+            images: fileImages,
+            image_delete: imageDelete.value,
+          };
+          updateProduct(productUpdate, props.productAction.productId);
+        } else {
+          const product: IProductParams = {
+            product_name: state.name,
+            product_price: state.price,
+            category: state.category,
+            sizes: sizeData.value,
+            images: fileImages,
+          };
+          addProduct(product);
+        }
       }
     };
 
@@ -351,20 +389,45 @@ export default defineComponent({
       resetForm();
     };
 
+    const updateProduct = async (productDetail: any, productId: number) => {
+      await store.dispatch("product/updateProduct", {
+        product_id: productId,
+        product_body: productDetail,
+      });
+      if (store.getters["product/getError"]) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Update lỗi vui lòng kiểm tra và thử lại",
+          life: 3000,
+        });
+        return;
+      }
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Chỉnh sửa sản phẩm thành công",
+        life: 3000,
+      });
+      emit("load-product");
+      resetForm();
+    };
+
     const resetForm = () => {
       state.name = "";
       state.category = "";
       state.price = null;
       submitted.value = false;
-      fileImages.value = [];
       images.value = [];
       sizeData.value = [
         {
+          size_id: null,
           size: null,
           size_quantity: null,
         },
       ];
       messageImageValid.value = "";
+      imageDelete.value = [];
     };
 
     const searchCategory = (event: any) => {
@@ -393,24 +456,27 @@ export default defineComponent({
     };
 
     const onUpload = (e: any) => {
-      images.value = [];
+      if (!props.productAction) images.value = [];
+
       const target = [...e.target.files];
       target.forEach((ele) => {
         const img = URL.createObjectURL(ele);
-        images.value.push({
-          itemImageSrc: img,
-          thumbnailImageSrc: img,
-          alt: "Description for Image 5",
-          title: "Title 5",
-        });
         convertToBase64(ele).then((res) => {
-          fileImages.value.push(res);
+          images.value.push({
+            id: null,
+            itemImageSrc: img,
+            thumbnailImageSrc: img,
+            alt: ele.name,
+            title: "Title 5",
+            imageLink: res,
+          });
         });
       });
     };
 
     const handleAddSize = () => {
       sizeData.value.push({
+        size_id: null,
         size: null,
         size_quantity: null,
       });
@@ -418,6 +484,15 @@ export default defineComponent({
 
     const handleEdit = () => {
       isEdit.value = true;
+    };
+
+    const delImage = (idImage: number, alt: string) => {
+      if (idImage) {
+        images.value = images.value.filter((ele) => ele.id !== idImage);
+        imageDelete.value.push(idImage);
+        return;
+      }
+      images.value = images.value.filter((ele) => ele.alt !== alt);
     };
 
     onMounted(async () => {
@@ -435,9 +510,9 @@ export default defineComponent({
       sizes,
       sizeData,
       filterSize,
-      fileImages,
       messageImageValid,
       isEdit,
+      delImage,
       handleEdit,
       searchSize,
       handleSubmit,
@@ -574,6 +649,7 @@ form {
         width: 100%;
         height: 13rem;
         object-fit: contain;
+        padding: 0 0.5rem;
       }
     }
     ::v-deep(.p-scrollpanel) {

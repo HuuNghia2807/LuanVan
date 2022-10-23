@@ -9,6 +9,7 @@ export const translateProductsResponse = (
       productId: prd.product_id,
       categoryId: prd.category_id,
       productName: prd.product_name,
+      productCode: prd.product_code.toUpperCase(),
       productPrice: prd.product_price,
       productRating: prd.product_rating,
       sizes: translateSize(prd.sizes),

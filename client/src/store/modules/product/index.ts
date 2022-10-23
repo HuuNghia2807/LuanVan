@@ -83,6 +83,15 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async updateProduct({ commit }, payload: any) {
+    try {
+      commit("setError", {});
+      const res = await productServices.updateProduct(payload);
+      return res;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const product = {

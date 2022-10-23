@@ -14,6 +14,7 @@ export interface IProduct {
   productId: number;
   productName: string;
   productPrice: number | null;
+  productCode: string;
   productRating: number;
   categoryId: number;
   category: string;
@@ -40,6 +41,7 @@ export interface IProductResponse {
   product_id: number;
   product_name: string;
   product_price: number;
+  product_code: string;
   category_id: number;
   product_rating: number;
   category: string;
@@ -50,6 +52,7 @@ export interface IProductResponse {
 // product image interface
 
 export interface IProductImageResponse {
+  product_image_id?: number;
   product_image_link: string;
   product_image_name: string;
 }
@@ -70,6 +73,7 @@ export interface ISize {
 }
 
 export interface ISizeParams {
+  size_id: number | null;
   size: number | null;
   size_quantity: number | null;
 }

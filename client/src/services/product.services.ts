@@ -68,6 +68,19 @@ class ProductServices {
       throw handleError(error as AxiosError);
     }
   }
+  async updateProduct(payload: any) {
+    try {
+      const path = "product/update";
+      const response = await http.put(path, payload);
+      if (response.data) {
+        return response.data.data;
+      } else {
+        throw new Error("Don't get");
+      }
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new ProductServices();

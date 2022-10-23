@@ -68,7 +68,7 @@
           :exportable="false"
         ></Column>
         <Column
-          field="productId"
+          field="productCode"
           header="Mã Sản Phẩm"
           :sortable="true"
           style="width: 10rem"
@@ -175,7 +175,10 @@
     :style="{ width: '60vw', fontSize: '2rem' }"
     :modal="true"
   >
-    <AddOrEditProductCpn :product-action="product" />
+    <AddOrEditProductCpn
+      :product-action="product"
+      @load-product="loadProduct"
+    />
   </my-dialog>
   <my-toast position="top-right" group="tr" />
 </template>
@@ -287,6 +290,7 @@ export default defineComponent({
       deleteProductsDialog,
       selectedProducts,
       listProduct,
+      loadProduct,
       addProduct,
       confirmDeleteSelected,
       editProduct,
