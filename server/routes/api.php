@@ -21,7 +21,8 @@ use App\Http\Controllers\CustomerController;
 */
 
 Route::group(['prefix' => 'customer'], function () {
-    Route::post('/register', [CustomerController::class, 'store'])->name('customer.store');
+    Route::post('/register', [CustomerController::class, 'register'])->name('customer.register');
+    Route::post('/login', [CustomerController::class, 'login'])->name('customer.login');
     Route::post('/delete', [CustomerController::class, 'destroy'])->name('customer.destroy');
     // Route::post('refresh-token', [AuthController::class, 'refresh'])->name('auth.refresh');
     // Route::get('me', [AuthController::class, 'userProfile'])->name('auth.userProfile');

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('customer_email', 100)->unique();
-            $table->string('customer_password', 100);
+            $table->string('email', 100)->unique();
+            $table->string('password', 100);
             $table->integer('user_status_id')->unsigned();
             $table->foreign('user_status_id')->references('id')->on('users_status');
             $table->integer('user_detail_id')->unsigned();

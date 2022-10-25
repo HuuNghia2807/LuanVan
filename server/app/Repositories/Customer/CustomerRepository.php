@@ -16,7 +16,7 @@ class CustomerRepository extends BaseRepository implements CustomerRepositoryInt
 
     public function checkCustomer($email)
     {
-        $customer = Customer::where('customer_email', '=', $email)->first();
+        $customer = Customer::where('email', '=', $email)->first();
         return $customer;
     }
 

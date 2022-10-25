@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('employee_email')->unique();
-            $table->string('employee_password');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->integer('role_id')->unsigned();
             $table->foreign('role_id')->references('id')->on('roles');
             $table->integer('user_detail_id')->unsigned();

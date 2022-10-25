@@ -6,8 +6,10 @@ use App\Models\Customer;
 use App\Repositories\Customer\CustomerRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends AbstractApiController
 {
@@ -49,36 +51,7 @@ class CustomerController extends AbstractApiController
 
     public function store(Request $request)
     {
-        DB::beginTransaction();
-        try {
-            $customer = $this->customerRepo->checkCustomer($request->email);
-            if ($customer) {
-                $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
-                $this->setStatus('failed');
-                $this->setMessage('Email đã tồn tại! ');
-                return $this->respond();
-            }
-            $customer_detail_id = $this->customerRepo->addCustomerDetail($request);
-            Customer::create([
-                'customer_email' => $request->email,
-                'customer_password' => Hash::make($request->password),
-                'user_status_id' => 1,
-                'user_detail_id' => $customer_detail_id
-            ]);
-            DB::commit();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            $this->setStatusCode(JsonResponse::HTTP_FORBIDDEN);
-            $this->setStatus('failed');
-            $this->setMessage($th->getMessage());
-            return $this->respond();
-            // response()->json('error', 500);
-        }
-
-        $this->setStatusCode(JsonResponse::HTTP_CREATED);
-        $this->setStatus('success');
-        $this->setMessage('Create account success');
-        return $this->respond();
+        //
     }
 
     /**
@@ -138,6 +111,96 @@ class CustomerController extends AbstractApiController
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
         $this->setStatus('success');
         $this->setMessage('Delete customer success');
+        return $this->respond();
+    }
+
+    /**
+     * 
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+        $validateCustomer = Validator::make(
+            $request->all(),
+            [
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'phone' => 'required',
+                'email' => 'required|email',
+                'password' => 'required|min:8|max:255'
+            ]
+        );
+        if ($validateCustomer->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+        DB::beginTransaction();
+        try {
+            $customer = $this->customerRepo->checkCustomer($request->email);
+            if ($customer) {
+                $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+                $this->setStatus('failed');
+                $this->setMessage('Email đã tồn tại!');
+                return $this->respond();
+            }
+            $customer_detail_id = $this->customerRepo->addCustomerDetail($request);
+            Customer::create([
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'user_status_id' => 1,
+                'user_detail_id' => $customer_detail_id
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->setStatusCode(JsonResponse::HTTP_FORBIDDEN);
+            $this->setStatus('failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_CREATED);
+        $this->setStatus('success');
+        $this->setMessage('Create account success');
+        return $this->respond();
+    }
+
+    /**
+     * 
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function login(Request $request)
+    {
+        $validateCustomer = Validator::make(
+            $request->all(),
+            [
+                'email' => 'required|email:filter|max:255|ends_with:gmail.com',
+                'password' => 'required|min:8|max:255'
+            ]
+        );
+        if ($validateCustomer->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+        if (!Auth::guard('api')->attempt($request->only(['email', 'password']))) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Tài khoản hoặc mật khẩu không chính xác!');
+            return $this->respond();
+        }
+        $customer = Customer::where('email', '=', $request->email)->first();
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Create account success');
+        $this->setData($customer);
         return $this->respond();
     }
 }
