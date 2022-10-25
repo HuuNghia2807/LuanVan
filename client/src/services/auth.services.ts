@@ -12,9 +12,9 @@ class AuthService {
   async login(credential: ILoginParams) {
     try {
       // const loginParams = translateLoginParams(credential);
-      const response = await http.post("auth/login", credential);
+      const response = await http.post("customer/login", credential);
       if (response.data.data) {
-        //   sessionStorage.setItem("user", JSON.stringify(user));
+        sessionStorage.setItem("user", JSON.stringify(response.data.data));
         return response.data.data;
       } else {
         throw new Error("Wrong credential");

@@ -26,7 +26,7 @@
           <Rating :disabled="true" />
           <span class="product-name">{{ product?.productName }}</span>
           <span class="product-code">
-            Mã SP: <span class="sup-code">280700{{ product?.productId }}</span>
+            Mã SP: <span class="sup-code">{{ product?.productCode }}</span>
           </span>
           <span class="product-price">{{
             formatPrice(product?.productPrice || 9999999999)
@@ -61,13 +61,13 @@
             />
           </div>
           <div class="mt-5">
-            <Button
+            <my-button
               label="Thêm vào giỏ hàng"
               icon="pi pi-shopping-cart"
               class="p-button-lg p-button-warning p-button-rounded"
               @click="handleAddCart"
             />
-            <Button
+            <my-button
               label="Mua Ngay"
               icon="pi pi-chevron-right"
               class="p-button-lg p-button-danger p-button-rounded"
@@ -103,12 +103,10 @@ import { ICart, IProduct } from "@/interface/product/product.state";
 import { formatPrice } from "@/function/common";
 import { useToast } from "primevue/usetoast";
 import { addProductToCart, setStateCart } from "@/function/handleLocalStorage";
-import router from "@/router";
 import HeaderTypeProductCpn from "@/components/Product/HeaderTypeProductCpn.vue";
 import Rating from "primevue/rating";
 import RadioButton from "primevue/radiobutton";
 import InputNumber from "primevue/inputnumber";
-import Button from "primevue/button";
 
 export default defineComponent({
   components: {
@@ -116,7 +114,6 @@ export default defineComponent({
     Rating,
     RadioButton,
     InputNumber,
-    Button,
   },
   setup() {
     const store = useStore();
@@ -221,6 +218,7 @@ export default defineComponent({
       .img {
         width: 59rem;
         height: 59rem;
+        object-fit: contain;
       }
     }
 

@@ -38,16 +38,18 @@
         </div>
         <div
           class="my-4 flex justify-content-center"
-          v-if="
-            (v$.email.$invalid && submitted) ||
-            v$.email.$pending ||
-            (v$.password.$invalid && submitted) ||
-            v$.password.$pending
-          "
+          v-if="(v$.email.$invalid && submitted) || v$.email.$pending"
         >
-          <small class="p-error">{{
-            v$.email.required.$message || v$.password.required.$message
-          }}</small>
+          <small class="p-error">{{ v$.email.required.$message }}</small>
+        </div>
+        <div
+          class="my-4 flex justify-content-center"
+          v-if="(v$.password.$invalid && submitted) || v$.password.$pending"
+        >
+          <small class="p-error">{{ v$.password.required.$message }}</small>
+        </div>
+        <div class="my-4 flex justify-content-center" v-if="!!errorMsg">
+          <small class="p-error">{{ errorMsg }}</small>
         </div>
 
         <my-button type="submit" label="Đăng Nhập" class="mt-2" />
@@ -62,14 +64,18 @@ import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
 import { ILoginParams } from "@/interface/auth/authentication.state";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
     const store = useStore();
     const state = reactive({
       email: "",
       password: "",
     });
+
+    const errorMsg = ref("");
 
     const rules = {
       email: {
@@ -84,17 +90,28 @@ export default defineComponent({
 
     const v$ = useVuelidate(rules, state);
 
-    const handleSubmit = async (isFormValid: any) => {
+    const handleSubmit = (isFormValid: any) => {
       submitted.value = true;
-      const user: ILoginParams = {
-        userName: state.email,
-        password: state.password,
-      };
+      errorMsg.value = "";
 
-      if (!isFormValid) {
-        await store.dispatch("auth/login", user);
-        const name = store.getters["auth/getUserName"];
+      if (isFormValid) {
+        const user: ILoginParams = {
+          email: state.email,
+          password: state.password,
+        };
+        login(user);
         return;
+      }
+    };
+
+    const login = async (user: ILoginParams) => {
+      await store.dispatch("auth/login", user);
+      const error = store.getters["auth/getError"];
+
+      if (error) {
+        errorMsg.value = error.data.message as string;
+      } else {
+        router.push("/");
       }
     };
 
@@ -102,6 +119,7 @@ export default defineComponent({
       state,
       v$,
       submitted,
+      errorMsg,
       handleSubmit,
     };
   },
