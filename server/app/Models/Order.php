@@ -17,6 +17,7 @@ class Order extends Model
         'order_total_price',
         'order_note',
         'order_time',
+        'receive_time',
         'payment_id',
         'address_id',
         'order_status_id',

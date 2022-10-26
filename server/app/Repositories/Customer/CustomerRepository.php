@@ -26,7 +26,6 @@ class CustomerRepository extends BaseRepository implements CustomerRepositoryInt
             'user_first_name' => $info->first_name,
             'user_last_name' => $info->last_name,
             'user_phone' => $info->phone,
-            'user_avatar' => '@/assets/avatar_default/default-avatar.png'
         ]);
         return $customer_detail->id;
     }

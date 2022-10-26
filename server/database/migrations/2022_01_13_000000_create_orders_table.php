@@ -16,8 +16,9 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('order_total_price');
-            $table->string('order_note', 200);
+            $table->string('order_note', 500);
             $table->string('order_time', 200);
+            $table->string('receive_time', 200);
             $table->integer('payment_id')->unsigned();
             $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('address_id')->unsigned();

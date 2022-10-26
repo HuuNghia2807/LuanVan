@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('user_phone', 10);
             $table->string('user_birth', 50)->nullable();
             $table->string('user_gender', 5)->nullable();
-            $table->longText('user_avatar');
+            $table->longText('user_avatar')->nullable();
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use App\Repositories\Customer\CustomerRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -157,7 +158,7 @@ class CustomerController extends AbstractApiController
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->setStatusCode(JsonResponse::HTTP_FORBIDDEN);
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
             $this->setStatus('failed');
             $this->setMessage($th->getMessage());
             return $this->respond();
@@ -200,7 +201,7 @@ class CustomerController extends AbstractApiController
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('success');
         $this->setMessage('Create account success');
-        $this->setData($customer);
+        $this->setData(CustomerResource::make($customer));
         return $this->respond();
     }
 }
