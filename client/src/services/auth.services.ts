@@ -2,6 +2,8 @@ import { AxiosError } from "axios";
 import { http } from "@/api/axiosClient";
 import { handleError } from "@/function/common";
 import { ILoginParams } from "@/interface/auth/authentication.state";
+import { translateCustomer } from "@/function/translateCustomer";
+import { setItemLocal } from "@/function/handleLocalStorage";
 
 export interface ICredential {
   username: string;
@@ -14,8 +16,10 @@ class AuthService {
       // const loginParams = translateLoginParams(credential);
       const response = await http.post("customer/login", credential);
       if (response.data.data) {
-        sessionStorage.setItem("user", JSON.stringify(response.data.data));
-        return response.data.data;
+        const customer = translateCustomer(response.data.data);
+        setItemLocal("customer", customer);
+        // sessionStorage.setItem("user", JSON.stringify(response.data.data));
+        return customer;
       } else {
         throw new Error("Wrong credential");
       }
@@ -26,11 +30,7 @@ class AuthService {
   async register(newCustomer: any) {
     try {
       const response = await http.post("customer/register", newCustomer);
-      if (response.data.data) {
-        return response.data.data;
-      } else {
-        throw new Error("Wrong credential");
-      }
+      return response;
     } catch (error) {
       throw handleError(error as AxiosError);
     }

@@ -15,4 +15,30 @@ export interface ILoginParams {
   password: string;
 }
 
+export interface ICustomerResponse {
+  id: number;
+  email: string;
+  user_status_id: number;
+  user_status: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  birth: string | null;
+  gender: string;
+  avatar: string;
+}
+
+export interface ICustomer {
+  id: number;
+  email: string;
+  status: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  phone: string;
+  birth: string | null;
+  gender: string | null;
+  avatar: string;
+}
+
 export type Role = "admin" | "user";

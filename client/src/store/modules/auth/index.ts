@@ -1,5 +1,6 @@
 // import axios from "axios"
 
+import { removeItemLocal } from "@/function/handleLocalStorage";
 import {
   IAuthentication,
   ILoginParams,
@@ -22,7 +23,7 @@ const state = initDefaultState();
 const getters: GetterTree<IAuthentication, IAuthentication> = {
   getUserId: (state) => state.userId,
   getIslogged: (state) => state.isLogged,
-  getUserName: (state) => state.userInfo,
+  getUser: (state) => state.userInfo,
   getCart: (state) => state.cart,
   getError: (state) => state.error,
 };
@@ -35,12 +36,12 @@ const mutations: MutationTree<IAuthentication> = {
     state.cart = payload;
   },
   setUser(state, payload) {
-    Object.assign(state, {
-      ...state,
-      userId: payload.userId,
-      userName: payload.userName,
-      role: payload.role,
-    });
+    state.userInfo = payload;
+    if (payload) {
+      state.isLogged = true;
+      return;
+    }
+    state.isLogged = false;
   },
 };
 
@@ -54,6 +55,14 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async logout({ commit }) {
+    try {
+      commit("setUser", null);
+      removeItemLocal("customer");
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
   async addCart({ commit }, data: any) {
     try {
       commit("setCart", data);
@@ -63,7 +72,7 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
   },
   async register({ commit }, newCustomer: any) {
     try {
-      commit("setError", {});
+      commit("setError", { error: null });
       const res = await authServices.register(newCustomer);
       return res;
       //call api

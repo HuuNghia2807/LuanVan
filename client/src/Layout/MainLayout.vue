@@ -9,7 +9,7 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
-import { setStateCart } from "@/function/handleLocalStorage";
+import { setCustomerLogin, setStateCart } from "@/function/handleLocalStorage";
 import HeaderCpn from "@/components/HeaderCpn.vue";
 import FooterCpn from "@/components/FooterCpn.vue";
 
@@ -23,6 +23,7 @@ export default defineComponent({
     onMounted(async () => {
       await store.dispatch("product/getProducts");
       setStateCart(store);
+      setCustomerLogin(store);
     });
     return {};
   },

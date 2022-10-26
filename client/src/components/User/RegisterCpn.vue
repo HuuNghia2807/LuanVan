@@ -16,6 +16,13 @@
                 >Họ *</label
               >
             </div>
+            <small
+              v-if="
+                (v$.first_name.$invalid && submitted) || v$.first_name.$pending
+              "
+              class="p-error"
+              >{{ v$.first_name.required.$message }}</small
+            >
           </div>
           <div class="field ml-4">
             <div class="p-float-label">
@@ -30,6 +37,13 @@
                 >Tên *</label
               >
             </div>
+            <small
+              v-if="
+                (v$.last_name.$invalid && submitted) || v$.last_name.$pending
+              "
+              class="p-error"
+              >{{ v$.last_name.required.$message }}</small
+            >
           </div>
         </div>
         <div class="field">
@@ -45,6 +59,11 @@
               >Số điện thoại *</label
             >
           </div>
+          <small
+            v-if="(v$.phone.$invalid && submitted) || v$.phone.$pending"
+            class="p-error"
+            >{{ v$.phone.required.$message }}</small
+          >
         </div>
         <div class="field">
           <div class="p-float-label">
@@ -59,6 +78,11 @@
               >Email *</label
             >
           </div>
+          <small
+            v-if="(v$.email.$invalid && submitted) || v$.email.$pending"
+            class="p-error"
+            >{{ v$.email.required.$message }}</small
+          >
         </div>
         <div class="field">
           <div class="p-float-label">
@@ -85,28 +109,15 @@
               >Mật khẩu *</label
             >
           </div>
+          <small
+            v-if="(v$.password.$invalid && submitted) || v$.password.$pending"
+            class="p-error"
+            >{{ v$.password.required.$message }}</small
+          >
         </div>
-        <!-- <div
-          class="my-4 flex justify-content-center"
-          v-if="
-            (v$.name.$invalid && submitted) ||
-            v$.name.$pending ||
-            (v$.phone.$invalid && submitted) ||
-            v$.phone.$pending ||
-            (v$.email.$invalid && submitted) ||
-            v$.email.$pending ||
-            (v$.password.$invalid && submitted) ||
-            v$.password.$pending
-          "
-        >
-          <small class="p-error">{{
-            v$.name.required.$message ||
-            v$.phone.required.$message ||
-            v$.email.required.$message ||
-            v$.password.required.$message
-          }}</small>
-        </div> -->
-
+        <div class="my-4 flex justify-content-center" v-if="errorMsg">
+          <small class="p-error">{{ errorMsg }}</small>
+        </div>
         <my-button
           type="submit"
           label="Đăng Ký"
@@ -124,13 +135,16 @@ import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
 import Divider from "primevue/divider";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
     Divider,
   },
   setup() {
+    const router = useRouter();
     const store = useStore();
+    const errorMsg = ref("");
     const state = reactive({
       first_name: "",
       last_name: "",
@@ -164,8 +178,9 @@ export default defineComponent({
 
     const v$ = useVuelidate(rules, state);
 
-    const handleSubmit = async (isFormValid: any) => {
+    const handleSubmit = (isFormValid: any) => {
       submitted.value = true;
+      errorMsg.value = "";
       if (isFormValid) {
         const customer = {
           first_name: state.first_name,
@@ -174,14 +189,25 @@ export default defineComponent({
           email: state.email,
           password: state.password,
         };
-        await store.dispatch("auth/register", customer);
+        register(customer);
       }
+    };
+
+    const register = async (cus: any) => {
+      await store.dispatch("auth/register", cus);
+      const error = store.getters["auth/getError"];
+      if (error) {
+        errorMsg.value = error.data?.message;
+        return;
+      }
+      //toast
     };
 
     return {
       state,
       v$,
       submitted,
+      errorMsg,
       handleSubmit,
     };
   },

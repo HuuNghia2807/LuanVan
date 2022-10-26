@@ -10,6 +10,10 @@ export const getItemLocal = (name: string) => {
   return JSON.parse(localStorage.getItem(name) as string);
 };
 
+export const removeItemLocal = (name: string) => {
+  localStorage.removeItem(name);
+};
+
 export const addProductToCart = (item: ICart, assign?: boolean) => {
   const arrCart: ICart[] = getItemLocal("cart") || [];
   if (arrCart.length) {
@@ -43,4 +47,9 @@ export const removeProductToCart = (id: number) => {
 export const setStateCart = (st: any) => {
   const listItem = getItemLocal("cart");
   st.dispatch("auth/addCart", listItem);
+};
+
+export const setCustomerLogin = (st: any) => {
+  const user = getItemLocal("customer");
+  st.commit("auth/setUser", user);
 };

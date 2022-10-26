@@ -74,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
         component: CartView,
       },
       {
-        path: "/customer",
+        path: "/profile",
         component: CustomerView,
       },
     ],

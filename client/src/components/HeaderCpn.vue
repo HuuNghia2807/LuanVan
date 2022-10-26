@@ -27,17 +27,16 @@
       aria-controls="overlay_panel"
       aria-haspopup="true"
       @mouseover="showCart"
+      @mouseleave="hideCart"
     >
       <i class="icon pi pi-shopping-cart" style="font-size: 2.2rem">
         <span class="badge-icon-cart">{{ cartQuantity.length }}</span>
       </i>
-      <OverlayPanel
-        ref="op"
-        appendTo="body"
-        id="overlay_panel"
-        style="width: 450px"
-        :breakpoints="{ '960px': '75vw' }"
-        @mouseleave="showCart"
+      <div
+        class="cart"
+        v-show="isShow"
+        @mouseleave="hideCart"
+        @mouseover="showCart"
       >
         <DataTable
           :value="cartList"
@@ -71,10 +70,13 @@
             </template>
           </Column>
         </DataTable>
-      </OverlayPanel>
+      </div>
     </router-link>
     <div class="account">
-      <div class="flex align-items-center justify-content-center">
+      <div
+        class="flex align-items-center justify-content-center"
+        v-if="!customer"
+      >
         <router-link to="/account" class="login no-underline"
           >Đăng nhập</router-link
         >
@@ -83,7 +85,44 @@
           >Đăng ký</router-link
         >
       </div>
-      <div class="user">user</div>
+      <div
+        class="user"
+        v-else
+        @mouseover="toggleShowSubMenu(true)"
+        @mouseleave="toggleShowSubMenu(false)"
+      >
+        <img
+          :src="
+            customer.avatar ||
+            require('@/assets/img/avatar_default/default-avatar.png')
+          "
+          class="img"
+        />
+        <span>{{ customer.fullName }}</span>
+        <div
+          class="sub-user"
+          v-show="isShowUser"
+          @mouseover="toggleShowSubMenu(true)"
+          @mouseleave="toggleShowSubMenu(false)"
+        >
+          <ul class="special-list flex flex-column z-100">
+            <li
+              v-for="action of subMenuItems"
+              :key="action.label"
+              class="opacity-100 z-5 control-item"
+            >
+              <a
+                href="#"
+                class="font-normal text-left"
+                @click="handleClick(action.action)"
+              >
+                <div :class="action.icon" class="text-2xl mr-2"></div>
+                {{ action.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -91,30 +130,33 @@
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import InputText from "primevue/inputtext";
-import OverlayPanel from "primevue/overlaypanel";
 import Column from "primevue/column";
 import { ICart, IProduct } from "@/interface/product/product.state";
 import { getCartList } from "@/function/getCartList";
 import { formatPrice } from "@/function/common";
+import { getItemLocal } from "@/function/handleLocalStorage";
+import { ICustomer } from "@/interface/auth/authentication.state";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
     InputText,
-    OverlayPanel,
     Column,
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
     const listMenu = ref([
       { name: "NIKE", link: "nike" },
       { name: "ADIDAS", link: "adidas" },
       { name: "JORDAN", link: "jordan" },
       { name: "YEZZY", link: "yeezy" },
       { name: "SALE", link: "sale" },
-      { name: "DÂY GIÀY", link: "day-giay" },
       { name: "LIÊN HỆ", link: "contact" },
     ]);
-    const op = ref();
+    const isShow = ref(false);
+    const isShowUser = ref(false);
+
     const cartList = computed(() => {
       const listProduct: IProduct[] =
         store.getters["product/getProducts"] || [];
@@ -123,19 +165,66 @@ export default defineComponent({
       return getCartList(listProduct, cartItem);
     });
 
+    const subMenuItems = [
+      {
+        label: "Trang cá nhân",
+        icon: "pi pi-user",
+        action: "personal",
+      },
+      {
+        label: "Đăng xuất",
+        icon: "pi pi-fw pi-power-off",
+        action: "logout",
+      },
+    ];
+
+    const customer = computed(() => {
+      return (store.getters["auth/getUser"] ||
+        getItemLocal("customer") ||
+        null) as ICustomer;
+    });
+
     const cartQuantity = computed(() => {
       return store.getters["auth/getCart"] || [];
     });
 
-    const showCart = (e: any) => {
-      op.value.toggle(e);
+    const showCart = () => {
+      isShow.value = true;
+    };
+
+    const hideCart = () => {
+      isShow.value = false;
+    };
+
+    const handleClick = (ac: string) => {
+      switch (ac) {
+        case "personal":
+          router.push({ path: "/profile", query: { user: customer.value.id } });
+          break;
+        case "logout":
+          store.dispatch("auth/logout");
+          router.push("/");
+          break;
+        default:
+          break;
+      }
+    };
+
+    const toggleShowSubMenu = (show?: boolean) => {
+      isShowUser.value = show || false;
     };
 
     return {
       listMenu,
       cartQuantity,
       cartList,
-      op,
+      isShow,
+      customer,
+      subMenuItems,
+      isShowUser,
+      toggleShowSubMenu,
+      handleClick,
+      hideCart,
       showCart,
       formatPrice,
     };
@@ -226,6 +315,15 @@ export default defineComponent({
   background-color: var(--black-color);
   border-radius: 50%;
   cursor: pointer;
+  position: relative;
+
+  .cart {
+    position: absolute;
+    top: 100%;
+    right: -300%;
+    border-radius: 10px;
+    min-width: 40rem;
+  }
 
   &:hover {
     background-color: var(--primary-color);
@@ -275,6 +373,57 @@ export default defineComponent({
 }
 
 .user {
-  display: none;
+  display: flex;
+  align-items: center;
+  position: relative;
+  .img {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    object-fit: contain;
+    border: 1px solid #ccc;
+  }
+
+  span {
+    margin-left: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .sub-user {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+  }
+
+  .special-list {
+    margin-top: 0;
+    background-color: #fff;
+    border: solid 1px #f3f2f1;
+    border-radius: 10px;
+    background-color: #f3f2f1;
+    min-width: 8rem;
+    list-style: none;
+    box-shadow: 0.2rem 0.2rem 0.2rem #ccc;
+  }
+
+  .control-item {
+    display: flex;
+    padding: 1rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--white-color);
+    }
+
+    a {
+      min-width: 120px;
+      text-decoration: none;
+      color: #000;
+    }
+  }
+
+  .z-100 {
+    z-index: 100;
+  }
 }
 </style>
