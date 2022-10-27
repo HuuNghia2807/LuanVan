@@ -1,5 +1,6 @@
 <template>
   <div class="cart">
+    <my-toast />
     <div class="container">
       <div class="cart-wrap">
         <span class="cart-title">Giỏ Hàng</span>
@@ -47,6 +48,7 @@ import { ICart, IProduct } from "@/interface/product/product.state";
 import { formatPrice } from "@/function/common";
 import { useRouter } from "vue-router";
 import { getCartList } from "@/function/getCartList";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   components: {
@@ -54,6 +56,7 @@ export default defineComponent({
     Button,
   },
   setup() {
+    const toast = useToast();
     const store = useStore();
     const router = useRouter();
     const cartList = computed(() => {
@@ -71,11 +74,21 @@ export default defineComponent({
     });
 
     const backToProduct = () => {
-      router.push("/san-pham");
+      router.push("/");
     };
 
     const handleOrder = () => {
       const isLogged = store.getters["auth/getIslogged"];
+      if (!cartList.value.length) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Vui lòng thêm sản phẩm trước khi mua hàng!",
+          life: 3000,
+        });
+
+        return;
+      }
       if (!isLogged) {
         router.push("/checkouts");
       } else {

@@ -20,6 +20,7 @@ export interface IProduct {
   category: string;
   sizes: ISize[];
   images: IProductImageResponse[];
+  display?: string;
 }
 
 export interface IOptionProduct {
@@ -90,5 +91,15 @@ export interface ICategoryResponse {
 export interface ICart {
   productId: number | undefined;
   productSizeId: number;
+  quantity: number;
+}
+
+export interface ICartList {
+  productId: number;
+  img: string;
+  name: string;
+  price: number;
+  productSizeId: number;
+  size: number;
   quantity: number;
 }

@@ -283,8 +283,8 @@
       </div>
       <div class="price-temp">
         <div class="temp">
-          <span class="text">Tam tinh</span>
-          <span class="price">54,300,000 đ</span>
+          <span class="text">Tạm tính</span>
+          <span class="price">{{ formatPrice(totalOrder || 999999) }}</span>
         </div>
         <div class="temp">
           <span class="text">Phí vận chuyển</span>
@@ -300,7 +300,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref } from "vue";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import ProductCheckoutsCpn from "@/components/Product/ProductCheckoutsCpn.vue";
@@ -310,6 +310,11 @@ import Dropdown from "primevue/dropdown";
 import Textarea from "primevue/textarea";
 
 import { city, district, ward } from "@/function/addressData";
+import { ICart, ICartList, IProduct } from "@/interface/product/product.state";
+import { useStore } from "vuex";
+import { getCartList } from "@/function/getCartList";
+import { setCustomerLogin, setStateCart } from "@/function/handleLocalStorage";
+import { formatPrice } from "@/function/common";
 
 export default defineComponent({
   components: {
@@ -320,36 +325,20 @@ export default defineComponent({
     Textarea,
   },
   setup() {
-    const productCheckout = ref([
-      {
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        price: "2.200.000 đ",
-        size: 41,
-        quantity: 2,
-      },
-      {
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD DDDD FFFFF",
-        price: "9.500.000 đ",
-        size: 42,
-        quantity: 3,
-      },
-      {
-        img: "https://kingshoes.vn/data/upload/media/SNEAKER-315122-111-AIR-FORCE-1-07-NIKE-KINGSHOES.VN-TPHCM-TANBINH-17-logo-1551924204-.jpg",
-        name: "AIR FORCE 1",
-        price: "2.200.000 đ",
-        size: 40,
-        quantity: 1,
-      },
-      {
-        img: "https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-jordan-1-low-shattered-backboard-553558-128-king-shoes-sneaker-real-hcm-10-1637120327.jpeg",
-        name: "AIR JORDAN 1 LOW SHATTERED BACKBOARD",
-        price: "9.500.000 đ",
-        size: 43,
-        quantity: 1,
-      },
-    ]);
+    const store = useStore();
+    const productCheckout = computed(() => {
+      const listProduct: IProduct[] =
+        store.getters["product/getProducts"] || [];
+      const cartItem: ICart[] = store.getters["auth/getCart"] || [];
+
+      return getCartList(listProduct, cartItem) as ICartList[];
+    });
+    const totalOrder = computed(() => {
+      return productCheckout.value.reduce(
+        (prev, cur) => prev + (cur?.price || 0) * (cur?.quantity || 0),
+        0
+      );
+    });
     const submitted = ref(false);
     const state = reactive({
       name: "",
@@ -395,6 +384,12 @@ export default defineComponent({
         return;
       }
     };
+    onMounted(async () => {
+      await store.dispatch("product/getProducts");
+      await store.dispatch("order/getProvince");
+      setStateCart(store);
+      setCustomerLogin(store);
+    });
     return {
       v$,
       state,
@@ -403,6 +398,8 @@ export default defineComponent({
       city,
       district,
       ward,
+      totalOrder,
+      formatPrice,
       handleSubmit,
     };
   },

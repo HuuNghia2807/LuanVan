@@ -13,9 +13,9 @@
         <span class="cart-size mt-1">Size giày: {{ product?.size }}</span>
         <span class="cart-code-product mt-1"
           >Mã SP:
-          <span class="font-normal text-black-alpha-80"
-            >280700{{ product?.productId }}</span
-          ></span
+          <span class="font-normal text-black-alpha-80">{{
+            product?.productCode
+          }}</span></span
         >
         <div class="cart-quantity mt-3">
           <InputNumber
