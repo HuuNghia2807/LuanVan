@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProvinceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ Route::group(['prefix' => 'customer'], function () {
     // Route::get('me', [AuthController::class, 'userProfile'])->name('auth.userProfile');
     // Route::post('newpassword', [AuthController::class, 'changePassword'])->name('auth.changePassword');
     // Route::get('', [AuthController::class, 'getAllUser'])->name('auth.getAllUser');
+});
+
+Route::group(['prefix' => 'province'], function () {
+    Route::get('', [ProvinceController::class, 'index'])->name('province.index');
 });
 
 Route::group(['prefix' => 'category'], function () {
