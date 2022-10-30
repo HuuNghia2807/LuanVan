@@ -86,10 +86,9 @@ export default defineComponent({
           detail: "Vui lòng thêm sản phẩm trước khi mua hàng!",
           life: 3000,
         });
-
         return;
       }
-      if (!isLogged) {
+      if (isLogged) {
         router.push("/checkouts");
       } else {
         router.push("/account");

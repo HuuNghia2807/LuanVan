@@ -1,4 +1,5 @@
 import { Nullable } from "primevue/ts-helpers";
+import { ICartList } from "../product/product.state";
 
 // interface state
 export interface IStateOrder {
@@ -33,4 +34,23 @@ export interface IWard {
   id: number;
   ward: string;
   district_id: number;
+}
+
+// order interface
+
+export interface IOrderParams {
+  customer_id: number;
+  customer_name: string;
+  note: string;
+  total_price: number;
+  address_order: IAddressOrder;
+  product_order: ICartList[];
+  payment_id: number;
+}
+
+export interface IAddressOrder {
+  address: string;
+  ward: number | null;
+  district: number | null;
+  city: number | null;
 }

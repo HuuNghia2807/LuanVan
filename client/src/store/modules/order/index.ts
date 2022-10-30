@@ -2,7 +2,7 @@
 
 import { translateProvinceResponse } from "@/function/translateProvince";
 import { IAuthentication } from "@/interface/auth/authentication.state";
-import { IStateOrder } from "@/interface/order/order.state";
+import { IOrderParams, IStateOrder } from "@/interface/order/order.state";
 import orderServices from "@/services/order.services";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 
@@ -49,8 +49,26 @@ const actions: ActionTree<IStateOrder, IAuthentication> = {
       const add = await orderServices.getProvince();
       const province = translateProvinceResponse(add);
       commit("setCities", province.cities);
-      commit("setDistricts", province.cities);
+      commit("setDistricts", province.districts);
       commit("setWards", province.wards);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getPayment({ commit }) {
+    try {
+      commit("setError", {});
+      const pay = await orderServices.getPayment();
+      return pay;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async order({ commit }, payload: IOrderParams) {
+    try {
+      commit("setError", {});
+      const res = await orderServices.order(payload);
+      return res;
     } catch (error) {
       commit("setError", { error });
     }
