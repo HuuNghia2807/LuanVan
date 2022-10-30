@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProvinceController;
 
 /*
@@ -35,6 +37,10 @@ Route::group(['prefix' => 'province'], function () {
     Route::get('', [ProvinceController::class, 'index'])->name('province.index');
 });
 
+Route::group(['prefix' => 'payment'], function () {
+    Route::get('', [PaymentController::class, 'index'])->name('payment.index');
+});
+
 Route::group(['prefix' => 'category'], function () {
     Route::get('', [CategoryController::class, 'index'])->name('category.index');
     Route::post('/add', [CategoryController::class, 'store'])->name('category.store');
@@ -57,4 +63,11 @@ Route::group(['prefix' => 'size'], function () {
 Route::group(['prefix' => 'cart'], function () {
     Route::get('', [CartController::class, 'index']);
     Route::post('/add', [CartController::class, 'store']);
+});
+
+Route::group(['prefix' => 'order'], function () {
+    Route::get('', [OrderController::class, 'index'])->name('order.index');
+    Route::post('', [OrderController::class, 'store'])->name('order.store');
+    // Route::post('/add', [OrderController::class, 'store'])->name('order.store');
+    // Route::post('/{id}', [OrderController::class, 'update'])->name('order.update');
 });
