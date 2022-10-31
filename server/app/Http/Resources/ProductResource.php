@@ -5,7 +5,6 @@ namespace App\Http\Resources;
 use App\Models\Category;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
-use App\Models\Size;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource

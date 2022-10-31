@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
 use App\Repositories\Order\OrderRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +26,12 @@ class OrderController extends AbstractApiController
 
     public function index()
     {
-        //
+        $orders = OrderResource::collection($this->orderRepo->getAll());
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Get order success');
+        $this->setData($orders);
+        return $this->respond();
     }
 
     /**
@@ -85,7 +91,6 @@ class OrderController extends AbstractApiController
             $this->setStatus('failed');
             $this->setMessage($th->getMessage());
             return $this->respond();
-            // response()->json('error', 500);
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
