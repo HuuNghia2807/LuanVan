@@ -1,118 +1,173 @@
 <template>
   <div class="order">
-    <DataTable
-      :value="orders"
-      :paginator="true"
-      class="p-datatable-customers"
-      :rows="6"
-      dataKey="id"
-      :rowHover="true"
-      v-model:filters="filters"
-      :loading="loading"
-      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      responsiveLayout="scroll"
-    >
-      <template #header>
-        <div class="flex justify-content-between align-items-center">
-          <h3 class="m-0">Danh Sách Hóa Đơn</h3>
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <my-inputText
-              v-model="filters['global'].value"
-              placeholder="Keyword Search"
-            />
-          </span>
-        </div>
-      </template>
-      <template #empty> No orders found. </template>
-      <template #loading> Loading orders data. Please wait. </template>
-      <Column field="id" header="Mã hóa đơn" style="width: 8rem">
-        <template #body="{ data }">
-          {{ data.id }}
-        </template>
-      </Column>
-      <Column header="Ảnh sản phẩm" field="productImage" style="width: 15rem">
-        <template #body="{ data }">
-          <img
-            class="img"
-            src="https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-max-90-love-letter-dd8029-100-king-shoes-sneaker-real-hcm-12-1638423994.jpeg"
-          />
-          <span class="hidden">{{ data.productImage }}</span>
-        </template>
-      </Column>
-      <Column header="Tên sản phẩm" field="productName" style="width: 15rem">
-        <template #body="{ data }">
-          {{ data.productName }}
-        </template>
-      </Column>
-      <Column field="quantity" header="Số Lượng" style="width: 10rem">
-        <template #body="{ data }">
-          {{ data.quantity }}
-        </template>
-      </Column>
-      <Column field="totalPrice" header="Tổng hóa đơn" style="width: 10rem">
-        <template #body="{ data }">
-          {{ data.totalPrice }}
-        </template>
-      </Column>
-      <Column field="status" header="Trạng thái" style="width: 10rem">
-        <template #body="{ data }">
-          <span :class="'order-badge status-' + data.status">{{
-            data.status
-          }}</span>
-        </template>
-      </Column>
-      <Column
-        field="payment"
-        header="Phương thức thanh toán"
-        style="width: 10rem"
-      >
-        <template #body="{ data }">
-          {{ data.payment }}
-        </template>
-      </Column>
+    <TabView ref="tabview1">
+      <TabPanel header="Đơn Hàng Mới">
+        <DataTable
+          :value="orders"
+          :paginator="true"
+          class="p-datatable-customers"
+          :rows="6"
+          dataKey="id"
+          :rowHover="true"
+          v-model:filters="filters"
+          :loading="loading"
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+          responsiveLayout="scroll"
+        >
+          <template #header>
+            <div class="flex justify-content-between align-items-center">
+              <h3 class="m-0">Danh Sách Hóa Đơn</h3>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <my-inputText
+                  v-model="filters['global'].value"
+                  placeholder="Keyword Search"
+                />
+              </span>
+            </div>
+          </template>
+          <template #empty> No orders found. </template>
+          <template #loading> Loading orders data. Please wait. </template>
+          <Column field="id" header="Mã hóa đơn" style="width: 8rem">
+            <template #body="{ data }">
+              {{ data.id }}
+            </template>
+          </Column>
+          <Column
+            header="Ảnh sản phẩm"
+            field="productImage"
+            style="width: 15rem"
+          >
+            <template #body="{ data }">
+              <img
+                class="img"
+                src="https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-max-90-love-letter-dd8029-100-king-shoes-sneaker-real-hcm-12-1638423994.jpeg"
+              />
+              <span class="hidden">{{ data.productImage }}</span>
+            </template>
+          </Column>
+          <Column
+            header="Tên sản phẩm"
+            field="productName"
+            style="width: 15rem"
+          >
+            <template #body="{ data }">
+              {{ data.productName }}
+            </template>
+          </Column>
+          <Column field="quantity" header="Số Lượng" style="width: 10rem">
+            <template #body="{ data }">
+              {{ data.quantity }}
+            </template>
+          </Column>
+          <Column field="totalPrice" header="Tổng hóa đơn" style="width: 10rem">
+            <template #body="{ data }">
+              {{ data.totalPrice }}
+            </template>
+          </Column>
+          <Column field="status" header="Trạng thái" style="width: 10rem">
+            <template #body="{ data }">
+              <span :class="'order-badge status-' + data.status">{{
+                data.status
+              }}</span>
+            </template>
+          </Column>
+          <Column
+            field="payment"
+            header="Phương thức thanh toán"
+            style="width: 10rem"
+          >
+            <template #body="{ data }">
+              {{ data.payment }}
+            </template>
+          </Column>
 
-      <Column
-        headerStyle="width: 4rem; text-align: center"
-        bodyStyle="text-align: center; overflow: visible"
-      >
-        <template #body>
-          <div class="flex justify-content-between align-items-center">
-            <my-button
-              type="button"
-              icon="pi pi-check"
-              class="p-button-rounded p-button-info"
-            ></my-button>
-            <my-button
-              type="button"
-              icon="pi pi-eye"
-              class="p-button-rounded p-button-success"
-            ></my-button>
-            <my-button
-              type="button"
-              icon="pi pi-times"
-              class="p-button-rounded p-button-danger"
-            ></my-button>
-          </div>
-        </template>
-      </Column>
-    </DataTable>
+          <Column
+            headerStyle="width: 4rem; text-align: center"
+            bodyStyle="text-align: center; overflow: visible"
+          >
+            <template #body>
+              <div class="flex justify-content-between align-items-center">
+                <my-button
+                  type="button"
+                  icon="pi pi-check"
+                  class="p-button-rounded p-button-info"
+                ></my-button>
+                <my-button
+                  type="button"
+                  icon="pi pi-eye"
+                  class="p-button-rounded p-button-success"
+                ></my-button>
+                <my-button
+                  type="button"
+                  icon="pi pi-times"
+                  class="p-button-rounded p-button-danger"
+                ></my-button>
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </TabPanel>
+      <TabPanel header="Đơn Hàng Đã Xác Nhận">
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
+          ab illo inventore veritatis et quasi architecto beatae vitae dicta
+          sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+          aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
+          qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit,
+          sed quia non numquam eius modi.
+        </p>
+      </TabPanel>
+      <TabPanel header="Đơn Hàng Đã Hoàn Thành">
+        <p>
+          At vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
+          et quas molestias excepturi sint occaecati cupiditate non provident,
+          similique sunt in culpa qui officia deserunt mollitia animi, id est
+          laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita
+          distinctio. Nam libero tempore, cum soluta nobis est eligendi optio
+          cumque nihil impedit quo minus.
+        </p>
+      </TabPanel>
+      <TabPanel header="Tất Cả Đơn Hàng">
+        <p>
+          At vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
+          et quas molestias excepturi sint occaecati cupiditate non provident,
+          similique sunt in culpa qui officia deserunt mollitia animi, id est
+          laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita
+          distinctio. Nam libero tempore, cum soluta nobis est eligendi optio
+          cumque nihil impedit quo minus.
+        </p>
+      </TabPanel>
+    </TabView>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { FilterMatchMode } from "primevue/api";
-import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import { useStore } from "vuex";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
 
 export default defineComponent({
   components: {
-    DataTable,
     Column,
+    TabView,
+    TabPanel,
   },
   setup() {
+    const store = useStore();
+    const columns = ref([
+      { field: "orderId", header: "Mã Đơn Hàng" },
+      { field: "name", header: "Name" },
+      { field: "category", header: "Category" },
+      { field: "quantity", header: "Quantity" },
+    ]);
     const orders = ref([
       {
         id: "1",
@@ -223,7 +278,11 @@ export default defineComponent({
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
+    onMounted(async () => {
+      await store.dispatch("order/getOrder");
+    });
     return {
+      columns,
       orders,
       loading,
       filters,

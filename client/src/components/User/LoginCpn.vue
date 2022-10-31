@@ -51,7 +51,6 @@
         <div class="my-4 flex justify-content-center" v-if="!!errorMsg">
           <small class="p-error">{{ errorMsg }}</small>
         </div>
-
         <my-button type="submit" label="Đăng Nhập" class="mt-2" />
       </form>
     </div>
@@ -59,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, reactive, ref } from "vue";
 import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
@@ -67,16 +66,17 @@ import { ILoginParams } from "@/interface/auth/authentication.state";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
-  setup() {
+  props: {
+    admin: { type: Boolean, default: false },
+  },
+  setup(props, { emit }) {
     const router = useRouter();
     const store = useStore();
     const state = reactive({
       email: "",
       password: "",
     });
-
     const errorMsg = ref("");
-
     const rules = {
       email: {
         required: helpers.withMessage("Email không đúng", required),
@@ -85,11 +85,8 @@ export default defineComponent({
         required: helpers.withMessage("Vui lòng nhập password", required),
       },
     };
-
     const submitted = ref(false);
-
     const v$ = useVuelidate(rules, state);
-
     const handleSubmit = (isFormValid: any) => {
       submitted.value = true;
       errorMsg.value = "";
@@ -99,19 +96,35 @@ export default defineComponent({
           email: state.email,
           password: state.password,
         };
-        login(user);
+        if (props.admin) {
+          loginDashboard(user);
+        } else {
+          login(user);
+        }
         return;
       }
     };
 
+    const error = computed(() => {
+      return store.getters["auth/getError"] || null;
+    });
+
     const login = async (user: ILoginParams) => {
       await store.dispatch("auth/login", user);
-      const error = store.getters["auth/getError"];
 
-      if (error) {
-        errorMsg.value = error.data.message as string;
+      if (error.value) {
+        errorMsg.value = error.value?.data.message as string;
       } else {
         router.push("/");
+      }
+    };
+
+    const loginDashboard = async (user: ILoginParams) => {
+      await store.dispatch("auth/loginDashboard", user);
+      if (error.value) {
+        errorMsg.value = error.value?.data.message as string;
+      } else {
+        router.push("/dashboard");
       }
     };
 

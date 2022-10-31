@@ -80,6 +80,15 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async loginDashboard({ commit }, employee: ILoginParams) {
+    try {
+      commit("setError", { error: null });
+      const res = await authServices.loginDashboard(employee);
+      return res;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const auth = {

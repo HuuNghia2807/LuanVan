@@ -1,4 +1,5 @@
 import { Nullable } from "primevue/ts-helpers";
+import { ICustomer, ICustomerResponse } from "../auth/authentication.state";
 import { ICartList } from "../product/product.state";
 
 // interface state
@@ -37,6 +38,18 @@ export interface IWard {
 }
 
 // order interface
+export interface IOrders {
+  address: string;
+  customer: ICustomer;
+  employee: any;
+  orderId: number;
+  orderNote: string;
+  status: string;
+  orderTime: number;
+  payment: string;
+  receiveTime: string;
+  totalPrice: number;
+}
 
 export interface IOrderParams {
   customer_id: number;
@@ -53,4 +66,33 @@ export interface IAddressOrder {
   ward: number | null;
   district: number | null;
   city: number | null;
+}
+
+export interface IOrderResponse {
+  address: IAddressResponse;
+  customer: ICustomerResponse;
+  employee: any;
+  order_id: number;
+  order_note: string;
+  order_status: IOrderStatusResponse;
+  order_time: number;
+  payment: IPaymentResponse;
+  receive_time: string;
+  total_price: number;
+}
+
+export interface IAddressResponse {
+  address: string;
+  ward: string;
+  district: string;
+  city: string;
+}
+export interface IOrderStatusResponse {
+  id: number;
+  order_status: string;
+}
+
+export interface IPaymentResponse {
+  id: number;
+  payment_name: string;
 }

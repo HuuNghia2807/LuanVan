@@ -35,6 +35,14 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async loginDashboard(employee: ILoginParams) {
+    try {
+      const response = await http.post("employee/login", employee);
+      return response;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();

@@ -21,6 +21,7 @@ import ReportDashboardView from "@/Dashboard/views/ReportDashboardView.vue";
 import OrderDashboardView from "@/Dashboard/views/OrderDashboardView.vue";
 import UserDashboardView from "@/Dashboard/views/UserDashboardView.vue";
 import PersonalDashboardView from "@/Dashboard/views/PersonalDashboardView.vue";
+import LoginDashboardView from "@/Dashboard/views/LoginDashboardView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -50,10 +51,6 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "/yeezy",
-        component: ProductTypeView,
-      },
-      {
-        path: "/day-giay",
         component: ProductTypeView,
       },
       {
@@ -88,6 +85,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/account",
     name: "account",
     component: AccountView,
+  },
+  {
+    path: "/login",
+    name: "login-admin",
+    component: LoginDashboardView,
   },
   {
     path: "/dashboard",

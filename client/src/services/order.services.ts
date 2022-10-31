@@ -40,6 +40,18 @@ class OrderService {
       throw handleError(error as AxiosError);
     }
   }
+  async getOrder() {
+    try {
+      const response = await http.get("order");
+      if (response.data.data) {
+        return response.data.data;
+      } else {
+        throw new Error("Wrong credential");
+      }
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new OrderService();

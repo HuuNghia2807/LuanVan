@@ -1,5 +1,6 @@
 // import axios from "axios"
 
+import { translateOrders } from "@/function/translateOrder";
 import { translateProvinceResponse } from "@/function/translateProvince";
 import { IAuthentication } from "@/interface/auth/authentication.state";
 import { IOrderParams, IStateOrder } from "@/interface/order/order.state";
@@ -68,6 +69,17 @@ const actions: ActionTree<IStateOrder, IAuthentication> = {
     try {
       commit("setError", {});
       const res = await orderServices.order(payload);
+      return res;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getOrder({ commit }) {
+    try {
+      commit("setError", {});
+      const res = await orderServices.getOrder();
+      const orders = translateOrders(res);
+      commit("setOrders", orders);
       return res;
     } catch (error) {
       commit("setError", { error });
