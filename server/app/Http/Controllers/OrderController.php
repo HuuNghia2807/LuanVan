@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderResource;
+use App\Models\Order;
 use App\Repositories\Order\OrderRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -142,5 +143,21 @@ class OrderController extends AbstractApiController
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getOrderStatus($id)
+    {
+        $orders = OrderResource::collection(Order::where('order_status_id', '=', $id)->get());
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Get order success');
+        $this->setData($orders);
+        return $this->respond();
     }
 }

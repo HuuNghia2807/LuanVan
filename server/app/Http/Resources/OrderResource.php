@@ -77,10 +77,9 @@ class OrderResource extends JsonResource
         return $emp;
     }
 
-    public function getProductOrder($id)
+    public function getProductOrder($order_id)
     {
-        $pro = array();
-        $pro = OrderDetail::where('order_id', '=', $id)->get();
+        $pro = OrderDetailResource::collection(OrderDetail::where('order_id', '=', $order_id)->get());
         return $pro;
     }
 }
