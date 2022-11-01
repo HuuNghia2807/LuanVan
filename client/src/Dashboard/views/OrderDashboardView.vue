@@ -17,7 +17,7 @@
         >
           <template #header>
             <div class="flex justify-content-between align-items-center">
-              <h3 class="m-0">Danh Sách Hóa Đơn</h3>
+              <h3 class="m-0">Danh Sách Đơn Hàng Mới</h3>
               <span class="p-input-icon-left">
                 <i class="pi pi-search" />
                 <my-inputText
@@ -28,62 +28,42 @@
             </div>
           </template>
           <template #empty> No orders found. </template>
-          <template #loading> Loading orders data. Please wait. </template>
-          <Column field="id" header="Mã hóa đơn" style="width: 8rem">
-            <template #body="{ data }">
-              {{ data.id }}
-            </template>
-          </Column>
-          <Column
-            header="Ảnh sản phẩm"
-            field="productImage"
-            style="width: 15rem"
+          <my-column
+            v-for="col of columns"
+            :field="col.field"
+            :header="col.header"
+            :key="col.field"
+            :style="{ width: col.width }"
           >
-            <template #body="{ data }">
-              <img
-                class="img"
-                src="https://kingshoes.vn/data/upload/media/gia%CC%80y-nike-air-max-90-love-letter-dd8029-100-king-shoes-sneaker-real-hcm-12-1638423994.jpeg"
-              />
-              <span class="hidden">{{ data.productImage }}</span>
+            <template v-if="col.field === 'customer'" #body="{ data }">
+              {{ data[col.field].fullName }}
             </template>
-          </Column>
-          <Column
-            header="Tên sản phẩm"
-            field="productName"
-            style="width: 15rem"
-          >
-            <template #body="{ data }">
-              {{ data.productName }}
+          </my-column>
+          <my-column header="Điện Thoại" :style="{ width: '15rem' }">
+            <template #body="slotProps">
+              {{ slotProps.data.customer.phone }}
             </template>
-          </Column>
-          <Column field="quantity" header="Số Lượng" style="width: 10rem">
-            <template #body="{ data }">
-              {{ data.quantity }}
-            </template>
-          </Column>
-          <Column field="totalPrice" header="Tổng hóa đơn" style="width: 10rem">
-            <template #body="{ data }">
-              {{ data.totalPrice }}
-            </template>
-          </Column>
-          <Column field="status" header="Trạng thái" style="width: 10rem">
-            <template #body="{ data }">
-              <span :class="'order-badge status-' + data.status">{{
-                data.status
+          </my-column>
+          <my-column header="Tổng" :style="{ width: '15rem' }">
+            <template #body="slotProps">
+              <span class="text-green-500">{{
+                formatPrice(slotProps.data.totalPrice)
               }}</span>
             </template>
-          </Column>
-          <Column
-            field="payment"
-            header="Phương thức thanh toán"
-            style="width: 10rem"
-          >
-            <template #body="{ data }">
-              {{ data.payment }}
+          </my-column>
+          <my-column header="Trạng Thái" :style="{ width: '12rem' }">
+            <template #body="slotProps">
+              <span :class="'order-badge status-' + slotProps.data.status">{{
+                slotProps.data.status.toUpperCase()
+              }}</span>
             </template>
-          </Column>
-
-          <Column
+          </my-column>
+          <my-column header="Thời Gian Đặt Hàng" :style="{ width: '20rem' }">
+            <template #body="slotProps">
+              {{ translateUnixTimeToFullTime(slotProps.data.orderTime) }}
+            </template>
+          </my-column>
+          <my-column
             headerStyle="width: 4rem; text-align: center"
             bodyStyle="text-align: center; overflow: visible"
           >
@@ -106,7 +86,7 @@
                 ></my-button>
               </div>
             </template>
-          </Column>
+          </my-column>
         </DataTable>
       </TabPanel>
       <TabPanel header="Đơn Hàng Đã Xác Nhận">
@@ -120,7 +100,18 @@
           sed quia non numquam eius modi.
         </p>
       </TabPanel>
-      <TabPanel header="Đơn Hàng Đã Hoàn Thành">
+      <TabPanel header="Đơn Hàng Đang Vận Chuyển">
+        <p>
+          At vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
+          et quas molestias excepturi sint occaecati cupiditate non provident,
+          similique sunt in culpa qui officia deserunt mollitia animi, id est
+          laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita
+          distinctio. Nam libero tempore, cum soluta nobis est eligendi optio
+          cumque nihil impedit quo minus.
+        </p>
+      </TabPanel>
+      <TabPanel header="Đơn Hàng Đã Giao">
         <p>
           At vero eos et accusamus et iusto odio dignissimos ducimus qui
           blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
@@ -132,148 +123,37 @@
         </p>
       </TabPanel>
       <TabPanel header="Tất Cả Đơn Hàng">
-        <p>
-          At vero eos et accusamus et iusto odio dignissimos ducimus qui
-          blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
-          et quas molestias excepturi sint occaecati cupiditate non provident,
-          similique sunt in culpa qui officia deserunt mollitia animi, id est
-          laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita
-          distinctio. Nam libero tempore, cum soluta nobis est eligendi optio
-          cumque nihil impedit quo minus.
-        </p>
+        <p>zzz</p>
       </TabPanel>
     </TabView>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { FilterMatchMode } from "primevue/api";
-import Column from "primevue/column";
 import { useStore } from "vuex";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
+import { IOrders } from "@/interface/order/order.state";
+import { formatPrice, translateUnixTimeToFullTime } from "@/function/common";
 
 export default defineComponent({
   components: {
-    Column,
     TabView,
     TabPanel,
   },
   setup() {
     const store = useStore();
     const columns = ref([
-      { field: "orderId", header: "Mã Đơn Hàng" },
-      { field: "name", header: "Name" },
-      { field: "category", header: "Category" },
-      { field: "quantity", header: "Quantity" },
+      { field: "orderId", header: "Mã ĐH", width: "10rem" },
+      { field: "customer", header: "Khách Hàng", width: "18rem" },
+      { field: "payment", header: "Thanh Toán", width: "18rem" },
     ]);
-    const orders = ref([
-      {
-        id: "1",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "unconfimred",
-        payment: "Thanh toan tien mat",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-      {
-        id: "2",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "confimred",
-        payment: "Thanh toan online",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-      {
-        id: "1",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "confimred",
-        payment: "Thanh toan tien mat",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-      {
-        id: "2",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "unconfimred",
-        payment: "Thanh toan online",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-      {
-        id: "1",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "unconfimred",
-        payment: "Thanh toan tien mat",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-      {
-        id: "2",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "unconfimred",
-        payment: "Thanh toan online",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-      {
-        id: "1",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "unconfimred",
-        payment: "Thanh toan tien mat",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-      {
-        id: "2",
-        productImage:
-          "https://kingshoes.vn/data/upload/media/nike-air-force-1-volt-neon-db1555-100-king-shoes-sneaker-real-hcm-1624255364.jpeg",
-        productName: "Jordan 1234",
-        productPrice: "100000000",
-        quantity: "2",
-        totalPrice: "200000000",
-        status: "unconfimred",
-        payment: "Thanh toan online",
-        address: "Phu Thuan, Thoai Son, An Giang",
-        note: "bla bla bla",
-      },
-    ]);
+    const orders = computed(() => {
+      const order = store.getters["order/getOrders"] as IOrders[];
+      return order || [];
+    });
     const loading = ref(false);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -286,6 +166,8 @@ export default defineComponent({
       orders,
       loading,
       filters,
+      translateUnixTimeToFullTime,
+      formatPrice,
     };
   },
 });
@@ -293,7 +175,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .order {
-  padding: 5rem 2rem;
+  padding: 3rem 2rem 5rem 2rem;
   background-color: rgb(235, 235, 235);
   min-height: 90vh;
 
@@ -312,13 +194,28 @@ export default defineComponent({
     letter-spacing: 0.3px;
   }
 
-  .order-badge.status-confimred {
+  .order-badge.status-new {
     background-color: #c8e6c9;
     color: #256029;
   }
 
-  .order-badge.status-unconfimred {
-    background-color: #ffcdd2;
+  .order-badge.status-processing {
+    background-color: #a1a2ed;
+    color: #373ec6;
+  }
+
+  .order-badge.status-shipping {
+    background-color: #aaf5b8;
+    color: #1ccb16;
+  }
+
+  .order-badge.status-delivered {
+    background-color: #edee9a;
+    color: #cbbf16;
+  }
+
+  .order-badge.status-canceled {
+    background-color: #fddde0;
     color: #c63737;
   }
 

@@ -1,6 +1,6 @@
 import { Nullable } from "primevue/ts-helpers";
 import { ICustomer, ICustomerResponse } from "../auth/authentication.state";
-import { ICartList } from "../product/product.state";
+import { ICartList, IProductResponse } from "../product/product.state";
 
 // interface state
 export interface IStateOrder {
@@ -49,6 +49,17 @@ export interface IOrders {
   payment: string;
   receiveTime: string;
   totalPrice: number;
+  productOrder: IProductOrder[];
+}
+
+export interface IProductOrder {
+  orderDetailId: number;
+  productOrderQuantity: number;
+  productName: string;
+  productCode: string;
+  productImage: string;
+  productPrice: number;
+  productSize: number;
 }
 
 export interface IOrderParams {
@@ -79,6 +90,7 @@ export interface IOrderResponse {
   payment: IPaymentResponse;
   receive_time: string;
   total_price: number;
+  product_order: IOrderDetailResponse[];
 }
 
 export interface IAddressResponse {
@@ -90,6 +102,14 @@ export interface IAddressResponse {
 export interface IOrderStatusResponse {
   id: number;
   order_status: string;
+}
+
+export interface IOrderDetailResponse {
+  order_detail_id: number;
+  product_quantity: number;
+  product_size_id: number;
+  size: number;
+  product: IProductResponse;
 }
 
 export interface IPaymentResponse {

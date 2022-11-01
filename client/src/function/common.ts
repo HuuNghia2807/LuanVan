@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import moment from "moment";
 
 export const handleError = (error: AxiosError) => {
   return {
@@ -14,4 +15,8 @@ export const formatPrice = (price: number) => {
     style: "currency",
     currency: "VND",
   }).format(price);
+};
+
+export const translateUnixTimeToFullTime = (unixTime: number) => {
+  return moment.unix(Number(unixTime)).format("MMM DD YYYY HH:mm:ss");
 };

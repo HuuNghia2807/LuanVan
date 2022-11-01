@@ -1,4 +1,9 @@
-import { IOrderResponse, IOrders } from "@/interface/order/order.state";
+import {
+  IOrderDetailResponse,
+  IOrderResponse,
+  IOrders,
+  IProductOrder,
+} from "@/interface/order/order.state";
 import { translateCustomer } from "./translateCustomer";
 
 export const translateOrders = (listOrder: IOrderResponse[]): IOrders[] => {
@@ -21,6 +26,23 @@ export const translateOrders = (listOrder: IOrderResponse[]): IOrders[] => {
       receiveTime: ele.receive_time,
       status: ele.order_status.order_status,
       totalPrice: ele.total_price,
+      productOrder: translateProductOrder(ele.product_order),
+    };
+  });
+};
+
+export const translateProductOrder = (
+  productOrder: IOrderDetailResponse[]
+): IProductOrder[] => {
+  return productOrder.map((ele) => {
+    return {
+      orderDetailId: ele.order_detail_id,
+      productCode: ele.product.product_code,
+      productImage: ele.product.product_image[0].product_image_link,
+      productName: ele.product.product_name,
+      productPrice: ele.product.product_price,
+      productOrderQuantity: ele.product_quantity,
+      productSize: ele.size,
     };
   });
 };

@@ -20,6 +20,7 @@ import Password from "primevue/password";
 import Checkbox from "primevue/checkbox";
 import Tooltip from "primevue/tooltip";
 import InputNumber from "primevue/inputnumber";
+import Column from "primevue/column";
 
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -37,6 +38,7 @@ app.directive("badge", BadgeDirective);
 app.directive("tooltip", Tooltip);
 app.component("DataView", DataView);
 app.component("DataTable", DataTable);
+app.component("my-column", Column);
 app.component("my-checkbox", Checkbox);
 app.component("my-inputNumber", InputNumber);
 app.component("my-image", Image);
