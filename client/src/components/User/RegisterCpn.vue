@@ -135,14 +135,12 @@ import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
 import Divider from "primevue/divider";
-import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
     Divider,
   },
   setup() {
-    const router = useRouter();
     const store = useStore();
     const errorMsg = ref("");
     const state = reactive({

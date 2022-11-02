@@ -1,4 +1,5 @@
 <template>
+  <my-toast />
   <div class="checkouts">
     <div class="left">
       <div class="wrap">
@@ -371,12 +372,13 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import Textarea from "primevue/textarea";
-
+import { useToast } from "primevue/usetoast";
 import { ICart, ICartList, IProduct } from "@/interface/product/product.state";
 import { useStore } from "vuex";
 import { getCartList } from "@/function/getCartList";
 import {
   getItemLocal,
+  removeItemLocal,
   setCustomerLogin,
   setStateCart,
 } from "@/function/handleLocalStorage";
@@ -388,6 +390,7 @@ import {
   IWard,
 } from "@/interface/order/order.state";
 import { ICustomer } from "@/interface/auth/authentication.state";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -399,8 +402,10 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const toast = useToast();
     const payment = ref(false);
     const transport = ref("transport");
+    const router = useRouter();
     const selectedTypePay = ref();
     const productCheckout = computed(() => {
       const listProduct: IProduct[] =
@@ -538,6 +543,24 @@ export default defineComponent({
 
     const orderDefault = async (order: IOrderParams) => {
       await store.dispatch("order/order", order);
+      const error = store.getters["order/getError"];
+      if (error) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Đặt hàng thất bại vui lòng thử lại!",
+          life: 3000,
+        });
+        return;
+      }
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Đặt hàng thành công!",
+        life: 3000,
+      });
+      removeItemLocal("cart");
+      router.push("/profile");
     };
     const orderPaypal = (order: IOrderParams) => {
       console.log("-----", order);

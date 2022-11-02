@@ -116,3 +116,8 @@ export interface IPaymentResponse {
   id: number;
   payment_name: string;
 }
+
+export interface IUpdateStatusOrderParams {
+  order_id: number;
+  status_id: number;
+}

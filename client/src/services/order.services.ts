@@ -1,7 +1,10 @@
 import { AxiosError } from "axios";
 import { http } from "@/api/axiosClient";
 import { handleError } from "@/function/common";
-import { IOrderParams } from "@/interface/order/order.state";
+import {
+  IOrderParams,
+  IUpdateStatusOrderParams,
+} from "@/interface/order/order.state";
 
 class OrderService {
   async getProvince() {
@@ -31,11 +34,7 @@ class OrderService {
   async order(payload: IOrderParams) {
     try {
       const response = await http.post("order", payload);
-      if (response.data.data) {
-        return response.data.data;
-      } else {
-        throw new Error("Wrong credential");
-      }
+      return response.data;
     } catch (error) {
       throw handleError(error as AxiosError);
     }
@@ -48,6 +47,14 @@ class OrderService {
       } else {
         throw new Error("Wrong credential");
       }
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async handleStatusOrder(payload: IUpdateStatusOrderParams) {
+    try {
+      const response = await http.post("order/status/update", payload);
+      return response.data;
     } catch (error) {
       throw handleError(error as AxiosError);
     }
