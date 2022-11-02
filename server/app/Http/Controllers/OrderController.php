@@ -160,4 +160,24 @@ class OrderController extends AbstractApiController
         $this->setData($orders);
         return $this->respond();
     }
+
+
+    public function OrderUpdateStatus(Request $request)
+    {
+        // dd($request->all());
+        if ($request->status_id === 4) {
+            $time = Carbon::now('Asia/Ho_Chi_Minh');
+            Order::find($request->order_id)->update([
+                'order_status_id' => $request->status_id,
+                'receive_time' => $time->toDateTimeString()
+            ]);
+        } else {
+            Order::find($request->order_id)->update(['order_status_id' => $request->status_id]);
+        }
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Update success');
+        // $this->setData($orders);
+        return $this->respond();
+    }
 }

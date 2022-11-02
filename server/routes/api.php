@@ -69,6 +69,7 @@ Route::group(['prefix' => 'order'], function () {
     Route::get('', [OrderController::class, 'index'])->name('order.index');
     Route::get('/status/{id}', [OrderController::class, 'getOrderStatus']);
     Route::post('', [OrderController::class, 'store'])->name('order.store');
+    Route::post('/status/update', [OrderController::class, 'OrderUpdateStatus']);
     // Route::post('/add', [OrderController::class, 'store'])->name('order.store');
     // Route::post('/{id}', [OrderController::class, 'update'])->name('order.update');
 });
