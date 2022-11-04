@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CustomerResource;
+use App\Models\Address;
 use App\Models\Customer;
 use App\Repositories\Customer\CustomerRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -202,6 +203,17 @@ class CustomerController extends AbstractApiController
         $this->setStatus('success');
         $this->setMessage('Create account success');
         $this->setData(CustomerResource::make($customer));
+        return $this->respond();
+    }
+
+    public function getCustomerAddress($id)
+    {
+        $add = Address::where('customer_id', '=', $id)->get();
+        // create address resource
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Update success');
+        // $this->setData($orders);
         return $this->respond();
     }
 }

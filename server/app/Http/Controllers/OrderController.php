@@ -180,4 +180,14 @@ class OrderController extends AbstractApiController
         // $this->setData($orders);
         return $this->respond();
     }
+
+    public function getPersonalOrder($id)
+    {
+        $orders = OrderResource::collection(Order::where('customer_id', '=', $id)->orderBy('id', 'DESC')->get());
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Update success');
+        $this->setData($orders);
+        return $this->respond();
+    }
 }

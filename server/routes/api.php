@@ -24,6 +24,7 @@ use App\Http\Controllers\ProvinceController;
 */
 
 Route::group(['prefix' => 'customer'], function () {
+    Route::get('/address/${id}', [CustomerController::class, 'getCustomerAddress']);
     Route::post('/register', [CustomerController::class, 'register'])->name('customer.register');
     Route::post('/login', [CustomerController::class, 'login'])->name('customer.login');
     Route::post('/delete', [CustomerController::class, 'destroy'])->name('customer.destroy');
@@ -68,6 +69,7 @@ Route::group(['prefix' => 'cart'], function () {
 Route::group(['prefix' => 'order'], function () {
     Route::get('', [OrderController::class, 'index'])->name('order.index');
     Route::get('/status/{id}', [OrderController::class, 'getOrderStatus']);
+    Route::get('/customer/{id}', [OrderController::class, 'getPersonalOrder']);
     Route::post('', [OrderController::class, 'store'])->name('order.store');
     Route::post('/status/update', [OrderController::class, 'OrderUpdateStatus']);
     // Route::post('/add', [OrderController::class, 'store'])->name('order.store');
