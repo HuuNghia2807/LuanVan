@@ -1,5 +1,6 @@
 <template>
   <my-toast />
+  <TheLoader :is-loading="showLoading" />
   <div class="checkouts">
     <div class="left">
       <div class="wrap">
@@ -391,6 +392,7 @@ import {
 } from "@/interface/order/order.state";
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { useRouter } from "vue-router";
+import TheLoader from "@/components/common/TheLoader.vue";
 
 export default defineComponent({
   components: {
@@ -399,12 +401,14 @@ export default defineComponent({
     Button,
     Dropdown,
     Textarea,
+    TheLoader,
   },
   setup() {
     const store = useStore();
     const toast = useToast();
     const payment = ref(false);
     const transport = ref("transport");
+    const showLoading = ref(false);
     const router = useRouter();
     const selectedTypePay = ref();
     const productCheckout = computed(() => {
@@ -542,6 +546,7 @@ export default defineComponent({
     };
 
     const orderDefault = async (order: IOrderParams) => {
+      showLoading.value = true;
       await store.dispatch("order/order", order);
       const error = store.getters["order/getError"];
       if (error) {
@@ -551,6 +556,7 @@ export default defineComponent({
           detail: "Đặt hàng thất bại vui lòng thử lại!",
           life: 3000,
         });
+        showLoading.value = false;
         return;
       }
       toast.add({
@@ -560,6 +566,7 @@ export default defineComponent({
         life: 3000,
       });
       removeItemLocal("cart");
+      showLoading.value = false;
       router.push("/profile");
     };
     const orderPaypal = (order: IOrderParams) => {
@@ -567,11 +574,13 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      showLoading.value = true;
       await store.dispatch("product/getProducts");
       await store.dispatch("order/getProvince");
       payments.value = await store.dispatch("order/getPayment");
       setStateCart(store);
       setCustomerLogin(store);
+      showLoading.value = false;
     });
     return {
       v$,
@@ -588,6 +597,7 @@ export default defineComponent({
       selectedTypePay,
       payments,
       note,
+      showLoading,
       handleOrder,
       selectProvince,
       formatPrice,

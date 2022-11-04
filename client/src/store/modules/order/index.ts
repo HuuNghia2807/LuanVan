@@ -98,6 +98,16 @@ const actions: ActionTree<IStateOrder, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async getPersonalOrder({ commit }, customer_id: number) {
+    try {
+      commit("setError", {});
+      const res = await orderServices.getPersonalOrder(customer_id);
+      const orders = translateOrders(res.data);
+      return orders;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const order = {

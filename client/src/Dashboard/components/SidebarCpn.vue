@@ -9,14 +9,15 @@
     </router-link>
     <div class="line" />
     <div class="user">
-      <Avatar
-        image="https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.6435-9/180041959_1021589654914677_1918695516674184677_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=GAZqmffjXJAAX_LTr5B&_nc_ht=scontent.fsgn5-8.fna&oh=00_AT_yu1G92NwRXDPNOSeU6mLpSBtyirIhPevgqVX-L3sidg&oe=635C3CB9"
-        class="avatar"
-        shape="circle"
-      />
+      <div class="avatar">
+        <img
+          src="@/assets/img/avatar_default/default-avatar.png"
+          alt="avatar"
+        />
+      </div>
       <div class="name">
         <span>NGUYEN NGHIA</span>
-        <router-link to="personal" class="no-underline">
+        <router-link to="/dashboard/personal" class="no-underline">
           <i
             class="pi pi-cog text-white"
             style="font-size: 1.6rem"
@@ -42,12 +43,9 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import Avatar from "primevue/avatar";
 
 export default defineComponent({
-  components: {
-    Avatar,
-  },
+  components: {},
   setup() {
     const menuSidebar = ref([
       { name: "Dashboard", icon: "pi pi-home", link: "/dashboard" },
@@ -121,8 +119,11 @@ export default defineComponent({
     cursor: pointer;
 
     .avatar {
-      width: 4rem;
-      height: 4rem;
+      img {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+      }
     }
 
     .name {

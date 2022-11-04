@@ -59,6 +59,14 @@ class OrderService {
       throw handleError(error as AxiosError);
     }
   }
+  async getPersonalOrder(customer_id: number) {
+    try {
+      const response = await http.get(`order/customer/${customer_id}`);
+      return response.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new OrderService();

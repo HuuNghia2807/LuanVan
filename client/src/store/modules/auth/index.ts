@@ -89,6 +89,15 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async getPersonalAddress({ commit }, customer_id: number) {
+    try {
+      commit("setError", { error: null });
+      const res = await authServices.getPersonalAddress(customer_id);
+      return res;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const auth = {

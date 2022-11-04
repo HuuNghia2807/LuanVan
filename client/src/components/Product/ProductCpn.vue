@@ -1,5 +1,6 @@
 <template>
   <router-link
+    v-if="!!productDetail"
     class="product no-underline"
     :to="{ name: 'showDetail', params: { id: productDetail?.productId } }"
     :style="`width: ${type ? '20' : '25'}%`"
@@ -40,11 +41,15 @@
       <span class="text-tag">{{ productDetail?.sale }}</span>
     </div> -->
   </router-link>
+  <div class="product" v-else>
+    <Skeleton class="wrap" width="30rem" height="40rem" borderRadius="16px" />
+  </div>
 </template>
 
 <script lang="ts">
 import { formatPrice } from "@/function/common";
 import { defineComponent } from "vue";
+import Skeleton from "primevue/skeleton";
 
 export default defineComponent({
   props: {
@@ -52,7 +57,9 @@ export default defineComponent({
     productDetail: { type: Object },
     type: { type: String },
   },
-  components: {},
+  components: {
+    Skeleton,
+  },
   setup() {
     return {
       formatPrice,

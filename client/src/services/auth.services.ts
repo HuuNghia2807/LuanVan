@@ -43,6 +43,14 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async getPersonalAddress(customer_id: number) {
+    try {
+      const response = await http.get(`customer/address/${customer_id}`);
+      return response.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();
