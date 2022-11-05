@@ -206,14 +206,14 @@ class CustomerController extends AbstractApiController
         return $this->respond();
     }
 
-    public function getCustomerAddress($id)
-    {
-        $add = Address::where('customer_id', '=', $id)->get();
-        // create address resource
-        $this->setStatusCode(JsonResponse::HTTP_OK);
-        $this->setStatus('success');
-        $this->setMessage('Update success');
-        // $this->setData($orders);
-        return $this->respond();
-    }
+    // public function getCustomerAddress($id)
+    // {
+    //     $add = Address::where('customer_id', '=', $id)->get();
+    //     // create address resource
+    //     $this->setStatusCode(JsonResponse::HTTP_OK);
+    //     $this->setStatus('success');
+    //     $this->setMessage('Update success');
+    //     // $this->setData($orders);
+    //     return $this->respond();
+    // }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Address;
 use App\Models\UserDetail;
 use App\Models\UserStatus;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -27,6 +28,7 @@ class CustomerResource extends JsonResource
             'birth' => $this->getUserDetail($this->user_detail_id)->user_birth,
             'gender' => $this->getUserDetail($this->user_detail_id)->user_gender,
             'avatar' => $this->getUserDetail($this->user_detail_id)->user_avatar,
+            'address' => $this->getAddress($this->id),
         ];
         return $data;
     }
@@ -41,5 +43,11 @@ class CustomerResource extends JsonResource
     {
         $detail = UserDetail::find($id);
         return $detail;
+    }
+
+    public function getAddress($id)
+    {
+        $add = Address::where('customer_id', '=', $id)->get();
+        return AddressResource::collection($add);
     }
 }
