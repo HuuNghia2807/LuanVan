@@ -4,9 +4,8 @@
     :paginator="true"
     class="p-datatable-customers"
     :rows="5"
-    dataKey="id"
     :rowHover="true"
-    v-model:filters="filters"
+    dataKey="id"
     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     responsiveLayout="scroll"
@@ -25,7 +24,7 @@
         {{ translateUnixTimeToFullTime(slotProps.data.orderTime) }}
       </template>
     </my-column>
-    <my-column header="Thời Gian Nhận Hàng" :style="{ width: '26rem' }">
+    <my-column header="Thời Gian Nhận Hàng" :style="{ width: '27rem' }">
       <template #body="slotProps">
         {{
           slotProps.data.receiveTime
@@ -87,19 +86,14 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const columns = ref([
-      { field: "orderId", header: "ĐH", width: "8rem" },
+      { field: "orderId", header: "ĐH", width: "5rem" },
       { field: "payment", header: "Thanh Toán", width: "14rem" },
     ]);
-    const filters = ref({
-      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    });
     const cancelOrder = (order: IOrders) => {
-      //   emit("cancel-order", order.orderId);
-      console.log(order);
+      emit("cancel-order", order.orderId);
     };
     return {
       columns,
-      filters,
       cancelOrder,
       formatPrice,
       translateUnixTimeToFullTime,

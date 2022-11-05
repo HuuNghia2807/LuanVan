@@ -146,16 +146,22 @@
           </small>
         </div>
       </div>
+      <div class="flex justify-content-end">
+        <my-button
+          label="Cancel"
+          icon="pi pi-times"
+          @click="closeModal"
+          class="p-button-text w-2"
+        />
+        <my-button
+          type="submit"
+          label="Update"
+          icon="pi pi-check"
+          autofocus
+          class="w-2 ml-3"
+        />
+      </div>
     </form>
-    <template #footer>
-      <my-button
-        label="No"
-        icon="pi pi-times"
-        @click="closeModal"
-        class="p-button-text"
-      />
-      <my-button label="Yes" icon="pi pi-check" @click="closeModal" autofocus />
-    </template>
   </my-dialog>
 </template>
 
@@ -206,6 +212,7 @@ export default defineComponent({
       submitted.value = true;
 
       if (isFormValid) {
+        updateAddress(props.address?.address_id || 0);
         return;
       }
     };
@@ -249,6 +256,10 @@ export default defineComponent({
       emit("close-modal");
     };
 
+    const updateAddress = (address_id: number) => {
+      emit("update-address", address_id, state);
+    };
+
     return {
       submitted,
       state,
@@ -256,6 +267,7 @@ export default defineComponent({
       ward,
       district,
       city,
+      updateAddress,
       selectProvince,
       handleSubmit,
       closeModal,

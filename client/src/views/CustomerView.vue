@@ -8,22 +8,15 @@
           <div class="img">
             <Image
               :src="
-                customer.avatar ||
+                customer?.avatar ||
                 require('@/assets/img/avatar_default/default-avatar.png')
               "
               preview
             />
-            <div class="btn-upload">
-              <label class="upload" for="avatar">
-                Upload
-                <i class="pi pi-image" style="font-size: 1.6rem"></i>
-              </label>
-              <input id="avatar" type="file" class="hidden" />
-            </div>
           </div>
           <div class="name">
-            <span class="name-info">{{ customer.fullName }}</span>
-            <span class="email">{{ customer.email }}</span>
+            <span class="name-info">{{ customer?.fullName }}</span>
+            <span class="email">{{ customer?.email }}</span>
           </div>
         </div>
 
@@ -38,74 +31,52 @@
         <div class="information">
           <div class="head">
             <h2>THÔNG TIN CÁ NHÂN</h2>
-            <div
-              class="btn-edit"
-              @click="handleEdit"
-              :class="{ active: canEdit }"
-            >
-              <img
-                src="@/assets/img/icons/edit-personal.png"
-                width="25"
-                alt="edit-personal"
-              />
+            <div class="flex align-items-center">
+              <div
+                class="btn-edit mr-3"
+                v-tooltip="'Đổi mật khẩu'"
+                @click="openModalChangePass"
+              >
+                <img
+                  src="@/assets/img/icons/password.png"
+                  width="25"
+                  alt="edit-personal"
+                />
+              </div>
+              <div
+                class="btn-edit"
+                @click="openModalEdit"
+                v-tooltip="'Chỉnh sửa thông tin cá nhân'"
+              >
+                <img
+                  src="@/assets/img/icons/edit-personal.png"
+                  width="25"
+                  alt="edit-personal"
+                />
+              </div>
             </div>
           </div>
           <form class="p-fluid formgrid">
             <div class="field">
               <label for="username">Họ và tên: </label>
-              <my-inputText
-                id="username"
-                type="username"
-                v-model="info.name"
-                :disabled="!canEdit"
-              />
-            </div>
-            <div class="gender field">
-              <div
-                v-for="gender in genders"
-                :key="gender.key"
-                class="field-radiobutton mr-4"
-              >
-                <RadioButton
-                  :inputId="gender.key"
-                  name="gender"
-                  :value="gender.key"
-                  v-model="info.gender"
-                  :disabled="!canEdit"
-                />
-                <label :for="gender.key">{{ gender.name }}</label>
-              </div>
-            </div>
-            <div class="flex align-item-center">
-              <div class="field mr-2">
-                <label for="dateformat">Ngày sinh: </label>
-                <my-inputText
-                  id="dateformat"
-                  v-model="info.birth"
-                  :disabled="!canEdit"
-                />
-              </div>
-              <div class="field">
-                <label for="phone">Số điện thoại: </label>
-                <my-inputText
-                  id="phone"
-                  v-model="info.phone"
-                  :disabled="!canEdit"
-                />
-              </div>
+              <span>{{ customer?.fullName }}</span>
             </div>
             <div class="field">
-              <label for="email">Email: </label>
-              <my-inputText
-                id="email"
-                type="email"
-                v-model="info.email"
-                :disabled="!canEdit"
-              />
+              <label>Giới tính:</label>
+              <span>{{ customer?.gender }}</span>
             </div>
+            <div class="field">
+              <label for="dateformat">Ngày sinh: </label>
+              <span>{{ customer?.birth }}</span>
+            </div>
+            <div class="field">
+              <label for="phone">Số điện thoại: </label>
+              <span>{{ customer?.phone }}</span>
+            </div>
+            <hr class="line" />
             <div
-              class="field flex"
-              v-for="(add, i) in customer.address"
+              class="flex mb-3"
+              v-for="(add, i) in customer?.address"
               :key="add.address_id"
             >
               <div class="w-10">
@@ -128,15 +99,28 @@
       </div>
     </div>
     <UploadAddress
+      v-if="displayModal"
       :display-modal="displayModal"
       :address="addressModal"
+      @close-modal="closeModal"
+      @update-address="handleUpdateAddress"
+    />
+    <EditInfomation
+      v-if="isEditInfo"
+      :is-edit-info="isEditInfo"
+      :customer="customer"
+      @close-modal="closeModal"
+    />
+    <ChangePassword
+      v-if="isChangePass"
+      :is-change-pass="isChangePass"
       @close-modal="closeModal"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, reactive } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import Image from "primevue/image";
 import { computed } from "@vue/reactivity";
 import { useStore } from "vuex";
@@ -148,57 +132,43 @@ import {
 import TableOrderCustomerCpn from "@/components/order/TableOrderCustomerCpn.vue";
 import TheLoader from "@/components/common/TheLoader.vue";
 import { IOrders } from "@/interface/order/order.state";
-import RadioButton from "primevue/radiobutton";
+import { useRouter } from "vue-router";
 import UploadAddress from "@/components/modal/UploadAddress.vue";
+import EditInfomation from "@/components/modal/EditInfomation.vue";
+import ChangePassword from "@/components/modal/ChangePassword.vue";
 
 export default defineComponent({
   components: {
     Image,
     TableOrderCustomerCpn,
     TheLoader,
-    RadioButton,
     UploadAddress,
+    EditInfomation,
+    ChangePassword,
   },
   setup() {
+    const router = useRouter();
     const store = useStore();
     const showLoading = ref(false);
     const personalOrder = ref([] as IOrders[]);
-    const personalAddress = ref([] as any[]);
     const displayModal = ref(false);
+    const isEditInfo = ref(false);
+    const isChangePass = ref(false);
     const addressModal = ref<IAddressCustomer>();
-    const canEdit = ref(false);
     const customer = computed(() => {
       return (store.getters["auth/getUser"] ||
         getItemLocal("customer") ||
         null) as ICustomer;
     });
-    const info = reactive({
-      name: customer.value.fullName,
-      phone: customer.value.phone,
-      email: customer.value.email,
-      gender: "woman",
-      birth: customer.value.birth,
-    });
-    const genders = ref([
-      {
-        name: "Nam",
-        key: "man",
-      },
-      {
-        name: "Nữ",
-        key: "woman",
-      },
-      {
-        name: "Khác",
-        key: "other",
-      },
-    ]);
 
     const cancelOrder = (order_id: number) => {
       console.log("----", order_id);
     };
-    const handleEdit = () => {
-      canEdit.value = !canEdit.value;
+    const openModalEdit = () => {
+      isEditInfo.value = true;
+    };
+    const openModalChangePass = () => {
+      isChangePass.value = true;
     };
     const openModal = (add: IAddressCustomer) => {
       addressModal.value = add;
@@ -207,6 +177,11 @@ export default defineComponent({
     const closeModal = () => {
       addressModal.value = undefined;
       displayModal.value = false;
+      isEditInfo.value = false;
+      isChangePass.value = false;
+    };
+    const handleUpdateAddress = (address_id: number, state: any) => {
+      console.log("-----", address_id, state);
     };
     onMounted(async () => {
       showLoading.value = true;
@@ -214,25 +189,25 @@ export default defineComponent({
         "order/getPersonalOrder",
         customer.value.id
       );
-      personalAddress.value = await store.dispatch(
-        "auth/getPersonalAddress",
-        customer.value.id
-      );
       await store.dispatch("order/getProvince");
+      if (!store.getters["auth/getIslogged"]) {
+        router.push("/");
+      }
       showLoading.value = false;
     });
     return {
       customer,
       showLoading,
       personalOrder,
-      canEdit,
-      info,
-      genders,
       displayModal,
       addressModal,
+      isEditInfo,
+      isChangePass,
+      openModalChangePass,
+      handleUpdateAddress,
       closeModal,
       openModal,
-      handleEdit,
+      openModalEdit,
       cancelOrder,
     };
   },
@@ -241,7 +216,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .customer {
-  min-height: 90vh;
   display: flex;
   padding: 2rem 5rem;
   background-color: #efe4d3;
@@ -267,29 +241,12 @@ export default defineComponent({
 
       :deep(.p-image-preview-container > img),
       :deep(.p-image-preview-indicator) {
-        width: 10rem;
-        height: 10rem;
+        width: 14rem;
+        height: 14rem;
         object-fit: cover;
         border-radius: 50%;
         border: 1px solid #ccc;
       }
-
-      .btn-upload {
-        margin: 1rem 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .upload {
-          border: 1px solid #ccc;
-          background-color: var(--green-400);
-          color: #fff;
-          font-weight: 600;
-          padding: 0.5rem 2rem;
-          border-radius: 5px;
-        }
-      }
-
       .name {
         display: flex;
         flex-direction: column;
@@ -320,6 +277,7 @@ export default defineComponent({
     background-color: #fff;
     border-radius: 10px;
     padding: 2rem;
+    // height: 50rem;
 
     .head {
       display: flex;
@@ -350,21 +308,33 @@ export default defineComponent({
       flex-direction: column;
     }
 
-    .gender {
-      display: flex;
-      align-items: center;
-    }
-
     .field {
       margin: 1rem 0;
+      display: flex;
+      align-items: center;
+
+      label {
+        font-weight: 600;
+        width: 25%;
+        margin-bottom: 0;
+      }
+
+      span {
+        display: block;
+        width: 80%;
+        padding: 0.5rem 1rem;
+        background-color: #bdc2ff;
+        border-radius: 5px;
+        height: 3rem;
+      }
+    }
+
+    .line {
+      margin: 2rem 3rem;
     }
 
     :deep(.p-inputtext) {
       font-size: 1.6rem !important;
-    }
-
-    :deep(.p-component:disabled) {
-      opacity: 1 !important;
     }
   }
 }
