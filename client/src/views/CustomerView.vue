@@ -127,7 +127,11 @@
         </div>
       </div>
     </div>
-    <UploadAddress :display-modal="displayModal" @close-modal="closeModal" />
+    <UploadAddress
+      :display-modal="displayModal"
+      :address="addressModal"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
@@ -161,7 +165,7 @@ export default defineComponent({
     const personalOrder = ref([] as IOrders[]);
     const personalAddress = ref([] as any[]);
     const displayModal = ref(false);
-    const addressModal = ref({});
+    const addressModal = ref<IAddressCustomer>();
     const canEdit = ref(false);
     const customer = computed(() => {
       return (store.getters["auth/getUser"] ||
@@ -201,7 +205,7 @@ export default defineComponent({
       displayModal.value = true;
     };
     const closeModal = () => {
-      addressModal.value = {};
+      addressModal.value = undefined;
       displayModal.value = false;
     };
     onMounted(async () => {
@@ -214,6 +218,7 @@ export default defineComponent({
         "auth/getPersonalAddress",
         customer.value.id
       );
+      await store.dispatch("order/getProvince");
       showLoading.value = false;
     });
     return {
@@ -224,6 +229,7 @@ export default defineComponent({
       info,
       genders,
       displayModal,
+      addressModal,
       closeModal,
       openModal,
       handleEdit,
