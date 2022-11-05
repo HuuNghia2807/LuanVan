@@ -1,109 +1,133 @@
 <template>
-  <TheLoader :is-loading="showLoading" />
-  <div class="customer">
-    <div class="left-info">
-      <div class="avt-wrap">
-        <div class="img">
-          <Image
-            :src="
-              customer.avatar ||
-              require('@/assets/img/avatar_default/default-avatar.png')
-            "
-            preview
-          />
-          <div class="btn-upload">
-            <label class="upload" for="avatar">
-              Upload
-              <i class="pi pi-image" style="font-size: 1.6rem"></i>
-            </label>
-            <input id="avatar" type="file" class="hidden" />
-          </div>
-        </div>
-        <div class="name">
-          <span class="name-info">{{ customer.fullName }}</span>
-          <span class="email">{{ customer.email }}</span>
-        </div>
-      </div>
+  <div>
+    <TheLoader :is-loading="showLoading" />
 
-      <div class="order">
-        <TableOrderCustomerCpn
-          :orders="personalOrder"
-          @cancel-order="cancelOrder"
-        />
-      </div>
-    </div>
-    <div class="right-info">
-      <div class="information">
-        <div class="head">
-          <h2>THÔNG TIN CÁ NHÂN</h2>
-          <div
-            class="btn-edit"
-            @click="handleEdit"
-            :class="{ active: canEdit }"
-          >
-            <img
-              src="@/assets/img/icons/edit-personal.png"
-              width="25"
-              alt="edit-personal"
+    <div class="customer">
+      <div class="left-info">
+        <div class="avt-wrap">
+          <div class="img">
+            <Image
+              :src="
+                customer.avatar ||
+                require('@/assets/img/avatar_default/default-avatar.png')
+              "
+              preview
             />
-          </div>
-        </div>
-        <form class="p-fluid formgrid">
-          <div class="field">
-            <label for="username">Họ và tên: </label>
-            <my-inputText
-              id="username"
-              type="username"
-              v-model="info.name"
-              :disabled="!canEdit"
-            />
-          </div>
-          <div class="gender field">
-            <div
-              v-for="gender in genders"
-              :key="gender.key"
-              class="field-radiobutton mr-4"
-            >
-              <RadioButton
-                :inputId="gender.key"
-                name="gender"
-                :value="gender.key"
-                v-model="info.gender"
-                :disabled="!canEdit"
-              />
-              <label :for="gender.key">{{ gender.name }}</label>
+            <div class="btn-upload">
+              <label class="upload" for="avatar">
+                Upload
+                <i class="pi pi-image" style="font-size: 1.6rem"></i>
+              </label>
+              <input id="avatar" type="file" class="hidden" />
             </div>
           </div>
-          <div class="flex align-item-center">
-            <div class="field mr-2">
-              <label for="dateformat">Ngày sinh: </label>
+          <div class="name">
+            <span class="name-info">{{ customer.fullName }}</span>
+            <span class="email">{{ customer.email }}</span>
+          </div>
+        </div>
+
+        <div class="order">
+          <TableOrderCustomerCpn
+            :orders="personalOrder"
+            @cancel-order="cancelOrder"
+          />
+        </div>
+      </div>
+      <div class="right-info">
+        <div class="information">
+          <div class="head">
+            <h2>THÔNG TIN CÁ NHÂN</h2>
+            <div
+              class="btn-edit"
+              @click="handleEdit"
+              :class="{ active: canEdit }"
+            >
+              <img
+                src="@/assets/img/icons/edit-personal.png"
+                width="25"
+                alt="edit-personal"
+              />
+            </div>
+          </div>
+          <form class="p-fluid formgrid">
+            <div class="field">
+              <label for="username">Họ và tên: </label>
               <my-inputText
-                id="dateformat"
-                v-model="info.birth"
+                id="username"
+                type="username"
+                v-model="info.name"
                 :disabled="!canEdit"
               />
+            </div>
+            <div class="gender field">
+              <div
+                v-for="gender in genders"
+                :key="gender.key"
+                class="field-radiobutton mr-4"
+              >
+                <RadioButton
+                  :inputId="gender.key"
+                  name="gender"
+                  :value="gender.key"
+                  v-model="info.gender"
+                  :disabled="!canEdit"
+                />
+                <label :for="gender.key">{{ gender.name }}</label>
+              </div>
+            </div>
+            <div class="flex align-item-center">
+              <div class="field mr-2">
+                <label for="dateformat">Ngày sinh: </label>
+                <my-inputText
+                  id="dateformat"
+                  v-model="info.birth"
+                  :disabled="!canEdit"
+                />
+              </div>
+              <div class="field">
+                <label for="phone">Số điện thoại: </label>
+                <my-inputText
+                  id="phone"
+                  v-model="info.phone"
+                  :disabled="!canEdit"
+                />
+              </div>
             </div>
             <div class="field">
-              <label for="phone">Số điện thoại: </label>
+              <label for="email">Email: </label>
               <my-inputText
-                id="phone"
-                v-model="info.phone"
+                id="email"
+                type="email"
+                v-model="info.email"
                 :disabled="!canEdit"
               />
             </div>
-          </div>
-          <div class="field">
-            <label for="email">Email: </label>
-            <my-inputText
-              id="email"
-              type="email"
-              v-model="info.email"
-              :disabled="!canEdit"
-            />
-          </div>
-        </form>
+            <div
+              class="field flex"
+              v-for="(add, i) in customer.address"
+              :key="add.address_id"
+            >
+              <div class="w-10">
+                <label class="font-semibold">Địa chỉ {{ i }}: </label>
+                <span class="ml-2 text-2xl">{{
+                  `${add.address}, 
+                ${add.ward.ward},       
+                ${add.district.district},
+                ${add.city.city}`
+                }}</span>
+              </div>
+              <span
+                class="text-2xl text-teal-500 w-2 text-right cursor-pointer"
+                @click="openModal(add)"
+                >Thay đổi</span
+              >
+            </div>
+          </form>
+        </div>
       </div>
     </div>
+    <UploadAddress :display-modal="displayModal" @close-modal="closeModal" />
   </div>
 </template>
 
@@ -113,11 +137,15 @@ import Image from "primevue/image";
 import { computed } from "@vue/reactivity";
 import { useStore } from "vuex";
 import { getItemLocal } from "@/function/handleLocalStorage";
-import { ICustomer } from "@/interface/auth/authentication.state";
+import {
+  IAddressCustomer,
+  ICustomer,
+} from "@/interface/auth/authentication.state";
 import TableOrderCustomerCpn from "@/components/order/TableOrderCustomerCpn.vue";
 import TheLoader from "@/components/common/TheLoader.vue";
 import { IOrders } from "@/interface/order/order.state";
 import RadioButton from "primevue/radiobutton";
+import UploadAddress from "@/components/modal/UploadAddress.vue";
 
 export default defineComponent({
   components: {
@@ -125,20 +153,27 @@ export default defineComponent({
     TableOrderCustomerCpn,
     TheLoader,
     RadioButton,
+    UploadAddress,
   },
   setup() {
     const store = useStore();
     const showLoading = ref(false);
     const personalOrder = ref([] as IOrders[]);
     const personalAddress = ref([] as any[]);
+    const displayModal = ref(false);
+    const addressModal = ref({});
     const canEdit = ref(false);
+    const customer = computed(() => {
+      return (store.getters["auth/getUser"] ||
+        getItemLocal("customer") ||
+        null) as ICustomer;
+    });
     const info = reactive({
-      name: "Nguyễn Hoàng Thanh Toàn",
-      phone: "0123456789",
-      email: "toan@gmail.com",
+      name: customer.value.fullName,
+      phone: customer.value.phone,
+      email: customer.value.email,
       gender: "woman",
-      birth: "01-01-2000",
-      address: "Hẻm nào đó, Xã Gì Đó, Quận Gì Đó, TP Cần Thơ",
+      birth: customer.value.birth,
     });
     const genders = ref([
       {
@@ -154,16 +189,20 @@ export default defineComponent({
         key: "other",
       },
     ]);
-    const customer = computed(() => {
-      return (store.getters["auth/getUser"] ||
-        getItemLocal("customer") ||
-        null) as ICustomer;
-    });
+
     const cancelOrder = (order_id: number) => {
       console.log("----", order_id);
     };
     const handleEdit = () => {
       canEdit.value = !canEdit.value;
+    };
+    const openModal = (add: IAddressCustomer) => {
+      addressModal.value = add;
+      displayModal.value = true;
+    };
+    const closeModal = () => {
+      addressModal.value = {};
+      displayModal.value = false;
     };
     onMounted(async () => {
       showLoading.value = true;
@@ -184,6 +223,9 @@ export default defineComponent({
       canEdit,
       info,
       genders,
+      displayModal,
+      closeModal,
+      openModal,
       handleEdit,
       cancelOrder,
     };

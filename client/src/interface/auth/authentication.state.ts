@@ -1,4 +1,5 @@
 import { Nullable } from "primevue/ts-helpers";
+import { ICity, IDistrict, IWard } from "../order/order.state";
 import { ICart } from "../product/product.state";
 
 export interface IAuthentication {
@@ -26,6 +27,7 @@ export interface ICustomerResponse {
   birth: string | null;
   gender: string;
   avatar: string;
+  address: IAddressCustomerResponse[];
 }
 
 export interface ICustomer {
@@ -39,6 +41,24 @@ export interface ICustomer {
   birth: string | null;
   gender: string | null;
   avatar: string;
+  address: IAddressCustomer[];
+}
+
+export interface IAddressCustomerResponse {
+  id: number;
+  customer_id: number;
+  address: string;
+  ward: IWard;
+  district: IDistrict;
+  city: ICity;
+}
+
+export interface IAddressCustomer {
+  address_id: number;
+  address: string;
+  ward: IWard;
+  district: IDistrict;
+  city: ICity;
 }
 
 export type Role = "admin" | "user";

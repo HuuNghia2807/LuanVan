@@ -1,4 +1,6 @@
 import {
+  IAddressCustomer,
+  IAddressCustomerResponse,
   ICustomer,
   ICustomerResponse,
 } from "@/interface/auth/authentication.state";
@@ -15,5 +17,20 @@ export const translateCustomer = (user: ICustomerResponse): ICustomer => {
     phone: user.phone,
     status: user.user_status,
     avatar: user.avatar,
+    address: translateAddress(user.address),
   };
+};
+
+export const translateAddress = (
+  address: IAddressCustomerResponse[]
+): IAddressCustomer[] => {
+  return address.map((ele) => {
+    return {
+      address_id: ele.id,
+      address: ele.address,
+      ward: ele.ward,
+      district: ele.district,
+      city: ele.city,
+    };
+  });
 };
