@@ -1,4 +1,5 @@
 <template>
+  <my-toast />
   <div class="login flex justify-content-center">
     <div class="card">
       <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
@@ -122,6 +123,7 @@
           type="submit"
           label="Đăng Ký"
           class="mt-2"
+          :loading="showLoading"
           v-tooltip="'Kiểm tra kỹ mật khẩu trước khi đăng ký'"
         />
       </form>
@@ -135,14 +137,17 @@ import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
 import Divider from "primevue/divider";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   components: {
     Divider,
   },
-  setup() {
+  setup(_props, { emit }) {
     const store = useStore();
+    const toast = useToast();
     const errorMsg = ref("");
+    const showLoading = ref(false);
     const state = reactive({
       first_name: "",
       last_name: "",
@@ -192,13 +197,30 @@ export default defineComponent({
     };
 
     const register = async (cus: any) => {
+      showLoading.value = true;
       await store.dispatch("auth/register", cus);
+      showLoading.value = false;
       const error = store.getters["auth/getError"];
       if (error) {
         errorMsg.value = error.data?.message;
         return;
       }
-      //toast
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Đăng ký tài khoản thành công",
+        life: 3000,
+      });
+      clearForm();
+    };
+
+    const clearForm = () => {
+      state.first_name = "";
+      state.last_name = "";
+      state.email = "";
+      state.password = "";
+      state.phone = "";
+      submitted.value = false;
     };
 
     return {
@@ -206,6 +228,7 @@ export default defineComponent({
       v$,
       submitted,
       errorMsg,
+      showLoading,
       handleSubmit,
     };
   },

@@ -212,7 +212,7 @@ export default defineComponent({
       submitted.value = true;
 
       if (isFormValid) {
-        updateAddress(props.address?.address_id || 0);
+        updateAddress();
         return;
       }
     };
@@ -256,8 +256,8 @@ export default defineComponent({
       emit("close-modal");
     };
 
-    const updateAddress = (address_id: number) => {
-      emit("update-address", address_id, state);
+    const updateAddress = () => {
+      emit("update-address", props.address?.address_id, state);
     };
 
     return {
@@ -296,6 +296,10 @@ form {
 .field {
   margin-bottom: 1.5rem;
   height: 5rem;
+
+  small {
+    font-size: 1.2rem;
+  }
 }
 .label {
   margin-top: -1.1rem;

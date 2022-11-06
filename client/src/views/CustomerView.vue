@@ -1,7 +1,7 @@
 <template>
   <div>
     <TheLoader :is-loading="showLoading" />
-
+    <my-toast />
     <div class="customer">
       <div class="left-info">
         <div class="avt-wrap">
@@ -24,6 +24,7 @@
           <TableOrderCustomerCpn
             :orders="personalOrder"
             @cancel-order="cancelOrder"
+            @view-order-detail="handleOrderDetail"
           />
         </div>
       </div>
@@ -90,7 +91,7 @@
               </div>
               <span
                 class="text-2xl text-teal-500 w-2 text-right cursor-pointer"
-                @click="openModal(add)"
+                @click="openModalUpdateAddress(add)"
                 >Thay đổi</span
               >
             </div>
@@ -99,8 +100,8 @@
       </div>
     </div>
     <UploadAddress
-      v-if="displayModal"
-      :display-modal="displayModal"
+      v-if="isUpdateAddress"
+      :display-modal="isUpdateAddress"
       :address="addressModal"
       @close-modal="closeModal"
       @update-address="handleUpdateAddress"
@@ -110,10 +111,25 @@
       :is-edit-info="isEditInfo"
       :customer="customer"
       @close-modal="closeModal"
+      @update-info="updateInfo"
     />
     <ChangePassword
       v-if="isChangePass"
+      :customer="customer"
       :is-change-pass="isChangePass"
+      @close-modal="closeModal"
+      @change-pass-success="handleChangePass"
+    />
+    <ConfirmCancelOrder
+      v-if="isConfirm"
+      :is-confirm="isConfirm"
+      @close-modal="closeModal"
+      @cancel-order="handleCancelOrder"
+    />
+    <OrderDetailCpn
+      v-if="isOrderDetail"
+      :is-order-detail="isOrderDetail"
+      :order="orderDetail"
       @close-modal="closeModal"
     />
   </div>
@@ -128,14 +144,22 @@ import { getItemLocal } from "@/function/handleLocalStorage";
 import {
   IAddressCustomer,
   ICustomer,
+  IUpdateAddressParams,
+  IUpdateInfoCustomerParams,
 } from "@/interface/auth/authentication.state";
+import {
+  IOrders,
+  IUpdateStatusOrderParams,
+} from "@/interface/order/order.state";
+import { useRouter } from "vue-router";
+import { useToast } from "primevue/usetoast";
 import TableOrderCustomerCpn from "@/components/order/TableOrderCustomerCpn.vue";
 import TheLoader from "@/components/common/TheLoader.vue";
-import { IOrders } from "@/interface/order/order.state";
-import { useRouter } from "vue-router";
 import UploadAddress from "@/components/modal/UploadAddress.vue";
 import EditInfomation from "@/components/modal/EditInfomation.vue";
 import ChangePassword from "@/components/modal/ChangePassword.vue";
+import ConfirmCancelOrder from "@/components/modal/ConfirmCancelOrder.vue";
+import OrderDetailCpn from "@/components/order/OrderDetailCpn.vue";
 
 export default defineComponent({
   components: {
@@ -145,24 +169,63 @@ export default defineComponent({
     UploadAddress,
     EditInfomation,
     ChangePassword,
+    ConfirmCancelOrder,
+    OrderDetailCpn,
   },
   setup() {
     const router = useRouter();
     const store = useStore();
+    const toast = useToast();
     const showLoading = ref(false);
     const personalOrder = ref([] as IOrders[]);
-    const displayModal = ref(false);
+    const isUpdateAddress = ref(false);
     const isEditInfo = ref(false);
     const isChangePass = ref(false);
+    const isConfirm = ref(false);
+    const idOrderCancel = ref();
     const addressModal = ref<IAddressCustomer>();
+    const orderDetail = ref<IOrders>();
+    const isOrderDetail = ref(false);
     const customer = computed(() => {
       return (store.getters["auth/getUser"] ||
         getItemLocal("customer") ||
         null) as ICustomer;
     });
 
-    const cancelOrder = (order_id: number) => {
-      console.log("----", order_id);
+    const cancelOrder = (orderId: number) => {
+      idOrderCancel.value = orderId;
+      isConfirm.value = true;
+    };
+    const handleCancelOrder = (note: string) => {
+      const data = {
+        order_id: idOrderCancel.value,
+        status_id: 5,
+        note: note,
+      } as IUpdateStatusOrderParams;
+      isConfirm.value = false;
+      updateStatus(data);
+    };
+    const updateStatus = async (data: IUpdateStatusOrderParams) => {
+      showLoading.value = true;
+      await store.dispatch("order/handleStatusOrder", data);
+      showLoading.value = false;
+      const error = store.getters["order/getError"];
+      if (error) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Xử lý thất bại!",
+          life: 3000,
+        });
+        return;
+      }
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Xử lý thành công!",
+        life: 3000,
+      });
+      loadPage();
     };
     const openModalEdit = () => {
       isEditInfo.value = true;
@@ -170,43 +233,118 @@ export default defineComponent({
     const openModalChangePass = () => {
       isChangePass.value = true;
     };
-    const openModal = (add: IAddressCustomer) => {
+    const openModalUpdateAddress = (add: IAddressCustomer) => {
       addressModal.value = add;
-      displayModal.value = true;
+      isUpdateAddress.value = true;
     };
     const closeModal = () => {
       addressModal.value = undefined;
-      displayModal.value = false;
+      idOrderCancel.value = undefined;
+      orderDetail.value = undefined;
+      isUpdateAddress.value = false;
       isEditInfo.value = false;
       isChangePass.value = false;
+      isConfirm.value = false;
+      isOrderDetail.value = false;
     };
-    const handleUpdateAddress = (address_id: number, state: any) => {
-      console.log("-----", address_id, state);
+    const handleUpdateAddress = async (address_id: number, state: any) => {
+      isUpdateAddress.value = false;
+      await store.dispatch("auth/updateAddress", {
+        address_id,
+        address: state.address,
+        ward_id: state.ward,
+      } as IUpdateAddressParams);
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Cập nhật thông tin thành công",
+        life: 3000,
+      });
+      loadPage();
     };
-    onMounted(async () => {
+    const updateInfo = async (data: any) => {
+      showLoading.value = true;
+      await store.dispatch("auth/updateInfo", {
+        customer_id: customer.value.id,
+        info: {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          gender: data.gender,
+          birth: data.birth,
+          phone: data.phone,
+          avatar: data.avatar,
+        },
+      } as IUpdateInfoCustomerParams);
+      if (store.getters["auth/getError"]) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Cập nhật bị lỗi vui lòng kiểm tra và thử lại",
+          life: 3000,
+        });
+        showLoading.value = false;
+        return;
+      }
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Cập nhật thông tin thành công",
+        life: 3000,
+      });
+      showLoading.value = false;
+      isEditInfo.value = false;
+    };
+
+    const handleChangePass = () => {
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Thay đổi mật khẩu thành công",
+        life: 3000,
+      });
+    };
+
+    const handleOrderDetail = (order: IOrders) => {
+      orderDetail.value = order;
+      isOrderDetail.value = true;
+    };
+
+    const loadPage = async () => {
       showLoading.value = true;
       personalOrder.value = await store.dispatch(
         "order/getPersonalOrder",
         customer.value.id
       );
       await store.dispatch("order/getProvince");
+      await store.dispatch("auth/getCustomer", customer.value.id);
       if (!store.getters["auth/getIslogged"]) {
         router.push("/");
       }
       showLoading.value = false;
+    };
+    onMounted(() => {
+      loadPage();
     });
     return {
       customer,
       showLoading,
       personalOrder,
-      displayModal,
+      isUpdateAddress,
       addressModal,
       isEditInfo,
       isChangePass,
+      isConfirm,
+      isOrderDetail,
+      orderDetail,
+      handleOrderDetail,
+      handleCancelOrder,
+      handleChangePass,
+      updateInfo,
       openModalChangePass,
       handleUpdateAddress,
       closeModal,
-      openModal,
+      openModalUpdateAddress,
       openModalEdit,
       cancelOrder,
     };
@@ -277,7 +415,7 @@ export default defineComponent({
     background-color: #fff;
     border-radius: 10px;
     padding: 2rem;
-    // height: 50rem;
+    min-height: 80vh;
 
     .head {
       display: flex;

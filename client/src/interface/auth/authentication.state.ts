@@ -61,4 +61,32 @@ export interface IAddressCustomer {
   city: ICity;
 }
 
+export interface IUpdateInfoCustomerParams {
+  customer_id: number;
+  info: IInfoParams;
+}
+
+export interface IInfoParams {
+  first_name: string;
+  last_name: string;
+  email: string;
+  gender: string;
+  birth: string;
+  phone: string;
+  avatar: string;
+}
+
+export interface IChangePassParams {
+  customer_id: number;
+  new_pass: string;
+  old_pass: string;
+  new_pass_confirmation: string;
+}
+
+export interface IUpdateAddressParams {
+  address_id: number;
+  address: string;
+  ward_id: number;
+}
+
 export type Role = "admin" | "user";

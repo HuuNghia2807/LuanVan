@@ -3,7 +3,10 @@
 import { removeItemLocal } from "@/function/handleLocalStorage";
 import {
   IAuthentication,
+  IChangePassParams,
   ILoginParams,
+  IUpdateAddressParams,
+  IUpdateInfoCustomerParams,
 } from "@/interface/auth/authentication.state";
 import authServices from "@/services/auth.services";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
@@ -94,6 +97,40 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error: null });
       const res = await authServices.getPersonalAddress(customer_id);
       return res;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async updateInfo({ commit }, payload: IUpdateInfoCustomerParams) {
+    try {
+      commit("setError", { error: null });
+      const res = await authServices.updateInfo(payload);
+      commit("setUser", res);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getCustomer({ commit }, cus_id: number) {
+    try {
+      commit("setError", { error: null });
+      const res = await authServices.getCustomer(cus_id);
+      commit("setUser", res);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async changePass({ commit }, payload: IChangePassParams) {
+    try {
+      commit("setError", { error: null });
+      await authServices.changePass(payload);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async updateAddress({ commit }, payload: IUpdateAddressParams) {
+    try {
+      commit("setError", { error: null });
+      await authServices.updateAddress(payload);
     } catch (error) {
       commit("setError", { error });
     }

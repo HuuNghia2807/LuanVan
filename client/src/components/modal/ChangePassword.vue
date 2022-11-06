@@ -73,19 +73,25 @@
           >{{ v$.comfirmPass.required.$message }}</small
         >
       </div>
+      <div
+        class="flex justify-content-center align-items-center mb-3"
+        v-if="msgError"
+      >
+        <small class="p-error text-xl">{{ msgError }}</small>
+      </div>
       <div class="flex justify-content-end">
         <my-button
           label="Cancel"
           icon="pi pi-times"
           @click="closeModal"
-          class="p-button-text"
+          class="p-button-outlined"
         />
         <my-button
           type="submit"
           label="Update"
           icon="pi pi-check"
-          autofocus
           class="ml-3"
+          :loading="showLoading"
         />
       </div>
     </form>
@@ -93,17 +99,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
-import { helpers, required } from "@vuelidate/validators";
+import { defineComponent, PropType, reactive, ref } from "vue";
+import { helpers, minLength, required, sameAs } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import store from "@/store";
+import {
+  IChangePassParams,
+  ICustomer,
+} from "@/interface/auth/authentication.state";
 
 export default defineComponent({
   components: {},
   props: {
     isChangePass: { type: Boolean, default: false },
+    customer: { type: Object as PropType<ICustomer> },
   },
   setup(props, { emit }) {
     const submitted = ref(false);
+    const showLoading = ref(false);
     const state = reactive({
       oldPass: "",
       newPass: "",
@@ -112,25 +125,61 @@ export default defineComponent({
     const rules = {
       oldPass: {
         required: helpers.withMessage("Vui lòng nhập mật khẩu củ", required),
+        minLengthValue: minLength(8),
       },
       newPass: {
         required: helpers.withMessage("Vui lòng nhập mật khẩu mới", required),
+        minLengthValue: minLength(8),
       },
       comfirmPass: {
         required: helpers.withMessage(
           "Vui lòng nhập lại mật khẩu mới",
           required
         ),
+        minLengthValue: minLength(8),
       },
     };
 
+    const msgError = ref("");
     const v$ = useVuelidate(rules, state);
     const handleSubmit = (isFormValid: any) => {
+      msgError.value = "";
       submitted.value = true;
-
-      if (isFormValid) {
+      if (state.newPass !== state.comfirmPass) {
+        msgError.value = "Mật khẩu không khớp vui lòng kiểm tra lại!";
         return;
       }
+      if (isFormValid) {
+        changePass();
+        return;
+      }
+    };
+
+    const changePass = async () => {
+      showLoading.value = true;
+      msgError.value = "";
+      await store.dispatch("auth/changePass", {
+        customer_id: props.customer?.id,
+        old_pass: state.oldPass,
+        new_pass: state.newPass,
+        new_pass_confirmation: state.comfirmPass,
+      } as IChangePassParams);
+      const err = store.getters["auth/getError"]?.data;
+      if (err) {
+        msgError.value = err.message;
+        showLoading.value = false;
+        return;
+      }
+      emit("change-pass-success");
+      clearForm();
+      showLoading.value = false;
+    };
+
+    const clearForm = () => {
+      state.oldPass = "";
+      state.newPass = "";
+      state.comfirmPass = "";
+      submitted.value = false;
     };
 
     const closeModal = () => {
@@ -141,6 +190,8 @@ export default defineComponent({
       submitted,
       state,
       v$,
+      msgError,
+      showLoading,
       handleSubmit,
       closeModal,
     };
@@ -166,5 +217,9 @@ form {
 .field {
   margin-bottom: 1.5rem;
   height: 5rem;
+
+  small {
+    font-size: 1.2rem;
+  }
 }
 </style>

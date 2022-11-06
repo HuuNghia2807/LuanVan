@@ -10,40 +10,99 @@
       <div class="flex">
         <div class="information">
           <div class="p-fluid formgrid">
-            <div class="field">
-              <label for="username">Họ và tên: </label>
-              <my-inputText
-                id="username"
-                type="username"
-                v-model="state.name"
-              />
+            <div class="flex align-items-center">
+              <div class="field w-6 mr-3">
+                <label
+                  for="firstName"
+                  :class="{ 'p-error': v$.firstName.$invalid && submitted }"
+                >
+                  Họ *
+                </label>
+                <my-inputText
+                  id="firstName"
+                  v-model="v$.firstName.$model"
+                  :class="{ 'p-invalid': v$.firstName.$invalid && submitted }"
+                />
+                <small
+                  v-if="
+                    (v$.firstName.$invalid && submitted) ||
+                    v$.firstName.$pending
+                  "
+                  class="p-error"
+                  >{{ v$.firstName.required.$message }}</small
+                >
+              </div>
+              <div class="field w-6">
+                <label
+                  for="lastName"
+                  :class="{ 'p-error': v$.lastName.$invalid && submitted }"
+                >
+                  Tên *
+                </label>
+                <my-inputText
+                  id="lastName"
+                  v-model="v$.lastName.$model"
+                  :class="{ 'p-invalid': v$.lastName.$invalid && submitted }"
+                />
+                <small
+                  v-if="
+                    (v$.lastName.$invalid && submitted) || v$.lastName.$pending
+                  "
+                  class="p-error"
+                  >{{ v$.lastName.required.$message }}</small
+                >
+              </div>
             </div>
             <div class="gender field">
               <div
                 v-for="gender in genders"
-                :key="gender.key"
+                :key="gender.name"
                 class="field-radiobutton mr-4"
               >
                 <RadioButton
-                  :inputId="gender.key"
+                  :inputId="gender.name"
                   name="gender"
-                  :value="gender.key"
+                  :value="gender.name"
                   v-model="state.gender"
                 />
-                <label :for="gender.key">{{ gender.name }}</label>
+                <label :for="gender.name">{{ gender.name }}</label>
               </div>
             </div>
             <div class="field">
-              <label for="dateformat">Ngày sinh: </label>
-              <my-inputText id="dateformat" v-model="state.birth" />
+              <label for="birth">Ngày Sinh</label>
+              <my-inputText id="birth" v-model="state.birth" />
             </div>
             <div class="field">
+              <label
+                for="firstName"
+                :class="{ 'p-error': v$.firstName.$invalid && submitted }"
+              >
+                Số điện thoại *
+              </label>
+              <my-inputText
+                id="phone"
+                v-model="v$.phone.$model"
+                type="number"
+                :class="{ 'p-invalid': v$.phone.$invalid && submitted }"
+              />
+              <small
+                v-if="(v$.phone.$invalid && submitted) || v$.phone.$pending"
+                class="p-error"
+                >{{ v$.phone.required.$message }}</small
+              >
+            </div>
+            <!-- <div class="field">
               <label for="phone">Số điện thoại: </label>
               <my-inputText id="phone" v-model="state.phone" />
-            </div>
+            </div> -->
             <div class="field">
               <label for="email">Email: </label>
-              <my-inputText id="email" type="email" v-model="state.email" />
+              <my-inputText
+                id="email"
+                type="email"
+                v-model="state.email"
+                disabled
+              />
             </div>
           </div>
         </div>
@@ -51,13 +110,25 @@
           <div class="flex justify-content-between">
             <div class="avt-wrap">
               <div class="img">
-                <img src="@/assets/img/background-login.jpg" />
+                <img
+                  :src="
+                    state?.avatar ||
+                    require('@/assets/img/avatar_default/default-avatar.png')
+                  "
+                />
                 <label class="upload" for="avatar">
                   <i class="pi pi-camera" style="font-size: 5rem"></i>
-                  <input id="avatar" type="file" class="hidden" />
+                  <input
+                    id="avatar"
+                    type="file"
+                    class="hidden"
+                    @change="onUpload($event)"
+                  />
                 </label>
               </div>
-              <span class="name">{{ state.name }}</span>
+              <span class="name">{{
+                `${state.firstName} ${state.lastName}`
+              }}</span>
               <span class="email">{{ state.email }}</span>
             </div>
           </div>
@@ -68,7 +139,7 @@
           label="Cancel"
           icon="pi pi-times"
           @click="closeModal"
-          class="p-button-text w-2"
+          class="p-button-outlined w-2"
         />
         <my-button
           type="submit"
@@ -86,8 +157,9 @@
 import { defineComponent, PropType, reactive, ref } from "vue";
 import RadioButton from "primevue/radiobutton";
 import useVuelidate from "@vuelidate/core";
-import { helpers, required } from "@vuelidate/validators";
+import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import { ICustomer } from "@/interface/auth/authentication.state";
+import { convertToBase64 } from "@/function/convertImage";
 
 export default defineComponent({
   props: {
@@ -100,37 +172,40 @@ export default defineComponent({
   setup(props, { emit }) {
     const submitted = ref(false);
     const state = reactive({
-      name: "Nguyễn Hoàng Thanh Toàn",
-      phone: "0123456789",
-      email: "toan@gmail.com",
-      gender: "woman",
-      birth: "01-01-2000",
-      avatar: "",
+      firstName: props.customer?.firstName,
+      lastName: props.customer?.lastName,
+      phone: props.customer?.phone,
+      email: props.customer?.email,
+      gender: props.customer?.gender,
+      birth: props.customer?.birth,
+      avatar: props.customer?.avatar,
     });
     const genders = ref([
       {
         name: "Nam",
-        key: "man",
       },
       {
         name: "Nữ",
-        key: "woman",
       },
       {
         name: "Khác",
-        key: "other",
       },
     ]);
 
     const rules = {
-      name: {
+      firstName: {
+        required: helpers.withMessage("Tên không được trống", required),
+      },
+      lastName: {
         required: helpers.withMessage("Tên không được trống", required),
       },
       phone: {
         required: helpers.withMessage(
-          "Số điện thoại không được trống",
+          "Số điện thoại không được trống và có 10 số",
           required
         ),
+        maxLength: maxLength(10),
+        minLengthValue: minLength(10),
       },
     };
     const v$ = useVuelidate(rules, state);
@@ -138,8 +213,17 @@ export default defineComponent({
       submitted.value = true;
 
       if (isFormValid) {
+        emit("update-info", state);
         return;
       }
+    };
+
+    const onUpload = (e: any) => {
+      const target = e.target.files[0];
+      // const img = URL.createObjectURL(target);
+      convertToBase64(target).then((res) => {
+        state.avatar = res as string;
+      });
     };
 
     const closeModal = () => {
@@ -149,6 +233,8 @@ export default defineComponent({
       genders,
       v$,
       state,
+      submitted,
+      onUpload,
       closeModal,
       handleSubmit,
     };
@@ -183,15 +269,26 @@ export default defineComponent({
 
     .field {
       margin: 1rem 0;
+
+      label {
+        font-size: 1.6rem;
+      }
+
+      small {
+        font-size: 1.2rem;
+      }
+
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
     }
 
     :deep(.p-inputtext) {
       font-size: 1.6rem !important;
     }
-
-    :deep(.p-component:disabled) {
-      opacity: 0.8 !important;
-    }
+  }
+  :deep(.p-component:disabled) {
+    opacity: 0.9 !important;
   }
 
   .avatar {

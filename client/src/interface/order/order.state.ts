@@ -47,7 +47,7 @@ export interface IOrders {
   status: string;
   orderTime: number;
   payment: string;
-  receiveTime: string;
+  receiveTime: number;
   totalPrice: number;
   productOrder: IProductOrder[];
 }
@@ -88,7 +88,7 @@ export interface IOrderResponse {
   order_status: IOrderStatusResponse;
   order_time: number;
   payment: IPaymentResponse;
-  receive_time: string;
+  receive_time: number;
   total_price: number;
   product_order: IOrderDetailResponse[];
 }
@@ -120,4 +120,5 @@ export interface IPaymentResponse {
 export interface IUpdateStatusOrderParams {
   order_id: number;
   status_id: number;
+  note?: string;
 }

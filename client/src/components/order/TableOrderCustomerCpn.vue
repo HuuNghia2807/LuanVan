@@ -57,6 +57,7 @@
             type="button"
             icon="pi pi-eye"
             class="p-button-rounded p-button-success mr-3"
+            @click="orderDetail(slotProps.data)"
           ></my-button>
           <my-button
             v-if="
@@ -77,7 +78,6 @@
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
 import { formatPrice, translateUnixTimeToFullTime } from "@/function/common";
-import { FilterMatchMode } from "primevue/api";
 import { IOrders } from "@/interface/order/order.state";
 
 export default defineComponent({
@@ -92,8 +92,12 @@ export default defineComponent({
     const cancelOrder = (order: IOrders) => {
       emit("cancel-order", order.orderId);
     };
+    const orderDetail = (order: IOrders) => {
+      emit("view-order-detail", order);
+    };
     return {
       columns,
+      orderDetail,
       cancelOrder,
       formatPrice,
       translateUnixTimeToFullTime,
