@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CustomerResource;
 use App\Models\Address;
 use App\Models\Customer;
+use App\Models\UserDetail;
 use App\Repositories\Customer\CustomerRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -64,7 +65,11 @@ class CustomerController extends AbstractApiController
      */
     public function show($id)
     {
-        //
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Get customer success');
+        $this->setData(CustomerResource::make(Customer::find($id)));
+        return $this->respond();
     }
 
     /**
@@ -85,9 +90,45 @@ class CustomerController extends AbstractApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'customer_id' => 'required',
+            'info' => 'required',
+        ]);
+        if (!$validated) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+        $customer_id = $request->customer_id;
+        $data = $request->info;
+        DB::beginTransaction();
+        try {
+            $cus = Customer::find($customer_id);
+            UserDetail::find($cus->user_detail_id)->update([
+                'user_first_name' => $data['first_name'],
+                'user_last_name' => $data['last_name'],
+                'user_phone' => $data['phone'],
+                'user_birth' => $data['birth'],
+                'user_gender' => $data['gender'],
+                'user_avatar' => $data['avatar'],
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('Failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('Success');
+        $this->setMessage('Update info success');
+        $this->setData(CustomerResource::make($cus));
+        return $this->respond();
     }
 
     /**
@@ -206,14 +247,68 @@ class CustomerController extends AbstractApiController
         return $this->respond();
     }
 
-    // public function getCustomerAddress($id)
-    // {
-    //     $add = Address::where('customer_id', '=', $id)->get();
-    //     // create address resource
-    //     $this->setStatusCode(JsonResponse::HTTP_OK);
-    //     $this->setStatus('success');
-    //     $this->setMessage('Update success');
-    //     // $this->setData($orders);
-    //     return $this->respond();
-    // }
+    public function changePass(Request $request)
+    {
+        $validateCustomer = Validator::make(
+            $request->all(),
+            [
+                'customer_id' => 'required|numeric',
+                'old_pass' => 'required|min:8|max:255',
+                'new_pass' => 'required|min:8|max:255|confirmed',
+            ]
+        );
+        if ($validateCustomer->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+        $customer = Customer::find($request->customer_id);
+        if (Hash::check($request->old_pass, $customer->password)) {
+            $customer->update([
+                'password' => Hash::make($request->new_pass)
+            ]);
+        } else {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Mật khẩu củ không chính xác');
+            return $this->respond();
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Update success');
+        return $this->respond();
+    }
+
+
+    public function updateAddress(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+
+                'address_id' => 'required|numeric',
+                'address' => 'required',
+                'ward_id' => 'required|numeric',
+            ]
+        );
+        if ($validate->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+        $address = Address::find($request->address_id);
+        if ($address) {
+            $address->update([
+                'address' => $request->address,
+                'ward_id' => $request->ward_id
+            ]);
+        }
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Update success');
+        return $this->respond();
+    }
 }

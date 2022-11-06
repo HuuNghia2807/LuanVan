@@ -171,6 +171,11 @@ class OrderController extends AbstractApiController
                 'order_status_id' => $request->status_id,
                 'receive_time' => $time->toDateTimeString()
             ]);
+        } else if ($request->status_id === 5 && $request->note) {
+            Order::find($request->order_id)->update([
+                'order_status_id' => $request->status_id,
+                'order_note' => $request->note
+            ]);
         } else {
             Order::find($request->order_id)->update(['order_status_id' => $request->status_id]);
         }

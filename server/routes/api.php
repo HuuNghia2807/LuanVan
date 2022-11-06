@@ -24,10 +24,14 @@ use App\Http\Controllers\ProvinceController;
 */
 
 Route::group(['prefix' => 'customer'], function () {
-    Route::get('/address/${id}', [CustomerController::class, 'getCustomerAddress']);
+    Route::get('/{id}', [CustomerController::class, 'show'])->name('customer.show');
+    Route::get('/address/{id}', [CustomerController::class, 'getCustomerAddress']);
     Route::post('/register', [CustomerController::class, 'register'])->name('customer.register');
     Route::post('/login', [CustomerController::class, 'login'])->name('customer.login');
     Route::post('/delete', [CustomerController::class, 'destroy'])->name('customer.destroy');
+    Route::put('/update', [CustomerController::class, 'update'])->name('customer.update');
+    Route::put('/password', [CustomerController::class, 'changePass']);
+    Route::put('/address', [CustomerController::class, 'updateAddress']);
     // Route::post('refresh-token', [AuthController::class, 'refresh'])->name('auth.refresh');
     // Route::get('me', [AuthController::class, 'userProfile'])->name('auth.userProfile');
     // Route::post('newpassword', [AuthController::class, 'changePassword'])->name('auth.changePassword');
