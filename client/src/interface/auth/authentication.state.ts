@@ -5,6 +5,8 @@ import { ICart } from "../product/product.state";
 export interface IAuthentication {
   isLogged: boolean;
   userId: Nullable<number>;
+  isLoggedDashboard: boolean;
+  userDashboard: null;
   userInfo: any;
   cart: ICart[] | null;
   role: Nullable<Role>;

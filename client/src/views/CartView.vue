@@ -50,7 +50,6 @@ import { formatPrice } from "@/function/common";
 import { useRouter } from "vue-router";
 import { getCartList } from "@/function/getCartList";
 import { useToast } from "primevue/usetoast";
-import TheLoader from "@/components/common/TheLoader.vue";
 
 export default defineComponent({
   components: {

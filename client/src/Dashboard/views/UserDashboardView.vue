@@ -2,7 +2,7 @@
   <div class="card">
     <DataTable
       :value="users"
-      v-model:selection="selectedProducts"
+      v-model:selection="selectedUsers"
       dataKey="id"
       :paginator="true"
       :rows="8"
@@ -33,13 +33,21 @@
               placeholder="Search..."
             />
           </span>
-          <my-button
-            label="Xóa Sản Phẩm"
-            icon="pi pi-trash"
-            class="p-button-danger"
-            @click="confirmDeleteSelected"
-            :disabled="!selectedProducts || !selectedProducts.length"
-          />
+          <div class="wrap">
+            <my-button
+              label="Thêm Nhân Viên"
+              icon="pi pi-trash"
+              class="p-button-success mr-3"
+              @click="handleAddEmployee"
+            />
+            <my-button
+              label="Xóa Người Dùng"
+              icon="pi pi-trash"
+              class="p-button-danger"
+              @click="confirmDeleteSelected"
+              :disabled="!selectedUsers || !selectedUsers.length"
+            />
+          </div>
         </div>
       </template>
 
@@ -140,32 +148,27 @@
       />
     </template>
   </my-dialog>
-
-  <my-dialog
-    header="ACTIONS"
-    v-model:visible="productDialog"
-    :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-    :style="{ width: '60vw', fontSize: '2rem' }"
-    :modal="true"
-  >
-    <AddOrEditProductCpn />
-  </my-dialog>
+  <AddEmployee
+    :is-add-employee="isAddEmployee"
+    @close-modal-add-employee="closeModalAddEmployee"
+  />
   <my-toast position="top-right" group="tr" />
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
-import AddOrEditProductCpn from "@/Dashboard/components/product/AddOrEditProductCpn.vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import Column from "primevue/column";
+import store from "@/store";
+import AddEmployee from "../components/modal/AddEmployee.vue";
 
 export default defineComponent({
   components: {
-    AddOrEditProductCpn,
     InputText,
     Column,
+    AddEmployee,
   },
   setup() {
     const users = ref([
@@ -281,7 +284,8 @@ export default defineComponent({
         code: "employee",
       },
     ]);
-    const selectedProducts = ref([] as any[]);
+    const selectedUsers = ref([] as any[]);
+    const isAddEmployee = ref(false);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
@@ -290,11 +294,6 @@ export default defineComponent({
     const product = ref<any>({});
     const toast = useToast();
     const deleteProductsDialog = ref(false);
-    const statuses = ref([
-      { label: "NIKE", value: "nike" },
-      { label: "JORDAN", value: "jordan" },
-      { label: "PUMA", value: "puma" },
-    ]);
 
     const confirmDeleteSelected = () => {
       deleteProductDialog.value = true;
@@ -304,7 +303,7 @@ export default defineComponent({
       productDialog.value = true;
     };
     const deleteProduct = () => {
-      if (selectedProducts.value.length) {
+      if (selectedUsers.value.length) {
         deleteSelectedProducts();
       }
 
@@ -321,10 +320,10 @@ export default defineComponent({
     };
     const deleteSelectedProducts = () => {
       users.value = users.value.filter(
-        (val) => !selectedProducts.value.includes(val)
+        (val) => !selectedUsers.value.includes(val)
       );
       deleteProductsDialog.value = false;
-      selectedProducts.value = [];
+      selectedUsers.value = [];
       toast.add({
         severity: "success",
         summary: "Successful",
@@ -339,6 +338,18 @@ export default defineComponent({
       deleteProductDialog.value = true;
     };
 
+    const handleAddEmployee = () => {
+      isAddEmployee.value = true;
+    };
+
+    const closeModalAddEmployee = () => {
+      isAddEmployee.value = false;
+    };
+
+    onMounted(async () => {
+      // await store
+    });
+
     return {
       users,
       filters,
@@ -346,8 +357,10 @@ export default defineComponent({
       productDialog,
       product,
       deleteProductsDialog,
-      selectedProducts,
-      statuses,
+      selectedUsers,
+      isAddEmployee,
+      closeModalAddEmployee,
+      handleAddEmployee,
       confirmDeleteSelected,
       editProduct,
       deleteProduct,

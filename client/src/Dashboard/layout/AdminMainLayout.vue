@@ -15,9 +15,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted } from "vue";
 import SidebarCpn from "@/Dashboard/components/SidebarCpn.vue";
 import HeaderAdminCpn from "@/Dashboard/components/HeaderAdminCpn.vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -25,6 +27,14 @@ export default defineComponent({
     HeaderAdminCpn,
   },
   setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    onMounted(() => {
+      // if (!store.getters["auth/getIsloggedDashboard"]) {
+      //   router.push("/login");
+      // }
+    });
     return {};
   },
 });

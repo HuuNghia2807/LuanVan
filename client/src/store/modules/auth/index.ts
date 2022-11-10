@@ -15,6 +15,8 @@ const initDefaultState = (): IAuthentication => {
   return {
     userId: null,
     isLogged: false,
+    isLoggedDashboard: false,
+    userDashboard: null,
     userInfo: null,
     cart: null,
     role: null,
@@ -26,7 +28,9 @@ const state = initDefaultState();
 const getters: GetterTree<IAuthentication, IAuthentication> = {
   getUserId: (state) => state.userId,
   getIslogged: (state) => state.isLogged,
+  getIsloggedDashboard: (state) => state.isLoggedDashboard,
   getUser: (state) => state.userInfo,
+  getUserDashboard: (state) => state.userDashboard,
   getCart: (state) => state.cart,
   getError: (state) => state.error,
 };
@@ -45,6 +49,14 @@ const mutations: MutationTree<IAuthentication> = {
       return;
     }
     state.isLogged = false;
+  },
+  setDashboard(state, payload) {
+    state.userDashboard = payload;
+    if (payload) {
+      state.isLoggedDashboard = true;
+      return;
+    }
+    state.isLoggedDashboard = false;
   },
 };
 
@@ -131,6 +143,14 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
     try {
       commit("setError", { error: null });
       await authServices.updateAddress(payload);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async addEmployee({ commit }, payload: any) {
+    try {
+      commit("setError", { error: null });
+      await authServices.addEmployee(payload);
     } catch (error) {
       commit("setError", { error });
     }

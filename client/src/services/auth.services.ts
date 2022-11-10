@@ -101,6 +101,14 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async addEmployee(payload: any) {
+    try {
+      const response = await http.post("employee/add", payload);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();

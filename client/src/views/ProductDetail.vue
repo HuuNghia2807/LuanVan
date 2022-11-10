@@ -1,7 +1,6 @@
 <template>
   <my-toast />
   <div class="product-detail">
-    <HeaderTypeProductCpn />
     <div class="container">
       <div class="list-img-wrap">
         <div class="list-img">
@@ -72,6 +71,7 @@
               icon="pi pi-chevron-right"
               class="p-button-lg p-button-danger p-button-rounded"
               iconPos="right"
+              @click="handleAddCart"
             />
           </div>
         </div>
@@ -103,14 +103,12 @@ import { ICart, IProduct } from "@/interface/product/product.state";
 import { formatPrice } from "@/function/common";
 import { useToast } from "primevue/usetoast";
 import { addProductToCart, setStateCart } from "@/function/handleLocalStorage";
-import HeaderTypeProductCpn from "@/components/Product/HeaderTypeProductCpn.vue";
 import Rating from "primevue/rating";
 import RadioButton from "primevue/radiobutton";
 import InputNumber from "primevue/inputnumber";
 
 export default defineComponent({
   components: {
-    HeaderTypeProductCpn,
     Rating,
     RadioButton,
     InputNumber,
@@ -121,13 +119,7 @@ export default defineComponent({
     const toast = useToast();
     const rate = ref(3);
     const product = ref<IProduct>();
-    const sizes = ref([
-      //   { name: "40", value: 40 },
-      //   { name: "41", value: 41 },
-      //   { name: "42", value: 42 },
-      //   { name: "43", value: 43 },
-      //   { name: "44", value: 44 },
-    ] as any);
+    const sizes = ref([] as any);
     const selectedSize = ref<number>();
     const quantity = ref(1);
     const handleAddCart = () => {
