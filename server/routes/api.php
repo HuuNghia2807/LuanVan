@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProvinceController;
@@ -36,6 +37,11 @@ Route::group(['prefix' => 'customer'], function () {
     // Route::get('me', [AuthController::class, 'userProfile'])->name('auth.userProfile');
     // Route::post('newpassword', [AuthController::class, 'changePassword'])->name('auth.changePassword');
     // Route::get('', [AuthController::class, 'getAllUser'])->name('auth.getAllUser');
+});
+
+Route::group(['prefix' => 'employee'], function () {
+    Route::post('/add', [EmployeeController::class, 'store'])->name('employee.store');
+    Route::post('/login', [EmployeeController::class, 'login'])->name('employee.login');
 });
 
 Route::group(['prefix' => 'province'], function () {

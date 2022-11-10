@@ -43,6 +43,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Order\OrderRepositoryInterface::class,
             \App\Repositories\Order\OrderRepository::class
         );
+
+        $this->app->singleton(
+            \App\Repositories\Employee\EmployeeRepositoryInterface::class,
+            \App\Repositories\Employee\EmployeeRepository::class
+        );
     }
 
     /**
