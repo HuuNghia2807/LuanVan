@@ -1,5 +1,5 @@
 import { Nullable } from "primevue/ts-helpers";
-import { ICustomer, ICustomerResponse } from "../auth/authentication.state";
+import { ICustomer, IUserResponse } from "../auth/authentication.state";
 import { ICartList, IProductResponse } from "../product/product.state";
 
 // interface state
@@ -81,7 +81,7 @@ export interface IAddressOrder {
 
 export interface IOrderResponse {
   address: IAddressResponse;
-  customer: ICustomerResponse;
+  customer: IUserResponse;
   employee: any;
   order_id: number;
   order_note: string;

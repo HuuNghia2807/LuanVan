@@ -2,10 +2,10 @@ import {
   IAddressCustomer,
   IAddressCustomerResponse,
   ICustomer,
-  ICustomerResponse,
+  IUserResponse,
 } from "@/interface/auth/authentication.state";
 
-export const translateCustomer = (user: ICustomerResponse): ICustomer => {
+export const translateCustomer = (user: IUserResponse): ICustomer => {
   return {
     id: user.id,
     firstName: user.first_name,
@@ -15,7 +15,7 @@ export const translateCustomer = (user: ICustomerResponse): ICustomer => {
     birth: user.birth,
     gender: user.gender,
     phone: user.phone,
-    status: user.user_status,
+    status: user.user_status || null,
     avatar: user.avatar,
     address: translateAddress(user.address),
   };

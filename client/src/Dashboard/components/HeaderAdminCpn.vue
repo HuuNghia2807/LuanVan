@@ -1,7 +1,7 @@
 <template>
   <div class="header-admin">
     <div class="title">
-      <Button
+      <my-button
         icon="pi pi-bars"
         class="p-button-rounded p-button-secondary p-button-text"
       />
@@ -21,10 +21,28 @@
           v-badge="2"
         ></i>
       </div>
-      <Button
-        icon="pi pi-user"
-        class="p-button-rounded p-button-info p-button-outlined"
-      />
+      <div
+        class="user"
+        @mouseover="toggleShowSubMenu(true)"
+        @mouseleave="toggleShowSubMenu(false)"
+      >
+        <i class="pi pi-user" style="font-size: 1.6rem"></i>
+        <div
+          class="sub-user"
+          v-show="isShowSubmenu"
+          @mouseover="toggleShowSubMenu(true)"
+          @mouseleave="toggleShowSubMenu(false)"
+        >
+          <ul class="special-list flex flex-column z-100">
+            <li class="opacity-100 z-5 control-item">
+              <a href="#" class="font-normal text-left" @click="handleClick">
+                <div class="text-2xl mr-2"></div>
+                Đăng Xuất
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -32,17 +50,30 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
-import Button from "primevue/button";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
     InputText,
-    Button,
   },
   setup() {
+    const router = useRouter();
+    const store = useStore();
     const search = ref("");
+    const isShowSubmenu = ref(false);
+    const toggleShowSubMenu = (show?: boolean) => {
+      isShowSubmenu.value = show || false;
+    };
+    const handleClick = () => {
+      store.dispatch("auth/logoutDashboard");
+      router.push("/dashboard");
+    };
     return {
       search,
+      isShowSubmenu,
+      handleClick,
+      toggleShowSubMenu,
     };
   },
 });
@@ -95,6 +126,51 @@ export default defineComponent({
 
       &:hover {
         background-color: #ccc;
+      }
+    }
+
+    .user {
+      border-radius: 50%;
+      border: 1px solid blue;
+      position: relative;
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+
+      .sub-user {
+        position: absolute;
+        top: 100%;
+        right: -50%;
+      }
+
+      .special-list {
+        margin-top: 0;
+        background-color: #fff;
+        border: solid 1px #f3f2f1;
+        border-radius: 10px;
+        background-color: #f3f2f1;
+        min-width: 8rem;
+        list-style: none;
+        box-shadow: 0.2rem 0.2rem 0.2rem #ccc;
+      }
+
+      .control-item {
+        display: flex;
+        padding: 1rem;
+        cursor: pointer;
+
+        &:hover {
+          background-color: var(--white-color);
+        }
+
+        a {
+          min-width: 120px;
+          text-decoration: none;
+          color: #000;
+        }
+      }
+
+      .z-100 {
+        z-index: 100;
       }
     }
 

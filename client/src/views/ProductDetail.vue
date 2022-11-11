@@ -71,7 +71,6 @@
               icon="pi pi-chevron-right"
               class="p-button-lg p-button-danger p-button-rounded"
               iconPos="right"
-              @click="handleAddCart"
             />
           </div>
         </div>

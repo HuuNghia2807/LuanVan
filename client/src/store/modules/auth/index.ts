@@ -1,6 +1,7 @@
 // import axios from "axios"
 
 import { removeItemLocal } from "@/function/handleLocalStorage";
+import { translateUser } from "@/function/translateEmployee";
 import {
   IAuthentication,
   IChangePassParams,
@@ -50,7 +51,7 @@ const mutations: MutationTree<IAuthentication> = {
     }
     state.isLogged = false;
   },
-  setDashboard(state, payload) {
+  setUserDashboard(state, payload) {
     state.userDashboard = payload;
     if (payload) {
       state.isLoggedDashboard = true;
@@ -78,6 +79,14 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async logoutDashboard({ commit }) {
+    try {
+      commit("setUserDashboard", null);
+      removeItemLocal("userDashboard");
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
   async addCart({ commit }, data: any) {
     try {
       commit("setCart", data);
@@ -98,8 +107,8 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
   async loginDashboard({ commit }, employee: ILoginParams) {
     try {
       commit("setError", { error: null });
-      const res = await authServices.loginDashboard(employee);
-      return res;
+      const emp = await authServices.loginDashboard(employee);
+      commit("setUserDashboard", emp);
     } catch (error) {
       commit("setError", { error });
     }
@@ -151,6 +160,15 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
     try {
       commit("setError", { error: null });
       await authServices.addEmployee(payload);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getAllUser({ commit }) {
+    try {
+      commit("setError", { error: null });
+      const all = await authServices.getAllUser();
+      return translateUser(all);
     } catch (error) {
       commit("setError", { error });
     }

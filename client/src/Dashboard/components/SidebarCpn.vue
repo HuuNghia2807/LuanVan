@@ -69,11 +69,6 @@ export default defineComponent({
         icon: "pi pi-chart-bar",
         link: "/dashboard/report",
       },
-      {
-        name: "Logout",
-        icon: "pi pi-sign-out",
-        link: "/login",
-      },
     ]);
     return {
       menuSidebar,

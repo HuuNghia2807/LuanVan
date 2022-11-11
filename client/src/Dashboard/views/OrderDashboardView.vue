@@ -1,5 +1,6 @@
 <template>
   <my-toast />
+  <TheLoader :is-loading="showLoading" />
   <div class="order">
     <TabView ref="tabview1">
       <TabPanel header="Đơn Hàng Mới">
@@ -44,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import {
   IOrders,
@@ -54,16 +55,19 @@ import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import TableOrderAdminCpn from "../components/order/TableOrderAdminCpn.vue";
 import { useToast } from "primevue/usetoast";
+import TheLoader from "@/components/common/TheLoader.vue";
 
 export default defineComponent({
   components: {
     TabView,
     TabPanel,
     TableOrderAdminCpn,
+    TheLoader,
   },
   setup() {
     const store = useStore();
     const toast = useToast();
+    const showLoading = ref(false);
     const orders = computed(() => {
       const order = store.getters["order/getOrders"] as IOrders[];
       return order || [];
@@ -150,7 +154,9 @@ export default defineComponent({
     };
 
     const getOrders = async () => {
+      showLoading.value = true;
       await store.dispatch("order/getOrder");
+      showLoading.value = false;
     };
     onMounted(() => {
       getOrders();
@@ -160,6 +166,7 @@ export default defineComponent({
       deliveryOrder,
       completeOrder,
       cancelOrder,
+      showLoading,
       orderCanceled,
       orderDelivered,
       orderShipping,

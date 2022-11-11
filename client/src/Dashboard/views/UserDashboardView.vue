@@ -1,15 +1,16 @@
 <template>
+  <TheLoader :is-loading="showLoading" />
   <div class="card">
     <DataTable
-      :value="users"
+      :value="userList"
       v-model:selection="selectedUsers"
       dataKey="id"
       :paginator="true"
       :rows="8"
       :filters="filters"
+      scrollDirection="both"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      responsiveLayout="scroll"
     >
       <template #header>
         <div
@@ -36,7 +37,7 @@
           <div class="wrap">
             <my-button
               label="Thêm Nhân Viên"
-              icon="pi pi-trash"
+              icon="pi pi-plus"
               class="p-button-success mr-3"
               @click="handleAddEmployee"
             />
@@ -50,76 +51,59 @@
           </div>
         </div>
       </template>
-
-      <Column
+      <my-column
         selectionMode="multiple"
         style="width: 3rem"
         :exportable="false"
-      ></Column>
-      <Column
-        header="Ảnh & Tên"
-        :showFilterMatchModes="false"
-        style="min-width: 14rem"
-      >
-        <template #body="{ data }">
-          <my-avatar
-            :image="data.img"
-            class="mr-2"
-            size="xlarge"
-            shape="circle"
-            style="vertical-align: middle"
-          />
-          <span class="image-text">{{ data.name }}</span>
-        </template>
-      </Column>
-      <Column header="Ngày Sinh" dataType="date" style="min-width: 8rem">
-        <template #body="{ data }">
-          {{ data.birth }}
-        </template>
-        <template #filter="{ filterModel }">
-          <my-calendar
-            v-model="filterModel.value"
-            dateFormat="mm/dd/yy"
-            placeholder="mm/dd/yyyy"
-          />
-        </template>
-      </Column>
-      <Column field="email" header="Email" style="min-width: 8rem"></Column>
-      <Column
-        field="phone"
-        header="Số Điện Thoại"
-        style="min-width: 8rem"
-      ></Column>
-      <Column
-        field="address"
-        header="Địa Chỉ"
-        style="min-width: 20rem"
-      ></Column>
-
-      <Column :exportable="false" style="min-width: 8rem">
+      ></my-column>
+      <my-column field="id" header="Mã" style="width: 8rem"></my-column>
+      <my-column header="Ảnh" style="width: 8rem">
         <template #body="slotProps">
-          <my-button
-            type="button"
-            icon="pi pi-eye"
-            class="p-button-rounded p-button-info"
-          ></my-button>
-          <my-button
-            icon="pi pi-pencil"
-            class="p-button-rounded p-button-success mx-2"
-            @click="editProduct(slotProps.data)"
+          <img
+            :src="
+              slotProps.data.avatar ||
+              require('@/assets/img/avatar_default/default-avatar.png')
+            "
+            class="img"
           />
+        </template>
+      </my-column>
+
+      <my-column
+        v-for="col of columns"
+        :field="col.field"
+        :header="col.header"
+        :key="col.field"
+        :style="{ width: col.width }"
+      >
+        <template v-if="col.field === 'address'" #body="slotProps">
+          <div>
+            <span>{{
+              slotProps.data.address?.length
+                ? `${slotProps.data.address[0].address}, 
+                ${slotProps.data.address[0].ward.ward},       
+                ${slotProps.data.address[0].district.district},
+                ${slotProps.data.address[0].city.city}`
+                : ""
+            }}</span>
+          </div>
+        </template>
+      </my-column>
+
+      <my-column :exportable="false" style="min-width: 8rem">
+        <template #body="slotProps">
           <my-button
             icon="pi pi-trash"
             class="p-button-rounded p-button-warning"
             @click="confirmDeleteProduct(slotProps.data)"
           />
         </template>
-      </Column>
+      </my-column>
     </DataTable>
   </div>
 
   <my-dialog
-    v-model:visible="deleteProductDialog"
+    v-model:visible="deleteUserDialog"
     :style="{ width: '450px' }"
     header="Confirm"
     :modal="true"
@@ -137,7 +121,7 @@
         icon="pi pi-times"
         class="p-button-text"
         style="font-size: 1.6rem"
-        @click="deleteProductDialog = false"
+        @click="deleteUserDialog = false"
       />
       <my-button
         label="Yes"
@@ -156,159 +140,94 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref } from "vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
-import Column from "primevue/column";
 import store from "@/store";
 import AddEmployee from "../components/modal/AddEmployee.vue";
+import TheLoader from "@/components/common/TheLoader.vue";
+import { IAllUser } from "@/interface/auth/authentication.state";
 
 export default defineComponent({
   components: {
     InputText,
-    Column,
     AddEmployee,
+    TheLoader,
   },
   setup() {
-    const users = ref([
-      {
-        id: 1,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 2,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 3,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 4,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 5,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 1,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 2,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 3,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 4,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-      {
-        id: 5,
-        img: "https://scontent.fhan5-10.fna.fbcdn.net/v/t1.6435-9/177966357_1021543504919292_3434748594631026863_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=174925&_nc_ohc=e3sNXS-D1jwAX8XLQKR&_nc_oc=AQlxsE6-MWgYG1qgMN9FwPKKZjJFH6kum9Qq3nR5GWE12dFS8ugcqmeIFtYEY5KuwHg&tn=R_GashQiMcIgmxTl&_nc_ht=scontent.fhan5-10.fna&oh=00_AT8VY5OXJMp22medAX-Gm6xbMfIDzlLJ4LYRn2q-53uf-A&oe=635F1F90",
-        name: "Đặng Ngọc Kim Xuyến",
-        birth: "02/08/2003",
-        email: "xuyen@gmail.com",
-        phone: "0123456789",
-        address: "Xã Gì Đó, Quận Bình Thủy, TP Cần Thơ",
-        gender: "Nữ",
-      },
-    ]);
-    const selectUser = ref("customers");
+    const users = ref<IAllUser>();
+    const selectUser = ref("customer");
+    const showLoading = ref(false);
     const userType = reactive([
       {
         name: "Khách Hàng",
-        code: "customers",
+        code: "customer",
       },
       {
         name: "Nhân viên",
         code: "employee",
       },
     ]);
+
+    const columns = computed(() => {
+      if (selectUser.value === "customer") {
+        return [
+          { field: "fullName", header: "Tên", width: "20rem" },
+          { field: "email", header: "Email", width: "15rem" },
+          { field: "status", header: "Trạng Thái", width: "15rem" },
+          { field: "phone", header: "Số Điện Thoại", width: "15rem" },
+          { field: "birth", header: "Ngày Sinh", width: "15rem" },
+          { field: "gender", header: "Giới tính", width: "15rem" },
+          { field: "address", header: "Địa chỉ", width: "30rem" },
+        ];
+      }
+      return [
+        { field: "fullName", header: "Tên", width: "20rem" },
+        { field: "email", header: "Email", width: "15rem" },
+        { field: "role", header: "Chức vụ", width: "15rem" },
+        { field: "phone", header: "Số Điện Thoại", width: "15rem" },
+        { field: "birth", header: "Ngày Sinh", width: "15rem" },
+        { field: "gender", header: "Giới tính", width: "15rem" },
+        { field: "address", header: "Địa chỉ", width: "30rem" },
+      ];
+    });
     const selectedUsers = ref([] as any[]);
     const isAddEmployee = ref(false);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
-    const deleteProductDialog = ref(false);
+    const deleteUserDialog = ref(false);
     const productDialog = ref(false);
     const product = ref<any>({});
     const toast = useToast();
     const deleteProductsDialog = ref(false);
 
+    const userList = computed(() => {
+      return (
+        users.value &&
+        (selectUser.value === "customer"
+          ? users.value?.customer
+          : users.value?.employee)
+      );
+    });
+
     const confirmDeleteSelected = () => {
-      deleteProductDialog.value = true;
+      deleteUserDialog.value = true;
     };
+
     const editProduct = (prod: any) => {
       product.value = { ...prod };
       productDialog.value = true;
     };
+
     const deleteProduct = () => {
       if (selectedUsers.value.length) {
         deleteSelectedProducts();
       }
 
-      users.value = users.value.filter((val) => val.id !== product.value.id);
-      deleteProductDialog.value = false;
+      // users.value = users.value.filter((val) => val.id !== product.value.id);
+      deleteUserDialog.value = false;
       product.value = {};
       toast.add({
         severity: "success",
@@ -318,10 +237,11 @@ export default defineComponent({
         life: 3000,
       });
     };
+
     const deleteSelectedProducts = () => {
-      users.value = users.value.filter(
-        (val) => !selectedUsers.value.includes(val)
-      );
+      // users.value = users.value.filter(
+      //   (val) => !selectedUsers.value.includes(val)
+      // );
       deleteProductsDialog.value = false;
       selectedUsers.value = [];
       toast.add({
@@ -335,7 +255,7 @@ export default defineComponent({
 
     const confirmDeleteProduct = (prod: any) => {
       product.value = prod;
-      deleteProductDialog.value = true;
+      deleteUserDialog.value = true;
     };
 
     const handleAddEmployee = () => {
@@ -347,18 +267,23 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      // await store
+      showLoading.value = true;
+      users.value = await store.dispatch("auth/getAllUser");
+      showLoading.value = false;
     });
 
     return {
       users,
+      userList,
       filters,
-      deleteProductDialog,
+      deleteUserDialog,
       productDialog,
       product,
       deleteProductsDialog,
       selectedUsers,
       isAddEmployee,
+      showLoading,
+      columns,
       closeModalAddEmployee,
       handleAddEmployee,
       confirmDeleteSelected,
@@ -379,6 +304,14 @@ export default defineComponent({
   padding: 2rem;
   border-radius: 10px;
   margin-bottom: 2rem;
+}
+
+.img {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: contain;
+  border: 1px solid #ccc;
 }
 
 :deep(.p-component),

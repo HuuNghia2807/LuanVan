@@ -20,6 +20,7 @@ import SidebarCpn from "@/Dashboard/components/SidebarCpn.vue";
 import HeaderAdminCpn from "@/Dashboard/components/HeaderAdminCpn.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { setEmployeeLogin } from "@/function/handleLocalStorage";
 
 export default defineComponent({
   components: {
@@ -31,9 +32,10 @@ export default defineComponent({
     const router = useRouter();
 
     onMounted(() => {
-      // if (!store.getters["auth/getIsloggedDashboard"]) {
-      //   router.push("/login");
-      // }
+      setEmployeeLogin(store);
+      if (!store.getters["auth/getIsloggedDashboard"]) {
+        router.push("/login");
+      }
     });
     return {};
   },

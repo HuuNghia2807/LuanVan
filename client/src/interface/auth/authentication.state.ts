@@ -18,11 +18,12 @@ export interface ILoginParams {
   password: string;
 }
 
-export interface ICustomerResponse {
+export interface IUserResponse {
   id: number;
   email: string;
-  user_status_id: number;
-  user_status: string;
+  user_status_id?: number;
+  user_status?: string;
+  role?: string;
   first_name: string;
   last_name: string;
   phone: string;
@@ -35,7 +36,21 @@ export interface ICustomerResponse {
 export interface ICustomer {
   id: number;
   email: string;
-  status: string;
+  status: string | null;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  phone: string;
+  birth: string | null;
+  gender: string | null;
+  avatar: string;
+  address: IAddressCustomer[];
+}
+
+export interface IEmployee {
+  id: number;
+  email: string;
+  role: string | null;
   firstName: string;
   lastName: string;
   fullName: string;
@@ -89,6 +104,16 @@ export interface IUpdateAddressParams {
   address_id: number;
   address: string;
   ward_id: number;
+}
+
+export interface IAllUserResponse {
+  customer: IUserResponse[];
+  employee: IUserResponse[];
+}
+
+export interface IAllUser {
+  customer: ICustomer[];
+  employee: IEmployee[];
 }
 
 export type Role = "admin" | "user";

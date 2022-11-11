@@ -9,6 +9,7 @@ import {
 } from "@/interface/auth/authentication.state";
 import { translateCustomer } from "@/function/translateCustomer";
 import { setItemLocal } from "@/function/handleLocalStorage";
+import { translateEmployee } from "@/function/translateEmployee";
 
 export interface ICredential {
   username: string;
@@ -43,7 +44,13 @@ class AuthService {
   async loginDashboard(employee: ILoginParams) {
     try {
       const response = await http.post("employee/login", employee);
-      return response;
+      if (response.data.data) {
+        const employee = translateEmployee(response.data.data);
+        setItemLocal("userDashboard", employee);
+        return employee;
+      } else {
+        throw new Error("Wrong credential");
+      }
     } catch (error) {
       throw handleError(error as AxiosError);
     }
@@ -104,6 +111,14 @@ class AuthService {
   async addEmployee(payload: any) {
     try {
       const response = await http.post("employee/add", payload);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async getAllUser() {
+    try {
+      const response = await http.get("employee/all");
       return response.data.data;
     } catch (error) {
       throw handleError(error as AxiosError);

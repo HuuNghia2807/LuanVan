@@ -1,4 +1,5 @@
 <template>
+  <TheLoader :is-loading="showLoading" />
   <div class="container-product">
     <div class="card">
       <Toolbar class="mb-4">
@@ -69,7 +70,7 @@
         ></Column>
         <Column
           field="productCode"
-          header="Mã Sản Phẩm"
+          header="Mã SP"
           :sortable="true"
           style="width: 10rem"
         ></Column>
@@ -195,6 +196,7 @@ import Column from "primevue/column";
 import { IProduct } from "@/interface/product/product.state";
 import { useStore } from "vuex";
 import { formatPrice } from "@/function/common";
+import TheLoader from "@/components/common/TheLoader.vue";
 
 export default defineComponent({
   components: {
@@ -203,11 +205,13 @@ export default defineComponent({
     Rating,
     Toolbar,
     Column,
+    TheLoader,
   },
   setup() {
     const listProduct = ref([] as IProduct[]);
     const store = useStore();
     const selectedProducts = ref([] as any[]);
+    const showLoading = ref(false);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
@@ -274,8 +278,10 @@ export default defineComponent({
     };
 
     const loadProduct = async () => {
+      showLoading.value = true;
       await store.dispatch("product/getProducts");
       listProduct.value = store.getters["product/getProducts"] as IProduct[];
+      showLoading.value = false;
     };
 
     onMounted(() => {
@@ -290,6 +296,7 @@ export default defineComponent({
       deleteProductsDialog,
       selectedProducts,
       listProduct,
+      showLoading,
       loadProduct,
       addProduct,
       confirmDeleteSelected,
@@ -328,19 +335,37 @@ h5 {
   }
 }
 
+.product-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
 .product-badge.status-nike {
-  background: #c8e6c9;
-  color: #256029;
+  background-color: #aaf5b8;
+  color: #1ccb16;
 }
 
 .product-badge.status-jordan {
-  background: #ffcdd2;
-  color: #c63737;
+  background-color: #a1a2ed;
+  color: #373ec6;
 }
 
 .product-badge.status-puma {
-  background: #feedaf;
-  color: #8a5340;
+  background-color: #c8e6c9;
+  color: #256029;
+}
+
+.product-badge.status-adidas {
+  background-color: #edee9a;
+  color: #cbbf16;
+}
+.product-badge.status-jezzy {
+  background-color: #fddde0;
+  color: #c63737;
 }
 
 .table-header {

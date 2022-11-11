@@ -51,7 +51,12 @@
         <div class="my-4 flex justify-content-center" v-if="!!errorMsg">
           <small class="p-error">{{ errorMsg }}</small>
         </div>
-        <my-button type="submit" label="Đăng Nhập" class="mt-2" />
+        <my-button
+          :loading="showLoading"
+          type="submit"
+          label="Đăng Nhập"
+          class="mt-2"
+        />
       </form>
     </div>
   </div>
@@ -77,9 +82,10 @@ export default defineComponent({
       password: "",
     });
     const errorMsg = ref("");
+    const showLoading = ref(false);
     const rules = {
       email: {
-        required: helpers.withMessage("Email không đúng", required),
+        required: helpers.withMessage("Email không tồn tại", required),
       },
       password: {
         required: helpers.withMessage("Vui lòng nhập password", required),
@@ -101,6 +107,7 @@ export default defineComponent({
         } else {
           login(user);
         }
+
         return;
       }
     };
@@ -110,20 +117,27 @@ export default defineComponent({
     });
 
     const login = async (user: ILoginParams) => {
+      showLoading.value = true;
       await store.dispatch("auth/login", user);
 
       if (error.value) {
         errorMsg.value = error.value?.data.message as string;
+
+        showLoading.value = false;
       } else {
+        showLoading.value = false;
         router.push("/");
       }
     };
 
     const loginDashboard = async (user: ILoginParams) => {
+      showLoading.value = true;
       await store.dispatch("auth/loginDashboard", user);
       if (error.value) {
         errorMsg.value = error.value?.data.message as string;
+        showLoading.value = false;
       } else {
+        showLoading.value = false;
         router.push("/dashboard");
       }
     };
@@ -133,6 +147,7 @@ export default defineComponent({
       v$,
       submitted,
       errorMsg,
+      showLoading,
       handleSubmit,
     };
   },

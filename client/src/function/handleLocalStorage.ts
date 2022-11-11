@@ -53,3 +53,7 @@ export const setCustomerLogin = (st: any) => {
   const user = getItemLocal("customer");
   st.commit("auth/setUser", user);
 };
+export const setEmployeeLogin = (st: any) => {
+  const user = getItemLocal("userDashboard");
+  st.commit("auth/setUserDashboard", user);
+};
