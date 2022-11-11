@@ -40,6 +40,7 @@ Route::group(['prefix' => 'customer'], function () {
 });
 
 Route::group(['prefix' => 'employee'], function () {
+    Route::get('/all', [EmployeeController::class, 'index'])->name('employee.index');
     Route::post('/add', [EmployeeController::class, 'store'])->name('employee.store');
     Route::post('/login', [EmployeeController::class, 'login'])->name('employee.login');
 });

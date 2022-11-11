@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CustomerResource;
+use App\Http\Resources\EmployeeResource;
+use App\Models\Customer;
 use App\Models\Employee;
 use App\Repositories\Employee\EmployeeRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -27,7 +30,17 @@ class EmployeeController extends AbstractApiController
 
     public function index()
     {
-        //
+        $customer = Customer::all();
+        $employee = Employee::all();
+        $data = [
+            'customer' => CustomerResource::collection($customer),
+            'employee' => EmployeeResource::collection($employee),
+        ];
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Get user success');
+        $this->setData($data);
+        return $this->respond();
     }
 
     /**
@@ -164,11 +177,11 @@ class EmployeeController extends AbstractApiController
             $this->setMessage('Tài khoản hoặc mật khẩu không chính xác!');
             return $this->respond();
         }
-        // $customer = Customer::where('email', '=', $request->email)->first();
+        $employee = Employee::where('email', '=', $request->email)->first();
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('success');
         $this->setMessage('Login success');
-        // $this->setData(CustomerResource::make($customer));
+        $this->setData(EmployeeResource::make($employee));
         return $this->respond();
     }
 }
