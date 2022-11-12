@@ -35,9 +35,12 @@
     </my-column>
     <my-column header="Tổng" :style="{ width: '12rem' }">
       <template #body="slotProps">
-        <span class="text-green-500">{{
+        <span class="text-green-500" v-if="slotProps.data.payment_id === 1">{{
           formatPrice(slotProps.data.totalPrice)
         }}</span>
+        <span class="text-blue-500" v-else
+          >${{ slotProps.data.totalPrice }}</span
+        >
       </template>
     </my-column>
     <my-column header="Trạng Thái" :style="{ width: '12rem' }">

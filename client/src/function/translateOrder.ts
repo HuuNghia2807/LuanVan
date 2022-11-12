@@ -23,6 +23,7 @@ export const translateOrders = (listOrder: IOrderResponse[]): IOrders[] => {
       orderNote: ele.order_note,
       orderTime: ele.order_time,
       payment: ele.payment.payment_name,
+      payment_id: ele.payment.id,
       receiveTime: ele.receive_time,
       status: ele.order_status.order_status,
       totalPrice: ele.total_price,

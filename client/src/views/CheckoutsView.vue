@@ -326,12 +326,26 @@
                 </my-dropdown>
               </div>
             </div>
-            <div class="btn-payment">
+            <template v-if="selectedTypePay === 2">
+              <PayPal
+                :total-price="totalOrder"
+                @complete-paypal="orderPaypal"
+              />
+            </template>
+
+            <div
+              v-if="msgError"
+              class="flex align-items-center justify-content-center my-3"
+            >
+              <span class="text-red">{{ msgError }}</span>
+            </div>
+            <div class="btn-payment" v-if="selectedTypePay === 1">
               <Button
                 type="submit"
                 label="Đặt Hàng"
                 class="btn-submit"
                 @click="handleOrder"
+                :disabled="!selectedTypePay"
               />
             </div>
           </div>
@@ -358,7 +372,7 @@
       </div>
       <div class="total-price">
         <span class="text">Tổng cộng</span>
-        <span class="total">{{ formatPrice(totalOrder + transportFee) }}</span>
+        <span class="total">{{ formatPrice(totalOrder) }}</span>
       </div>
     </div>
   </div>
@@ -393,6 +407,7 @@ import {
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { useRouter } from "vue-router";
 import TheLoader from "@/components/common/TheLoader.vue";
+import PayPal from "@/components/common/PayPal.vue";
 
 export default defineComponent({
   components: {
@@ -402,6 +417,7 @@ export default defineComponent({
     Dropdown,
     Textarea,
     TheLoader,
+    PayPal,
   },
   setup() {
     const store = useStore();
@@ -411,6 +427,7 @@ export default defineComponent({
     const showLoading = ref(false);
     const router = useRouter();
     const selectedTypePay = ref();
+    const msgError = ref("");
     const productCheckout = computed(() => {
       const listProduct: IProduct[] =
         store.getters["product/getProducts"] || [];
@@ -424,9 +441,11 @@ export default defineComponent({
         null) as ICustomer;
     });
     const totalOrder = computed(() => {
-      return productCheckout.value.reduce(
-        (prev, cur) => prev + (cur?.price || 0) * (cur?.quantity || 0),
-        0
+      return (
+        productCheckout.value.reduce(
+          (prev, cur) => prev + (cur?.price || 0) * (cur?.quantity || 0),
+          0
+        ) + transportFee.value
       );
     });
     const transportFee = computed(() => {
@@ -523,7 +542,7 @@ export default defineComponent({
         customer_id: customer.value.id,
         customer_name: state.name,
         note: note.value,
-        total_price: totalOrder.value + transportFee.value,
+        total_price: totalOrder.value,
         address_order: {
           address: state.address,
           ward: state.ward,
@@ -533,19 +552,14 @@ export default defineComponent({
         product_order: productCheckout.value,
         payment_id: selectedTypePay.value,
       };
-      switch (selectedTypePay.value) {
-        case 1:
-          orderDefault(dataOrder);
-          break;
-        case 2:
-          orderPaypal(dataOrder);
-          break;
-        default:
-          break;
+      if (!selectedTypePay.value) {
+        msgError.value = "Vui lòng chọn phương thức thanh toán";
+        return;
       }
+      order(dataOrder);
     };
 
-    const orderDefault = async (order: IOrderParams) => {
+    const order = async (order: IOrderParams) => {
       showLoading.value = true;
       await store.dispatch("order/order", order);
       const error = store.getters["order/getError"];
@@ -569,8 +583,23 @@ export default defineComponent({
       showLoading.value = false;
       router.push("/profile");
     };
-    const orderPaypal = (order: IOrderParams) => {
-      console.log("-----", order);
+
+    const orderPaypal = async (price: number) => {
+      const dataOrder: IOrderParams = {
+        customer_id: customer.value.id,
+        customer_name: state.name,
+        note: note.value,
+        total_price: price,
+        address_order: {
+          address: state.address,
+          ward: state.ward,
+          district: state.district,
+          city: state.city,
+        },
+        product_order: productCheckout.value,
+        payment_id: selectedTypePay.value,
+      };
+      order(dataOrder);
     };
 
     onMounted(async () => {
@@ -598,6 +627,8 @@ export default defineComponent({
       payments,
       note,
       showLoading,
+      msgError,
+      orderPaypal,
       handleOrder,
       selectProvince,
       formatPrice,
@@ -667,6 +698,13 @@ export default defineComponent({
     }
     .pay {
       margin-top: 2rem;
+
+      :deep(.p-dropdown) {
+        width: 25rem;
+      }
+    }
+    .text-red {
+      color: red;
     }
     .form-info {
       margin-top: 2rem;

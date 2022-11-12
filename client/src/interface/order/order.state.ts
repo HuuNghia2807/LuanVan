@@ -47,6 +47,7 @@ export interface IOrders {
   status: string;
   orderTime: number;
   payment: string;
+  payment_id: number;
   receiveTime: number;
   totalPrice: number;
   productOrder: IProductOrder[];
