@@ -27,7 +27,7 @@ class OrderController extends AbstractApiController
 
     public function index()
     {
-        $orders = OrderResource::collection($this->orderRepo->getAll());
+        $orders = OrderResource::collection(Order::all()->sortByDesc('id'));
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('success');
         $this->setMessage('Get order success');
