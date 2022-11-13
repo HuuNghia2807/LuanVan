@@ -28,7 +28,7 @@ class ProductController extends AbstractApiController
     public function index()
     {
         //
-        $products = ProductResource::collection($this->productRepo->getAll());
+        $products = ProductResource::collection(Product::all()->sortByDesc('id'));
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('success');
         $this->setMessage('Get products success');

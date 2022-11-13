@@ -15,6 +15,7 @@ class Discount extends Model
 
     protected $fillable = [
         'discount_title',
-        'discount'
+        'discount',
+        'created_at'
     ];
 }

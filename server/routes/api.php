@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -53,6 +54,11 @@ Route::group(['prefix' => 'payment'], function () {
     Route::get('', [PaymentController::class, 'index'])->name('payment.index');
 });
 
+Route::group(['prefix' => 'discount'], function () {
+    Route::get('/', [DiscountController::class, 'index'])->name('discount.index');
+    Route::post('/add', [DiscountController::class, 'store'])->name('discount.store');
+});
+
 Route::group(['prefix' => 'category'], function () {
     Route::get('', [CategoryController::class, 'index'])->name('category.index');
     Route::post('/add', [CategoryController::class, 'store'])->name('category.store');
@@ -83,6 +89,4 @@ Route::group(['prefix' => 'order'], function () {
     Route::get('/customer/{id}', [OrderController::class, 'getPersonalOrder']);
     Route::post('', [OrderController::class, 'store'])->name('order.store');
     Route::post('/status/update', [OrderController::class, 'OrderUpdateStatus']);
-    // Route::post('/add', [OrderController::class, 'store'])->name('order.store');
-    // Route::post('/{id}', [OrderController::class, 'update'])->name('order.update');
 });
