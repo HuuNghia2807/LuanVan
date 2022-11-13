@@ -57,6 +57,8 @@ Route::group(['prefix' => 'payment'], function () {
 Route::group(['prefix' => 'discount'], function () {
     Route::get('/', [DiscountController::class, 'index'])->name('discount.index');
     Route::post('/add', [DiscountController::class, 'store'])->name('discount.store');
+    Route::post('/product', [DiscountController::class, 'addToProduct'])->name('discount.addToProduct');
+    Route::post('/remove', [DiscountController::class, 'removeToProduct'])->name('discount.removeToProduct');
 });
 
 Route::group(['prefix' => 'category'], function () {

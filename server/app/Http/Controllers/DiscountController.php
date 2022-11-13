@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DiscountResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Discount;
+use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -107,5 +109,69 @@ class DiscountController extends AbstractApiController
     public function destroy($id)
     {
         //
+    }
+
+
+    public function addToProduct(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'discount_id' => 'required|numeric',
+                'product_ids' => 'required',
+            ]
+        );
+        if ($validate->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+
+        $ids = $request->product_ids;
+        foreach ($ids as $id) {
+            Product::find($id)->update([
+                'discount_id' => $request->discount_id
+            ]);
+        }
+
+        $products = ProductResource::collection(Product::all()->sortByDesc('id'));
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('add discount success');
+        $this->setData($products);
+        return $this->respond();
+    }
+
+
+    public function removeToProduct(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'discount_id' => 'required|numeric',
+                'product_ids' => 'required',
+            ]
+        );
+        if ($validate->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+
+        $ids = $request->product_ids;
+        foreach ($ids as $id) {
+            Product::find($id)->update([
+                'discount_id' => null
+            ]);
+        }
+
+        $products = ProductResource::collection(Product::all()->sortByDesc('id'));
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('add discount success');
+        $this->setData($products);
+        return $this->respond();
     }
 }

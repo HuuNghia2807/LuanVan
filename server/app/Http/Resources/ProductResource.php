@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Category;
+use App\Models\Discount;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,6 +26,7 @@ class ProductResource extends JsonResource
             'product_rating' => $this->product_rating,
             'category_id' => $this->category_id,
             'category' => $this->getCategory($this->category_id),
+            'discount' => $this->getDiscount($this->discount_id),
             'sizes' => $this->getProductSize($this->id),
             'product_image' => $this->getProductImage($this->id),
             'created_at' => $this->created_at,
@@ -51,5 +53,11 @@ class ProductResource extends JsonResource
         $product_image = array();
         $product_image = ProductImage::where('product_id', '=', $id)->get();
         return ProductImageResource::collection($product_image);
+    }
+
+    public function getDiscount($id)
+    {
+        $discount = Discount::find($id);
+        return DiscountResource::make($discount);
     }
 }
