@@ -100,6 +100,9 @@ export default defineComponent({
         },
       ],
     });
+    // onMounted(async () => {
+    //   await store.dispatch("product/getHomeProduct");
+    // })
     return {
       newProduct,
       hotProduct,

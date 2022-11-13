@@ -85,7 +85,14 @@ export default defineComponent({
     const showLoading = ref(false);
     const rules = {
       email: {
-        required: helpers.withMessage("Email không tồn tại", required),
+        required: helpers.withMessage(
+          "Email chưa đúng định dạng",
+          (value: string) =>
+            // eslint-disable-next-line
+            /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(
+              value
+            )
+        ),
       },
       password: {
         required: helpers.withMessage("Vui lòng nhập password", required),

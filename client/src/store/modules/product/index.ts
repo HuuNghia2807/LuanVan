@@ -1,7 +1,10 @@
 // import axios from "axios"
 
 import { translateCategoryResponse } from "@/function/translateCategory";
-import { translateProductsResponse } from "@/function/translateProduct";
+import {
+  translateDiscount,
+  translateProductsResponse,
+} from "@/function/translateProduct";
 import { translateSizeResponse } from "@/function/translateSize";
 import { IAuthentication } from "@/interface/auth/authentication.state";
 import {
@@ -88,6 +91,25 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       commit("setError", {});
       const res = await productServices.updateProduct(payload);
       return res;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async addDiscount({ commit }, payload: any) {
+    try {
+      commit("setError", {});
+      const res = await productServices.addDiscount(payload);
+      return res;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getDiscount({ commit }) {
+    try {
+      commit("setError", {});
+      const res = await productServices.getDiscount();
+      const dis = translateDiscount(res);
+      return dis;
     } catch (error) {
       commit("setError", { error });
     }

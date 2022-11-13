@@ -22,7 +22,11 @@
       </div>
       <div class="content">
         <div>
-          <Rating :disabled="true" />
+          <Rating
+            :modelValue="product?.productRating"
+            :readonly="true"
+            :cancel="false"
+          />
           <span class="product-name">{{ product?.productName }}</span>
           <span class="product-code">
             Mã SP: <span class="sup-code">{{ product?.productCode }}</span>

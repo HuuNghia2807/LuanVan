@@ -1,4 +1,8 @@
-import { IProduct, IProductResponse } from "@/interface/product/product.state";
+import {
+  IDiscount,
+  IProduct,
+  IProductResponse,
+} from "@/interface/product/product.state";
 import { translateSize } from "./translateSize";
 
 export const translateProductsResponse = (
@@ -15,6 +19,17 @@ export const translateProductsResponse = (
       sizes: translateSize(prd.sizes),
       images: prd.product_image,
       category: prd.category,
+    };
+  });
+};
+
+export const translateDiscount = (dis: any[]): IDiscount[] => {
+  return dis.map((ele) => {
+    return {
+      discountId: ele.discount_id,
+      title: ele.title,
+      percent: ele.percent,
+      dateCreate: ele.time_create,
     };
   });
 };

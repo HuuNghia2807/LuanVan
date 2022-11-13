@@ -5,7 +5,7 @@
       <Toolbar class="mb-4">
         <template #start>
           <my-button
-            label="Thêm sản phẩm"
+            label="Thêm Sản Phẩm"
             icon="pi pi-plus"
             class="p-button-success mr-2"
             @click="addProduct"
@@ -18,23 +18,14 @@
             :disabled="!selectedProducts || !selectedProducts.length"
           />
         </template>
-
-        <!-- <template #end>
-          <FileUpload
-            mode="basic"
-            accept="image/*"
-            :maxFileSize="1000000"
-            label="Import"
-            chooseLabel="Import"
-            class="mr-2 inline-block"
-          />
+        <template #end>
           <my-button
-            label="Export"
-            icon="pi pi-upload"
-            class="p-button-help"
-            @click="exportCSV($event)"
+            label="Tạo Khuyến Mãi"
+            icon="pi pi-plus"
+            class="p-button"
+            @click="handleDiscount"
           />
-        </template> -->
+        </template>
       </Toolbar>
 
       <DataTable
@@ -42,7 +33,7 @@
         v-model:selection="selectedProducts"
         dataKey="productId"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
@@ -89,13 +80,19 @@
             />
           </template>
         </Column>
-        <Column header="Giá Sản Phẩm" :sortable="true" style="min-width: 8rem">
+        <Column
+          field="productPrice"
+          header="Giá Sản Phẩm"
+          :sortable="true"
+          style="min-width: 8rem"
+        >
           <template #body="slotProps">
             {{ formatPrice(slotProps.data.productPrice) }}
           </template>
         </Column>
         <Column
           header="Loại Sản Phẩm"
+          field="category"
           :sortable="true"
           style="min-width: 12rem"
         >
@@ -169,18 +166,19 @@
     </template>
   </my-dialog>
 
-  <my-dialog
-    header="ACTIONS"
-    v-model:visible="productDialog"
-    :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-    :style="{ width: '60vw', fontSize: '2rem' }"
-    :modal="true"
-  >
-    <AddOrEditProductCpn
-      :product-action="product"
-      @load-product="loadProduct"
-    />
-  </my-dialog>
+  <AddOrEditProductCpn
+    v-if="isProductModal"
+    :is-product-modal="isProductModal"
+    :product-action="product"
+    @load-product="loadProduct"
+    @close-modal="closeProductModal"
+  />
+
+  <DiscountModal
+    v-if="isDiscountModal"
+    :is-discount-modal="isDiscountModal"
+    @close-modal-discount="closeModalDiscount"
+  />
   <my-toast position="top-right" group="tr" />
 </template>
 
@@ -197,6 +195,7 @@ import { IProduct } from "@/interface/product/product.state";
 import { useStore } from "vuex";
 import { formatPrice } from "@/function/common";
 import TheLoader from "@/components/common/TheLoader.vue";
+import DiscountModal from "@/Dashboard/components/modal/DiscountModal.vue";
 
 export default defineComponent({
   components: {
@@ -206,17 +205,19 @@ export default defineComponent({
     Toolbar,
     Column,
     TheLoader,
+    DiscountModal,
   },
   setup() {
-    const listProduct = ref([] as IProduct[]);
     const store = useStore();
+    const listProduct = ref([] as IProduct[]);
     const selectedProducts = ref([] as any[]);
     const showLoading = ref(false);
+    const isDiscountModal = ref(false);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
     const deleteProductDialog = ref(false);
-    const productDialog = ref(false);
+    const isProductModal = ref(false);
     const product = ref<IProduct>();
     const toast = useToast();
     const deleteProductsDialog = ref(false);
@@ -226,18 +227,15 @@ export default defineComponent({
     };
     const addProduct = () => {
       product.value = undefined;
-      productDialog.value = true;
+      isProductModal.value = true;
     };
     const editProduct = (prod?: any) => {
       product.value = { ...prod };
-      productDialog.value = true;
+      isProductModal.value = true;
     };
     const deleteProduct = async (id?: number) => {
       deleteProductDialog.value = false;
       if (id) {
-        // products.value = products.value.filter(
-        //   (val) => val.id !== product.value.id
-        // );
         await store.dispatch("product/deleteProduct", [id]);
         product.value = undefined;
         toast.add({
@@ -277,6 +275,18 @@ export default defineComponent({
       deleteProductDialog.value = true;
     };
 
+    const handleDiscount = () => {
+      isDiscountModal.value = true;
+    };
+
+    const closeModalDiscount = () => {
+      isDiscountModal.value = false;
+    };
+
+    const closeProductModal = () => {
+      isProductModal.value = false;
+    };
+
     const loadProduct = async () => {
       showLoading.value = true;
       await store.dispatch("product/getProducts");
@@ -291,12 +301,16 @@ export default defineComponent({
     return {
       filters,
       deleteProductDialog,
-      productDialog,
+      isProductModal,
       product,
       deleteProductsDialog,
       selectedProducts,
       listProduct,
       showLoading,
+      isDiscountModal,
+      closeProductModal,
+      closeModalDiscount,
+      handleDiscount,
       loadProduct,
       addProduct,
       confirmDeleteSelected,
@@ -363,7 +377,7 @@ h5 {
   background-color: #edee9a;
   color: #cbbf16;
 }
-.product-badge.status-jezzy {
+.product-badge.status-yezzy {
   background-color: #fddde0;
   color: #c63737;
 }

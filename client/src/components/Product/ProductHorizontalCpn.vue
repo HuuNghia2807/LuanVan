@@ -17,7 +17,9 @@
           />
         </div>
         <div class="product-price">
-          <span class="price">{{ product?.productPrice }}</span>
+          <span class="price">{{
+            formatPrice(product?.productPrice || 9999999)
+          }}</span>
         </div>
       </div>
     </div>
@@ -25,6 +27,7 @@
 </template>
 
 <script lang="ts">
+import { formatPrice } from "@/function/common";
 import { IProduct } from "@/interface/product/product.state";
 import { defineComponent, PropType } from "vue";
 
@@ -34,7 +37,9 @@ export default defineComponent({
   },
   components: {},
   setup() {
-    return {};
+    return {
+      formatPrice,
+    };
   },
 });
 </script>

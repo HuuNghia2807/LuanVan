@@ -100,7 +100,7 @@
                   <li>Ít nhất một ký tự thường</li>
                   <li>Ít nhất một ký tự in hoa</li>
                   <li>Ít nhất một số</li>
-                  <li>8 kí tự trở lên</li>
+                  <li>6 kí tự trở lên</li>
                 </ul>
               </template>
             </my-password>
@@ -169,10 +169,17 @@ export default defineComponent({
         minLengthValue: minLength(10),
       },
       email: {
-        required: helpers.withMessage("Vui lòng nhập email", required),
+        required: helpers.withMessage(
+          "Email chưa đúng định dạng",
+          (value: string) =>
+            // eslint-disable-next-line
+            /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(
+              value
+            )
+        ),
       },
       password: {
-        minLengthValue: minLength(8),
+        minLengthValue: minLength(6),
         required: helpers.withMessage("Vui lòng nhập password", required),
       },
     };

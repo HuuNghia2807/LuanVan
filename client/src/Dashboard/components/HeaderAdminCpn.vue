@@ -67,7 +67,7 @@ export default defineComponent({
     };
     const handleClick = () => {
       store.dispatch("auth/logoutDashboard");
-      router.push("/dashboard");
+      router.push("/login");
     };
     return {
       search,

@@ -2,10 +2,10 @@
   <my-dialog
     header="Thêm nhân viên"
     :visible="isAddEmployee"
+    @update:visible="closeModal"
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
     :style="{ width: '40vw' }"
     :modal="true"
-    @update:visible="closeModal"
   >
     <my-toast />
     <div class="card">

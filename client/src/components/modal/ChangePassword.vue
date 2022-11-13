@@ -125,18 +125,18 @@ export default defineComponent({
     const rules = {
       oldPass: {
         required: helpers.withMessage("Vui lòng nhập mật khẩu củ", required),
-        minLengthValue: minLength(8),
+        minLengthValue: minLength(6),
       },
       newPass: {
         required: helpers.withMessage("Vui lòng nhập mật khẩu mới", required),
-        minLengthValue: minLength(8),
+        minLengthValue: minLength(6),
       },
       comfirmPass: {
         required: helpers.withMessage(
           "Vui lòng nhập lại mật khẩu mới",
           required
         ),
-        minLengthValue: minLength(8),
+        minLengthValue: minLength(6),
       },
     };
 

@@ -103,3 +103,12 @@ export interface ICartList {
   size: number;
   quantity: number;
 }
+
+// discount interface
+
+export interface IDiscount {
+  discountId: number;
+  title: string;
+  percent: number;
+  dateCreate: number;
+}

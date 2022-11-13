@@ -81,6 +81,24 @@ class ProductServices {
       throw handleError(error as AxiosError);
     }
   }
+  async addDiscount(payload: any) {
+    try {
+      const path = "discount/add";
+      const response = await http.post(path, payload);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async getDiscount() {
+    try {
+      const path = "discount";
+      const response = await http.get(path);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new ProductServices();
