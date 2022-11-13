@@ -16,6 +16,8 @@ export const translateProductsResponse = (
       productCode: prd.product_code.toUpperCase(),
       productPrice: prd.product_price,
       productRating: prd.product_rating,
+      discountId: prd.discount?.discount_id || 0,
+      discountPercent: prd.discount?.percent || 0,
       sizes: translateSize(prd.sizes),
       images: prd.product_image,
       category: prd.category,

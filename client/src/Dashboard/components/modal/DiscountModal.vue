@@ -5,7 +5,6 @@
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
     :style="{ width: '65vw' }"
     :modal="true"
-    position="topleft"
     @update:visible="closeModalDiscount"
   >
     <div class="list">
@@ -25,7 +24,7 @@
               label="Thêm Khuyến Mãi"
               icon="pi pi-plus"
               class="p-button-success"
-              @click="openAddDiscount"
+              @click="openAddDiscountModal"
             />
           </div>
         </template>
@@ -73,7 +72,7 @@
                 class="p-button-rounded p-button-info mr-3"
                 aria-haspopup="true"
                 aria-controls="overlay_panel"
-                @click="toggle($event, slotProps.data.discountId)"
+                @click="handleAddDiscountToProduct(slotProps.data.discountId)"
               />
               <my-button
                 label="Xóa sản phẩm"
@@ -89,80 +88,32 @@
       </DataTable>
     </div>
 
-    <OverlayPanel
-      ref="op"
-      appendTo="self"
-      :showCloseIcon="true"
-      id="overlay_panel"
-      style="width: 500px"
-      :breakpoints="{ '960px': '75vw' }"
-    >
-      <DataTable
-        v-model:selection="selectedProduct"
-        :value="products"
-        :paginator="true"
-        :rows="8"
-        :filters="filters"
-        responsiveLayout="scroll"
-      >
-        <template #header>
-          <div>
-            <span class="p-input-icon-left">
-              <i class="pi pi-search" />
-              <my-inputText
-                v-model="filters['global'].value"
-                placeholder="Search..."
-              />
-            </span>
-          </div>
-        </template>
-        <my-column field="productCode" header="Mã SP" sortable></my-column>
-        <my-column header="Ảnh">
-          <template #body="slotProps">
-            <my-image
-              :src="slotProps.data.images[0].product_image_link"
-              :alt="slotProps.data.images[0].product_image_name"
-              class="product-image"
-              preview
-            />
-          </template>
-        </my-column>
-        <my-column field="category" header="Loại" sortable>
-          <template #body="slotProps">
-            {{ slotProps.data.category }}
-          </template>
-        </my-column>
-        <my-column field="productPrice" header="Price" sortable>
-          <template #body="slotProps">
-            {{ formatPrice(slotProps.data.productPrice) }}
-          </template>
-        </my-column>
-
-        <my-column
-          selectionMode="multiple"
-          style="width: 3rem"
-          :exportable="false"
-        ></my-column>
-      </DataTable>
-    </OverlayPanel>
+    <ShowProductToDiscount
+      v-if="isDiscountToProduct"
+      :is-add-discount-to-product="isDiscountToProduct"
+      :id-discount="idDiscount"
+      :is-remove-discount="isRemoveDiscountToProduct"
+      @close-discount-to-product="closeDiscountToProduct"
+    />
 
     <AddDiscount
       :is-add-discount="isAddDiscount"
-      @close-modal-add="closeModalAdd"
+      @close-modal-add="closeAddDiscountModal"
+      @create-discount-success="createSuccess"
     />
     <my-toast />
   </my-dialog>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { IDiscount, IProduct } from "@/interface/product/product.state";
-import { formatPrice, translateUnixTimeToFullTime } from "@/function/common";
-import { FilterMatchMode } from "primevue/api";
+import { translateUnixTimeToFullTime } from "@/function/common";
 import Toolbar from "primevue/toolbar";
 import AddDiscount from "./AddDiscount.vue";
-import OverlayPanel from "primevue/overlaypanel";
+import ShowProductToDiscount from "./ShowProductToDiscount.vue";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   props: {
@@ -171,66 +122,86 @@ export default defineComponent({
   components: {
     Toolbar,
     AddDiscount,
-    OverlayPanel,
+    ShowProductToDiscount,
   },
-  setup(props, { emit }) {
+  setup(_props, { emit }) {
     const store = useStore();
+    const toast = useToast();
     const selectedDiscount = ref([]);
     const isAddDiscount = ref(false);
-    const op = ref();
+    const isDiscountToProduct = ref(false);
+    const isRemoveDiscountToProduct = ref(false);
+    const idDiscount = ref();
     const columns = ref([
       { field: "discountId", header: "Mã", width: "5rem" },
       { field: "title", header: "Tiêu đề", width: "15rem" },
     ]);
-    const filters = ref({
-      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    });
 
     const listDiscount = ref([] as IDiscount[]);
 
-    const selectedProduct = ref();
-
-    const products = computed(() => {
-      return store.getters["product/getProducts"] as IProduct[];
-    });
+    const selectedProduct = ref([] as IProduct[]);
 
     const closeModalDiscount = () => {
       emit("close-modal-discount");
     };
 
-    const openAddDiscount = () => {
+    const openAddDiscountModal = () => {
       isAddDiscount.value = true;
     };
 
-    const closeModalAdd = () => {
+    const closeAddDiscountModal = () => {
       isAddDiscount.value = false;
     };
 
-    const toggle = (event: any, idDiscount: number) => {
-      op.value?.toggle(event);
-      console.log(idDiscount);
+    const handleAddDiscountToProduct = (id: number) => {
+      isDiscountToProduct.value = true;
+      idDiscount.value = id;
     };
 
-    const handleRemoveProductToDiscount = (idDiscount: number) => {
-      console.log(idDiscount);
+    const closeDiscountToProduct = () => {
+      isDiscountToProduct.value = false;
+      idDiscount.value = undefined;
+      isRemoveDiscountToProduct.value = false;
     };
 
-    onMounted(async () => {
+    const handleRemoveProductToDiscount = (id: number) => {
+      isDiscountToProduct.value = true;
+      idDiscount.value = id;
+      isRemoveDiscountToProduct.value = true;
+    };
+
+    const createSuccess = () => {
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Thêm khuyến mãi thành công",
+        life: 3000,
+      });
+      getDiscount();
+    };
+
+    const getDiscount = async () => {
       listDiscount.value = await store.dispatch("product/getDiscount");
+    };
+
+    onMounted(() => {
+      getDiscount();
     });
+
     return {
       columns,
       listDiscount,
       selectedDiscount,
       isAddDiscount,
-      products,
       selectedProduct,
-      op,
-      filters,
-      formatPrice,
-      openAddDiscount,
-      closeModalAdd,
-      toggle,
+      isDiscountToProduct,
+      idDiscount,
+      isRemoveDiscountToProduct,
+      createSuccess,
+      handleAddDiscountToProduct,
+      closeDiscountToProduct,
+      openAddDiscountModal,
+      closeAddDiscountModal,
       handleRemoveProductToDiscount,
       translateUnixTimeToFullTime,
       closeModalDiscount,
@@ -241,7 +212,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 :deep(.p-component) {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
 }
 .btn-table {
   display: flex;
@@ -249,12 +220,7 @@ export default defineComponent({
   align-items: center;
 
   :deep(.p-button) {
-    font-size: 1.2rem;
+    font-size: 1.2rem !important;
   }
-}
-
-:deep(.p-image-preview-container > img) {
-  width: 5rem;
-  height: 4rem;
 }
 </style>

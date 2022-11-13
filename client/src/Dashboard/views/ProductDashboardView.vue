@@ -87,9 +87,33 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{ formatPrice(slotProps.data.productPrice) }}
+            <div v-if="slotProps.data.discountId === 0">
+              {{ formatPrice(slotProps.data.productPrice) }}
+            </div>
+            <div v-else>
+              <div class="font-medium">
+                {{
+                  formatPrice(
+                    caculatorSale(
+                      slotProps.data.productPrice,
+                      slotProps.data.discountPercent
+                    )
+                  )
+                }}
+              </div>
+              <div class="line-through text-500">
+                {{ formatPrice(slotProps.data.productPrice) }}
+              </div>
+            </div>
           </template>
         </Column>
+        <my-column field="discountPercent" header="Giảm Giá" sortable>
+          <template #body="slotProps">
+            <div :class="stockClass(slotProps.data)">
+              {{ slotProps.data.discountPercent }}%
+            </div>
+          </template>
+        </my-column>
         <Column
           header="Loại Sản Phẩm"
           field="category"
@@ -193,7 +217,7 @@ import Toolbar from "primevue/toolbar";
 import Column from "primevue/column";
 import { IProduct } from "@/interface/product/product.state";
 import { useStore } from "vuex";
-import { formatPrice } from "@/function/common";
+import { caculatorSale, formatPrice } from "@/function/common";
 import TheLoader from "@/components/common/TheLoader.vue";
 import DiscountModal from "@/Dashboard/components/modal/DiscountModal.vue";
 
@@ -287,6 +311,14 @@ export default defineComponent({
       isProductModal.value = false;
     };
 
+    const stockClass = (data: IProduct) => {
+      return [
+        {
+          "sale-active": data.discountId !== 0,
+        },
+      ];
+    };
+
     const loadProduct = async () => {
       showLoading.value = true;
       await store.dispatch("product/getProducts");
@@ -308,6 +340,8 @@ export default defineComponent({
       listProduct,
       showLoading,
       isDiscountModal,
+      caculatorSale,
+      stockClass,
       closeProductModal,
       closeModalDiscount,
       handleDiscount,
@@ -337,18 +371,6 @@ h5 {
   font-size: 1.4rem !important;
 }
 
-@keyframes pulse {
-  0% {
-    background-color: rgba(165, 165, 165, 0.1);
-  }
-  50% {
-    background-color: rgba(165, 165, 165, 0.3);
-  }
-  100% {
-    background-color: rgba(165, 165, 165, 0.1);
-  }
-}
-
 .product-badge {
   border-radius: 2px;
   padding: 0.25em 0.5rem;
@@ -356,6 +378,11 @@ h5 {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.3px;
+}
+
+.sale-active {
+  color: green;
+  font-weight: 700;
 }
 
 .product-badge.status-nike {
@@ -386,24 +413,11 @@ h5 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  @media screen and (max-width: 960px) {
-    align-items: start;
-  }
 }
 
 .confirmation-content {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-@media screen and (max-width: 960px) {
-  ::v-deep(.p-toolbar) {
-    flex-wrap: wrap;
-
-    .p-button {
-      margin-bottom: 0.25rem;
-    }
-  }
 }
 </style>

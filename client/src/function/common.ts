@@ -20,3 +20,7 @@ export const formatPrice = (price: number) => {
 export const translateUnixTimeToFullTime = (unixTime: number) => {
   return moment.unix(Number(unixTime)).format("MMM DD YYYY HH:mm:ss");
 };
+
+export const caculatorSale = (price: number, sale: number) => {
+  return (price * (100 - sale)) / 100;
+};

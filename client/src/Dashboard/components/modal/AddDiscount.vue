@@ -82,7 +82,7 @@ export default defineComponent({
   props: {
     isAddDiscount: { type: Boolean, default: false },
   },
-  setup(props, { emit }) {
+  setup(_props, { emit }) {
     const submitted = ref(false);
     const showLoading = ref(false);
     const state = reactive({
@@ -130,7 +130,8 @@ export default defineComponent({
         showLoading.value = false;
         return;
       }
-      //   clearForm();
+      clearForm();
+      emit("create-discount-success");
       showLoading.value = false;
     };
 

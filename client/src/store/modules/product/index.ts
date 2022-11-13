@@ -114,6 +114,26 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async addDiscountToProduct({ commit }, payload: any) {
+    try {
+      commit("setError", {});
+      const res = await productServices.addDiscountToProduct(payload);
+      const products = translateProductsResponse(res);
+      commit("setProducts", products);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async removeDiscountToProduct({ commit }, payload: any) {
+    try {
+      commit("setError", {});
+      const res = await productServices.removeDiscountToProduct(payload);
+      const products = translateProductsResponse(res);
+      commit("setProducts", products);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const product = {

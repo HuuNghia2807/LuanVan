@@ -18,6 +18,8 @@ export interface IProduct {
   productRating: number;
   categoryId: number;
   category: string;
+  discountId: number | null;
+  discountPercent: number | null;
   sizes: ISize[];
   images: IProductImageResponse[];
   display?: string;
@@ -46,6 +48,7 @@ export interface IProductResponse {
   category_id: number;
   product_rating: number;
   category: string;
+  discount: IDiscountResponse;
   sizes: ISizeResponse[];
   product_image: IProductImageResponse[];
 }
@@ -111,4 +114,11 @@ export interface IDiscount {
   title: string;
   percent: number;
   dateCreate: number;
+}
+
+export interface IDiscountResponse {
+  discount_id: number;
+  title: string;
+  percent: number;
+  time_create: number;
 }
