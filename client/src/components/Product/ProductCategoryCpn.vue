@@ -18,12 +18,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { IOptionProduct } from "@/interface/product/product.state";
+import { defineComponent, PropType } from "vue";
 import ListProductCpn from "./ListProductCpn.vue";
 
 export default defineComponent({
   props: {
-    categoryProduct: { type: Object },
+    categoryProduct: { type: Object as PropType<IOptionProduct> },
   },
   components: {
     ListProductCpn,

@@ -1,8 +1,5 @@
 <template>
-  <div class="dashboard">
-    <h2>WELCOME</h2>
-    <h4>DASHBOARD</h4>
-  </div>
+  <div class="main-comment">comment</div>
 </template>
 
 <script lang="ts">
@@ -16,10 +13,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.dashboard {
-  padding: 2rem;
-  width: 100%;
-  height: 100%;
-  background-color: rgb(255, 215, 140);
+.main-comment {
+  padding: 0 12rem;
+  background-color: #ccc;
 }
 </style>

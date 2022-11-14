@@ -1,21 +1,22 @@
 <template>
   <div class="list-product grid">
     <ProductCpn
-      v-for="(product, i) in products"
-      :key="i"
-      :productDetail="product"
+      v-for="product in products"
+      :key="product.productCode"
+      :product-detail="product"
       :type="type"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { IProduct } from "@/interface/product/product.state";
+import { defineComponent, PropType } from "vue";
 import ProductCpn from "./ProductCpn.vue";
 
 export default defineComponent({
   props: {
-    products: { type: Array },
+    products: { type: Array as PropType<IProduct[]> },
     type: { type: String },
   },
   components: {

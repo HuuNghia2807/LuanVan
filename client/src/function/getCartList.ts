@@ -8,6 +8,7 @@ export const getCartList = (listProduct: IProduct[], cartItem: ICart[]) => {
     if (pro) {
       return {
         productId: pro.productId || null,
+        productCode: pro.productCode || null,
         img: pro.images[0].product_image_link,
         name: pro.productName,
         price: pro.productPrice,

@@ -53,6 +53,16 @@ export interface IProductResponse {
   product_image: IProductImageResponse[];
 }
 
+export interface IProductHomeResponse {
+  new_product: IProductResponse[];
+  sale_product: IProductResponse[];
+}
+
+export interface IProductHome {
+  productNew: IProduct[];
+  productSale: IProduct[];
+}
+
 // product image interface
 
 export interface IProductImageResponse {

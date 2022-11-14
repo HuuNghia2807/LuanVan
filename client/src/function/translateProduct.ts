@@ -1,6 +1,8 @@
 import {
   IDiscount,
   IProduct,
+  IProductHome,
+  IProductHomeResponse,
   IProductResponse,
 } from "@/interface/product/product.state";
 import { translateSize } from "./translateSize";
@@ -34,4 +36,13 @@ export const translateDiscount = (dis: any[]): IDiscount[] => {
       dateCreate: ele.time_create,
     };
   });
+};
+
+export const translateProductsHomeResponse = (
+  res: IProductHomeResponse
+): IProductHome => {
+  return {
+    productNew: translateProductsResponse(res.new_product),
+    productSale: translateProductsResponse(res.sale_product),
+  };
 };

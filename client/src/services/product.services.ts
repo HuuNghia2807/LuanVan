@@ -54,6 +54,15 @@ class ProductServices {
       throw handleError(error as AxiosError);
     }
   }
+  async getHomeProduct() {
+    try {
+      const path = "product/home";
+      const response = await http.get(path);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
   async deleteProduct(listId: number[]) {
     try {
       const path = "product/delete";
@@ -95,6 +104,14 @@ class ProductServices {
       const path = "discount";
       const response = await http.get(path);
       return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async deleteDiscount(payload: number[]) {
+    try {
+      const path = "discount/delete";
+      await http.post(path, payload);
     } catch (error) {
       throw handleError(error as AxiosError);
     }

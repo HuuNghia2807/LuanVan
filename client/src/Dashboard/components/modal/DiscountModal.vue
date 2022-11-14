@@ -18,7 +18,9 @@
               label="Xóa"
               icon="pi pi-trash"
               class="p-button-danger mr-4"
-              disabled
+              :disabled="!selectedDiscount.length"
+              :loading="showLoading"
+              @click="handleDeleteDiscount"
             />
             <my-button
               label="Thêm Khuyến Mãi"
@@ -127,7 +129,7 @@ export default defineComponent({
   setup(_props, { emit }) {
     const store = useStore();
     const toast = useToast();
-    const selectedDiscount = ref([]);
+    const showLoading = ref(false);
     const isAddDiscount = ref(false);
     const isDiscountToProduct = ref(false);
     const isRemoveDiscountToProduct = ref(false);
@@ -140,6 +142,7 @@ export default defineComponent({
     const listDiscount = ref([] as IDiscount[]);
 
     const selectedProduct = ref([] as IProduct[]);
+    const selectedDiscount = ref([] as IDiscount[]);
 
     const closeModalDiscount = () => {
       emit("close-modal-discount");
@@ -170,6 +173,24 @@ export default defineComponent({
       isRemoveDiscountToProduct.value = true;
     };
 
+    const handleDeleteDiscount = async () => {
+      if (selectedDiscount.value?.length) {
+        const ids_discount = selectedDiscount.value.map(
+          (ele) => ele.discountId
+        );
+        showLoading.value = true;
+        await store.dispatch("product/deleteDiscount", { ids: ids_discount });
+        toast.add({
+          severity: "success",
+          summary: "Thành công",
+          detail: "Xoa thành công",
+          life: 3000,
+        });
+        getDiscount();
+        showLoading.value = false;
+      }
+    };
+
     const createSuccess = () => {
       toast.add({
         severity: "success",
@@ -182,6 +203,7 @@ export default defineComponent({
 
     const getDiscount = async () => {
       listDiscount.value = await store.dispatch("product/getDiscount");
+      await store.dispatch("product/getProducts");
     };
 
     onMounted(() => {
@@ -197,6 +219,8 @@ export default defineComponent({
       isDiscountToProduct,
       idDiscount,
       isRemoveDiscountToProduct,
+      showLoading,
+      handleDeleteDiscount,
       createSuccess,
       handleAddDiscountToProduct,
       closeDiscountToProduct,

@@ -2,7 +2,7 @@
   <router-link
     v-if="!!productDetail"
     class="product no-underline"
-    :to="{ name: 'showDetail', params: { id: productDetail?.productId } }"
+    :to="{ name: 'showDetail', params: { code: productDetail?.productCode } }"
     :style="`width: ${type ? '20' : '25'}%`"
   >
     <div class="wrap">
@@ -22,24 +22,34 @@
           />
         </div>
         <div class="product-price">
-          <span class="price">{{
-            formatPrice(productDetail?.productPrice)
+          <span class="price" v-if="productDetail.discountId === 0">{{
+            formatPrice(productDetail.productPrice || 9999999)
           }}</span>
-          <!-- <span v-if="productDetail?.sale.length > 0" class="price-sale">{{
-            productDetail?.productPrice
-          }}</span> -->
+          <div v-else>
+            <span class="price">{{
+              formatPrice(
+                caculatorSale(
+                  productDetail.productPrice || 9999999,
+                  productDetail.discountPercent || 0
+                )
+              )
+            }}</span>
+            <span class="price-sale">{{
+              formatPrice(productDetail.productPrice || 9999999)
+            }}</span>
+          </div>
         </div>
       </div>
     </div>
-    <div class="tag" v-if="type">
+    <div class="tag" v-if="type === 'New'">
       <span class="text-tag">{{ type }}</span>
     </div>
-    <!-- <div
-      class="tag tag-sale"
-      v-if="productDetail?.sale.length > 0 || type === 'Sale'"
-    >
-      <span class="text-tag">{{ productDetail?.sale }}</span>
-    </div> -->
+    <div class="tag hot-tag" v-if="type === 'Hot'">
+      <span class="text-tag">{{ type }}</span>
+    </div>
+    <div class="tag tag-sale" v-if="productDetail.discountId !== 0">
+      <span class="text-tag">{{ productDetail.discountPercent }}%</span>
+    </div>
   </router-link>
   <div class="product" v-else>
     <Skeleton class="wrap" width="30rem" height="40rem" borderRadius="16px" />
@@ -47,14 +57,15 @@
 </template>
 
 <script lang="ts">
-import { formatPrice } from "@/function/common";
-import { defineComponent } from "vue";
+import { caculatorSale, formatPrice } from "@/function/common";
+import { defineComponent, PropType } from "vue";
 import Skeleton from "primevue/skeleton";
+import { IProduct } from "@/interface/product/product.state";
 
 export default defineComponent({
   props: {
     none: { type: Boolean, default: false },
-    productDetail: { type: Object },
+    productDetail: { type: Object as PropType<IProduct> },
     type: { type: String },
   },
   components: {
@@ -63,6 +74,7 @@ export default defineComponent({
   setup() {
     return {
       formatPrice,
+      caculatorSale,
     };
   },
 });
@@ -87,6 +99,10 @@ export default defineComponent({
     top: 0;
     left: 1.2rem;
     background-color: var(--primary-color);
+  }
+
+  .hot-tag {
+    background-color: #ff8585;
   }
 
   .tag-sale {

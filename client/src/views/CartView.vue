@@ -1,7 +1,6 @@
 <template>
   <div class="cart">
     <my-toast />
-    <TheLoader :is-loading="showLoading" />
     <div class="container">
       <div class="cart-wrap">
         <span class="cart-title">Giỏ Hàng</span>
@@ -60,11 +59,11 @@ export default defineComponent({
     const toast = useToast();
     const store = useStore();
     const router = useRouter();
-    const showLoading = ref(false);
     const cartList = computed(() => {
       const listProduct: IProduct[] =
         store.getters["product/getProducts"] || [];
       const cartItem: ICart[] = store.getters["auth/getCart"] || [];
+      console.log(listProduct, cartItem);
 
       return getCartList(listProduct, cartItem);
     });
@@ -76,9 +75,7 @@ export default defineComponent({
     });
 
     const backToProduct = () => {
-      showLoading.value = true;
       router.push("/");
-      showLoading.value = false;
     };
 
     const handleOrder = () => {
@@ -101,7 +98,6 @@ export default defineComponent({
     return {
       cartList,
       totalOrder,
-      showLoading,
       formatPrice,
       backToProduct,
       handleOrder,

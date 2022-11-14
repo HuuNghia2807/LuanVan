@@ -3,7 +3,6 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import MainLayout from "@/Layout/MainLayout.vue";
 
 import HomeView from "@/views/HomeView.vue";
-import OrderView from "@/views/OrderView.vue";
 import ProductTypeView from "@/views/ProductTypeView.vue";
 import ProductDetail from "@/views/ProductDetail.vue";
 import CartView from "@/views/CartView.vue";
@@ -58,11 +57,7 @@ const routes: Array<RouteRecordRaw> = [
         component: ProductTypeView,
       },
       {
-        path: "/order",
-        component: OrderView,
-      },
-      {
-        path: "/san-pham/:id",
+        path: "/san-pham/:code",
         name: "showDetail",
         component: ProductDetail,
       },
@@ -135,6 +130,10 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // always scroll to top
+    return { top: 0 };
+  },
 });
 
 export default router;

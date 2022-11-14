@@ -6,7 +6,7 @@
       </div>
       <div class="product-context">
         <router-link
-          :to="{ name: 'showDetail', params: { id: product?.productId } }"
+          :to="{ name: 'showDetail', params: { code: product?.productCode } }"
           class="name-product"
           >{{ product?.name }}</router-link
         >

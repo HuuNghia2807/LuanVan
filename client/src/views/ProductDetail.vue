@@ -3,22 +3,32 @@
   <div class="product-detail">
     <div class="container">
       <div class="list-img-wrap">
-        <div class="list-img">
-          <img
-            v-for="image in product?.images"
-            :key="image.product_image_name"
-            class="imgs"
-            :src="image.product_image_link"
-            :alt="image.product_image_name"
-          />
-        </div>
+        <ScrollPanel style="width: 100%; height: 40rem" class="custombar1">
+          <div class="list-img">
+            <img
+              v-for="image in product?.images"
+              class="imgs"
+              :class="{
+                'active-imgs':
+                  imageShow.product_image_id === image.product_image_id,
+              }"
+              :key="image.product_image_id"
+              :src="image.product_image_link"
+              :alt="image.product_image_name"
+              @click="handleClickImage(image)"
+            />
+          </div>
+        </ScrollPanel>
       </div>
       <div class="show-img">
         <img
           class="img"
-          :src="product?.images[0].product_image_link"
-          :alt="product?.images[0].product_image_name"
+          :src="imageShow.product_image_link"
+          :alt="imageShow.product_image_name"
         />
+        <span class="tag-sale" v-if="product?.discountId !== 0"
+          >{{ product?.discountPercent }}%</span
+        >
       </div>
       <div class="content">
         <div>
@@ -31,23 +41,42 @@
           <span class="product-code">
             Mã SP: <span class="sup-code">{{ product?.productCode }}</span>
           </span>
-          <span class="product-price">{{
+          <span class="product-price" v-if="product?.discountId === 0">{{
             formatPrice(product?.productPrice || 9999999999)
           }}</span>
+          <div class="flex" v-else>
+            <span class="product-price">{{
+              formatPrice(
+                caculatorSale(
+                  product?.productPrice || 9999999,
+                  product?.discountPercent || 0
+                )
+              )
+            }}</span>
+            <span class="product-price-sale">{{
+              formatPrice(product?.productPrice || 9999999)
+            }}</span>
+          </div>
         </div>
         <div class="product-size">
-          <div v-for="(size, i) of sizes" :key="i" class="field-radiobutton">
-            <RadioButton
-              :inputId="size.name"
-              name="size"
-              :value="size.value"
-              v-model="selectedSize"
-              :disabled="size.quantity == 0"
-            />
-            <label :for="size.name">{{ size.name }}</label>
+          <div v-for="(size, i) of sizes" :key="i" class="list-size">
+            <span
+              class="size"
+              :class="{
+                active: size.sizeId === selectedSize.sizeId,
+              }"
+              @click="handleClickSize(size)"
+              >{{ size.size }}</span
+            >
           </div>
         </div>
         <div>
+          <div class="quantity">
+            <span>Số Lượng Còn Lại:</span>
+            <span class="font-bold ml-2">{{
+              selectedSize.productSizeQuantity
+            }}</span>
+          </div>
           <div class="mt-4">
             <InputNumber
               inputId="horizontal"
@@ -55,8 +84,8 @@
               mode="decimal"
               showButtons
               buttonLayout="horizontal"
-              :min="0"
-              :max="40"
+              :min="1"
+              :max="selectedSize.productSizeQuantity"
               decrementButtonClass="p-button-secondary"
               incrementButtonClass="p-button-secondary"
               incrementButtonIcon="pi pi-plus"
@@ -68,7 +97,7 @@
               label="Thêm vào giỏ hàng"
               icon="pi pi-shopping-cart"
               class="p-button-lg p-button-warning p-button-rounded"
-              @click="handleAddCart"
+              @click="addCart"
             />
             <my-button
               label="Mua Ngay"
@@ -79,6 +108,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="comment">
+      <CommentCpn />
     </div>
     <div class="other mb-8">
       <div class="my-3">
@@ -103,18 +135,20 @@ import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { ICart, IProduct } from "@/interface/product/product.state";
-import { formatPrice } from "@/function/common";
+import { caculatorSale, formatPrice } from "@/function/common";
 import { useToast } from "primevue/usetoast";
 import { addProductToCart, setStateCart } from "@/function/handleLocalStorage";
 import Rating from "primevue/rating";
-import RadioButton from "primevue/radiobutton";
 import InputNumber from "primevue/inputnumber";
+import ScrollPanel from "primevue/scrollpanel";
+import CommentCpn from "@/components/CommentCpn.vue";
 
 export default defineComponent({
   components: {
     Rating,
-    RadioButton,
     InputNumber,
+    ScrollPanel,
+    CommentCpn,
   },
   setup() {
     const store = useStore();
@@ -123,14 +157,12 @@ export default defineComponent({
     const rate = ref(3);
     const product = ref<IProduct>();
     const sizes = ref([] as any);
-    const selectedSize = ref<number>();
+    const imageShow = ref({} as any);
+    const selectedSize = ref({} as any);
     const quantity = ref(1);
-    const handleAddCart = () => {
-      addCart();
-    };
 
     const addCart = async () => {
-      const sizeId = selectedSize.value;
+      const sizeId = selectedSize.value.productSizeId;
       if (!sizeId) {
         toast.add({
           severity: "error",
@@ -155,18 +187,21 @@ export default defineComponent({
       });
     };
 
+    const handleClickImage = (img: any) => {
+      imageShow.value = img;
+    };
+    const handleClickSize = (szie: any) => {
+      selectedSize.value = szie;
+    };
+
     onMounted(async () => {
       await store.dispatch("product/getProducts");
       const list = store.getters["product/getProducts"] as IProduct[];
-      const id = route.params.id as any;
-      product.value = list && list.find((ele) => ele.productId == id);
-      sizes.value = product.value?.sizes.map((ele) => {
-        return {
-          name: ele.size,
-          value: ele.productSizeId,
-          quantity: ele.productSizeQuantity,
-        };
-      });
+      const code = route.params.code as any;
+      product.value = list && list.find((ele) => ele.productCode == code);
+      sizes.value = product.value?.sizes;
+      selectedSize.value = sizes.value[0];
+      imageShow.value = product.value?.images[0];
     });
     return {
       rate,
@@ -174,8 +209,12 @@ export default defineComponent({
       selectedSize,
       quantity,
       product,
+      imageShow,
+      handleClickSize,
+      handleClickImage,
+      caculatorSale,
       formatPrice,
-      handleAddCart,
+      addCart,
     };
   },
 });
@@ -193,27 +232,62 @@ export default defineComponent({
       width: 15%;
     }
 
+    ::v-deep(.p-scrollpanel) {
+      &.custombar1 {
+        .p-scrollpanel-wrapper {
+          border-right: 9px solid var(--surface-ground);
+        }
+
+        .p-scrollpanel-bar {
+          background-color: rgb(202, 202, 202);
+          opacity: 1;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: rgb(158, 158, 158);
+          }
+        }
+      }
+    }
+
     .list-img {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      height: 40rem !important;
-      overflow: auto;
-
-      .imgs {
-        width: 45%;
-        margin-bottom: 2rem;
-        border: 0.3rem solid #8d8d8d;
-      }
+      align-items: flex-end;
+      justify-content: flex-end;
+    }
+    .imgs {
+      width: 60%;
+      margin-bottom: 2rem;
+      border: 0.2rem solid #8d8d8d;
+      cursor: pointer;
+    }
+    .active-imgs {
+      border: 0.3rem solid rgb(255, 188, 132);
     }
 
     .show-img {
       width: 46%;
+      position: relative;
 
       .img {
         width: 59rem;
         height: 59rem;
         object-fit: contain;
+      }
+
+      .tag-sale {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 7.5rem;
+        height: 3rem;
+        font-weight: 700;
+        top: 0;
+        right: 0;
+        background-color: #cf5050;
+        color: #fff;
       }
     }
 
@@ -252,6 +326,15 @@ export default defineComponent({
         margin: 3rem 0;
       }
 
+      .product-price-sale {
+        display: block;
+        font-size: 2.4rem;
+        font-weight: bold;
+        color: #bcbcbc;
+        margin: 3rem 1rem 0;
+        text-decoration: line-through;
+      }
+
       .product-size {
         border-top: 1px solid #ccc;
         border-bottom: 1px solid #ccc;
@@ -259,6 +342,44 @@ export default defineComponent({
         flex-wrap: wrap;
         padding: 3rem 0;
         font-size: 2rem;
+      }
+
+      .quantity {
+        margin-top: 2rem;
+        display: flex;
+        align-items: center;
+
+        span {
+          font-size: 1.6rem;
+          color: #888;
+        }
+      }
+
+      .list-size {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+
+        .size {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #ccc;
+          padding: 0.6rem 2rem;
+          margin: 1rem 2rem 1rem 0;
+          box-shadow: 0px 2px 5px rgb(0 0 0 / 50%);
+          font-weight: bold;
+          cursor: pointer;
+
+          &:hover {
+            color: #888;
+          }
+        }
+
+        .active {
+          border: 2px solid var(--primary-color);
+          box-shadow: none;
+        }
       }
     }
 
@@ -269,13 +390,6 @@ export default defineComponent({
 
     :deep(.p-rating-icon.pi-star-fill) {
       color: yellow !important;
-    }
-
-    :deep(.field-radiobutton) {
-      flex-direction: column;
-      justify-content: center;
-      margin: 0 1.2rem;
-      font-size: 2rem;
     }
 
     :deep(.p-radiobutton) {
@@ -305,6 +419,11 @@ export default defineComponent({
     }
   }
 
+  .comment {
+    width: 100%;
+    min-height: 50rem;
+    max-height: 100rem;
+  }
   .other {
     display: flex;
     flex-direction: column;

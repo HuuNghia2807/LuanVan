@@ -11,12 +11,15 @@
     <div class="user">
       <div class="avatar">
         <img
-          src="@/assets/img/avatar_default/default-avatar.png"
+          :src="
+            employee.avatar ||
+            require('@/assets/img/avatar_default/default-avatar.png')
+          "
           alt="avatar"
         />
       </div>
       <div class="name">
-        <span>NGUYEN NGHIA</span>
+        <span>{{ employee.fullName }}</span>
         <router-link to="/dashboard/personal" class="no-underline">
           <i
             class="pi pi-cog text-white"
@@ -42,11 +45,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { getItemLocal } from "@/function/handleLocalStorage";
+import { IEmployee } from "@/interface/auth/authentication.state";
+import { computed, defineComponent, ref } from "vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {},
   setup() {
+    const store = useStore();
     const menuSidebar = ref([
       { name: "Dashboard", icon: "pi pi-home", link: "/dashboard" },
       {
@@ -70,8 +77,14 @@ export default defineComponent({
         link: "/dashboard/report",
       },
     ]);
+    const employee = computed(() => {
+      return (store.getters["auth/getUserDashboard"] ||
+        getItemLocal("userDashboard") ||
+        null) as IEmployee;
+    });
     return {
       menuSidebar,
+      employee,
     };
   },
 });

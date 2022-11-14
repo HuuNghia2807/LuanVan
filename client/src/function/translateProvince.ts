@@ -1,5 +1,4 @@
 import { IProvinceResponse } from "@/interface/order/order.state";
-import { district } from "./addressData";
 
 export const translateProvinceResponse = (
   add: IProvinceResponse

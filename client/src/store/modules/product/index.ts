@@ -3,6 +3,7 @@
 import { translateCategoryResponse } from "@/function/translateCategory";
 import {
   translateDiscount,
+  translateProductsHomeResponse,
   translateProductsResponse,
 } from "@/function/translateProduct";
 import { translateSizeResponse } from "@/function/translateSize";
@@ -77,6 +78,16 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async getHomeProduct({ commit }) {
+    try {
+      commit("setError", {});
+      const res = await productServices.getHomeProduct();
+      const products = translateProductsHomeResponse(res);
+      return products;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
   async deleteProduct({ commit }, listId: number[]) {
     try {
       commit("setError", {});
@@ -110,6 +121,14 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       const res = await productServices.getDiscount();
       const dis = translateDiscount(res);
       return dis;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async deleteDiscount({ commit }, payload: number[]) {
+    try {
+      commit("setError", {});
+      await productServices.deleteDiscount(payload);
     } catch (error) {
       commit("setError", { error });
     }
