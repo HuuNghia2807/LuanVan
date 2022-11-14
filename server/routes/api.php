@@ -57,6 +57,7 @@ Route::group(['prefix' => 'payment'], function () {
 Route::group(['prefix' => 'discount'], function () {
     Route::get('/', [DiscountController::class, 'index'])->name('discount.index');
     Route::post('/add', [DiscountController::class, 'store'])->name('discount.store');
+    Route::post('/delete', [DiscountController::class, 'deleteDiscount'])->name('discount.deleteDiscount');
     Route::post('/product', [DiscountController::class, 'addToProduct'])->name('discount.addToProduct');
     Route::post('/remove', [DiscountController::class, 'removeToProduct'])->name('discount.removeToProduct');
 });
@@ -70,6 +71,7 @@ Route::group(['prefix' => 'category'], function () {
 
 Route::group(['prefix' => 'product'], function () {
     Route::get('', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/home', [ProductController::class, 'getHome'])->name('product.getHome');
     Route::post('/add', [ProductController::class, 'store'])->name('product.store');
     Route::post('/delete', [ProductController::class, 'destroy'])->name('product.destroy');
     Route::put('/update', [ProductController::class, 'update'])->name('product.update');

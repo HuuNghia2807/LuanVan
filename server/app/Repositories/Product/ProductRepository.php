@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Product;
 
+use App\Http\Resources\ProductResource;
 use App\Repositories\BaseRepository;
 use App\Models\Category;
 use App\Models\Product;
@@ -138,5 +139,19 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             $product->delete();
         }
         return true;
+    }
+
+
+    public function getHome()
+    {
+        $new_product = Product::all()->sortByDesc('id')->take(10);
+
+        $sale_product =  Product::where('discount_id', '!=', null)->get()->take(10);
+
+        $data = [
+            'new_product' => ProductResource::collection($new_product),
+            'sale_product' => $sale_product ? ProductResource::collection($sale_product) : [],
+        ];
+        return $data;
     }
 }

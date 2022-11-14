@@ -174,4 +174,36 @@ class DiscountController extends AbstractApiController
         $this->setData($products);
         return $this->respond();
     }
+
+
+    public function deleteDiscount(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'ids' => 'required',
+            ]
+        );
+        if ($validate->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+
+        foreach ($request->ids as $id) {
+            $products = Product::where('discount_id', '=', $id)->get();
+            foreach ($products as $product) {
+                $product->update([
+                    'discount_id' => null
+                ]);
+            }
+            Discount::find($id)->delete();
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('delete discount success');
+        return $this->respond();
+    }
 }

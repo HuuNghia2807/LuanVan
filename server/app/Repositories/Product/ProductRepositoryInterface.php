@@ -15,4 +15,5 @@ interface ProductRepositoryInterface extends RepositoryInterface
     public function updateImage($product_id, $data);
     public function updateSize($product_id, $data);
     public function deleteProduct($arrId);
+    public function getHome();
 }

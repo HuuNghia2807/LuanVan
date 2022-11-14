@@ -187,4 +187,16 @@ class ProductController extends AbstractApiController
         $this->setMessage('Delete product success');
         return $this->respond();
     }
+
+
+    public function getHome()
+    {
+        $productHome = $this->productRepo->getHome();
+
+        $this->setStatusCode(JsonResponse::HTTP_CREATED);
+        $this->setStatus('success');
+        $this->setMessage('get product success');
+        $this->setData($productHome);
+        return $this->respond();
+    }
 }
