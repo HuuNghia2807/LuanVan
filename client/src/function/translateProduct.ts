@@ -1,4 +1,5 @@
 import {
+  IComment,
   IDiscount,
   IProduct,
   IProductHome,
@@ -17,7 +18,7 @@ export const translateProductsResponse = (
       productName: prd.product_name,
       productCode: prd.product_code.toUpperCase(),
       productPrice: prd.product_price,
-      productRating: prd.product_rating,
+      productRating: parseInt(prd.product_rating.toString()),
       discountId: prd.discount?.discount_id || 0,
       discountPercent: prd.discount?.percent || 0,
       sizes: translateSize(prd.sizes),
@@ -45,4 +46,18 @@ export const translateProductsHomeResponse = (
     productNew: translateProductsResponse(res.new_product),
     productSale: translateProductsResponse(res.sale_product),
   };
+};
+
+export const translateComment = (res: any[]): IComment[] => {
+  return res.map((ele) => {
+    return {
+      commentId: ele.comment_id,
+      productId: ele.product_id,
+      comment: ele.comment,
+      commentRating: ele.comment_rating,
+      customerId: ele.customer.id,
+      customerAvatar: ele.customer.avatar,
+      customerFullname: `${ele.customer.first_name} ${ele.customer.last_name}`,
+    };
+  });
 };

@@ -38,6 +38,7 @@ import ListProductCpn from "@/components/Product/ListProductCpn.vue";
 import ProductHorizontalCpn from "@/components/Product/ProductHorizontalCpn.vue";
 import { useStore } from "vuex";
 import { IProduct } from "@/interface/product/product.state";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -47,8 +48,17 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const route = useRoute();
     const listProduct = computed(() => {
-      return store.getters["product/getProducts"] || [];
+      const list = (store.getters["product/getProducts"] as IProduct[]) || [];
+      const type = route.path.slice(1);
+      return list
+        .map((ele) => {
+          if (ele.category.toLowerCase() === type) {
+            return ele;
+          }
+        })
+        .filter((ele) => ele) as IProduct[];
     });
 
     const newProducts = computed(() => {

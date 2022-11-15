@@ -33,6 +33,9 @@
           />
           <i class="pi pi-times mx-2" style="font-size: 1.3rem"></i>
           <span class="price price-red">{{ formatPrice(product?.price) }}</span>
+          <span class="price-red ml-3" v-if="product?.sale !== 0"
+            >(-{{ product?.sale }}%)</span
+          >
         </div>
         <div class="total-price mt-4">
           Thành tiền:

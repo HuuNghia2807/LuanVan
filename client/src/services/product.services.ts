@@ -134,6 +134,24 @@ class ProductServices {
       throw handleError(error as AxiosError);
     }
   }
+  async addComment(payload: any) {
+    try {
+      const path = "comment/add";
+      const response = await http.post(path, payload);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async getComment(product_id: number) {
+    try {
+      const path = `comment/product/${product_id}`;
+      const response = await http.get(path);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new ProductServices();

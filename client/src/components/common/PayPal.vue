@@ -40,7 +40,7 @@ export default defineComponent({
             const order = await actions.order.capture();
             paidFor.value = true;
             // console.log(order.purchase_units[0].amount.value);
-            emit("complete-paypal", order.purchase_units[0].amount.value);
+            emit("complete-paypal");
           },
           onError: (err: any) => {
             console.log(err);

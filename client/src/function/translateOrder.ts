@@ -44,6 +44,7 @@ export const translateProductOrder = (
       productPrice: ele.product.product_price,
       productOrderQuantity: ele.product_quantity,
       productSize: ele.size,
+      sale: ele.sale,
     };
   });
 };

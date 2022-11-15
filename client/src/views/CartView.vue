@@ -40,7 +40,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import ProductCartCpn from "@/components/Product/ProductCartCpn.vue";
 import Button from "primevue/button";
 import { useStore } from "vuex";
@@ -63,7 +63,6 @@ export default defineComponent({
       const listProduct: IProduct[] =
         store.getters["product/getProducts"] || [];
       const cartItem: ICart[] = store.getters["auth/getCart"] || [];
-      console.log(listProduct, cartItem);
 
       return getCartList(listProduct, cartItem);
     });

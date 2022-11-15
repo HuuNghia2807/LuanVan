@@ -3,7 +3,7 @@
     header="Chi tiết đơn hàng"
     :visible="isOrderDetail"
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-    :style="{ width: '45vw' }"
+    :style="{ width: '55vw' }"
     :modal="true"
   >
     <div class="order-detail">
@@ -67,7 +67,18 @@
           </my-column>
           <my-column header="Giá" key="gia" :style="{ width: '15rem' }">
             <template #body="{ data }">
-              {{ formatPrice(data.productPrice) }}
+              <div v-if="data.sale === 0">
+                {{ formatPrice(data.productPrice) }}
+              </div>
+              <div v-else>
+                <div class="font-medium">
+                  {{ formatPrice(caculatorSale(data.productPrice, data.sale)) }}
+                  <span class="ml-3 text-base">(-{{ data.sale }}%)</span>
+                </div>
+                <div class="line-through text-500">
+                  {{ formatPrice(data.productPrice) }}
+                </div>
+              </div>
             </template>
           </my-column>
           <my-column
@@ -77,7 +88,10 @@
           >
             <template #body="{ data }">
               <span class="text-red">{{
-                formatPrice(data.productPrice * data.productOrderQuantity)
+                formatPrice(
+                  caculatorSale(data.productPrice, data.sale) *
+                    data.productOrderQuantity
+                )
               }}</span>
             </template>
           </my-column>
@@ -108,7 +122,11 @@
 </template>
 
 <script lang="ts">
-import { formatPrice, translateUnixTimeToFullTime } from "@/function/common";
+import {
+  caculatorSale,
+  formatPrice,
+  translateUnixTimeToFullTime,
+} from "@/function/common";
 import { IOrders } from "@/interface/order/order.state";
 import { defineComponent, PropType, ref } from "vue";
 
@@ -134,6 +152,7 @@ export default defineComponent({
       closeModal,
       formatPrice,
       translateUnixTimeToFullTime,
+      caculatorSale,
     };
   },
 });

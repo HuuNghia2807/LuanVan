@@ -584,12 +584,12 @@ export default defineComponent({
       router.push("/profile");
     };
 
-    const orderPaypal = async (price: number) => {
+    const orderPaypal = async () => {
       const dataOrder: IOrderParams = {
         customer_id: customer.value.id,
         customer_name: state.name,
         note: note.value,
-        total_price: price,
+        total_price: totalOrder.value,
         address_order: {
           address: state.address,
           ward: state.ward,

@@ -112,6 +112,7 @@ export interface ICartList {
   img: string;
   name: string;
   price: number;
+  sale: number;
   productSizeId: number;
   size: number;
   quantity: number;
@@ -131,4 +132,16 @@ export interface IDiscountResponse {
   title: string;
   percent: number;
   time_create: number;
+}
+
+// interface comment
+
+export interface IComment {
+  commentId: number;
+  comment: string;
+  commentRating: number;
+  productId: number;
+  customerId: number;
+  customerAvatar: string;
+  customerFullname: string;
 }

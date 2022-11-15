@@ -2,6 +2,7 @@
 
 import { translateCategoryResponse } from "@/function/translateCategory";
 import {
+  translateComment,
   translateDiscount,
   translateProductsHomeResponse,
   translateProductsResponse,
@@ -149,6 +150,26 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       const res = await productServices.removeDiscountToProduct(payload);
       const products = translateProductsResponse(res);
       commit("setProducts", products);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async addComment({ commit }, payload: any) {
+    try {
+      commit("setError", {});
+      const res = await productServices.addComment(payload);
+      const cmt = translateComment(res);
+      return cmt;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getComment({ commit }, payload: number) {
+    try {
+      commit("setError", {});
+      const res = await productServices.getComment(payload);
+      const cmt = translateComment(res);
+      return cmt;
     } catch (error) {
       commit("setError", { error });
     }

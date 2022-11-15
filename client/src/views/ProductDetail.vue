@@ -104,13 +104,14 @@
               icon="pi pi-chevron-right"
               class="p-button-lg p-button-danger p-button-rounded"
               iconPos="right"
+              @click="goToCart"
             />
           </div>
         </div>
       </div>
     </div>
     <div class="comment">
-      <CommentCpn />
+      <CommentCpn v-if="product" :product="product" />
     </div>
     <div class="other mb-8">
       <div class="my-3">
@@ -133,7 +134,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ICart, IProduct } from "@/interface/product/product.state";
 import { caculatorSale, formatPrice } from "@/function/common";
 import { useToast } from "primevue/usetoast";
@@ -153,6 +154,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
     const toast = useToast();
     const rate = ref(3);
     const product = ref<IProduct>();
@@ -194,6 +196,11 @@ export default defineComponent({
       selectedSize.value = szie;
     };
 
+    const goToCart = () => {
+      addCart();
+      router.push("/gio-hang");
+    };
+
     onMounted(async () => {
       await store.dispatch("product/getProducts");
       const list = store.getters["product/getProducts"] as IProduct[];
@@ -210,6 +217,7 @@ export default defineComponent({
       quantity,
       product,
       imageShow,
+      goToCart,
       handleClickSize,
       handleClickImage,
       caculatorSale,
@@ -392,10 +400,6 @@ export default defineComponent({
       color: yellow !important;
     }
 
-    :deep(.p-radiobutton) {
-      margin-bottom: 0.5rem;
-    }
-
     :deep(.p-inputtext) {
       font-size: 2rem;
       width: 6rem;
@@ -422,7 +426,6 @@ export default defineComponent({
   .comment {
     width: 100%;
     min-height: 50rem;
-    max-height: 100rem;
   }
   .other {
     display: flex;

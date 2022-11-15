@@ -49,7 +49,7 @@ const routes: Array<RouteRecordRaw> = [
         component: ProductTypeView,
       },
       {
-        path: "/yeezy",
+        path: "/yezzy",
         component: ProductTypeView,
       },
       {

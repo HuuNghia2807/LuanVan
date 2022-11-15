@@ -61,6 +61,7 @@ export interface IProductOrder {
   productImage: string;
   productPrice: number;
   productSize: number;
+  sale: number;
 }
 
 export interface IOrderParams {
@@ -111,6 +112,7 @@ export interface IOrderDetailResponse {
   product_size_id: number;
   size: number;
   product: IProductResponse;
+  sale: number;
 }
 
 export interface IPaymentResponse {

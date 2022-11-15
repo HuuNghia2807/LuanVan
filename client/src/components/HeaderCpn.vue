@@ -150,7 +150,7 @@ export default defineComponent({
       { name: "NIKE", link: "nike" },
       { name: "ADIDAS", link: "adidas" },
       { name: "JORDAN", link: "jordan" },
-      { name: "YEZZY", link: "yeezy" },
+      { name: "YEZZY", link: "yezzy" },
       { name: "SALE", link: "sale" },
       { name: "LIÊN HỆ", link: "contact" },
     ]);
@@ -376,6 +376,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   position: relative;
+  min-width: 15rem;
   .img {
     width: 4rem;
     height: 4rem;

@@ -112,6 +112,7 @@
             type="button"
             icon="pi pi-eye"
             class="p-button-rounded p-button-success"
+            @click="handleorderDetail(slotProps.data)"
           ></my-button>
           <my-button
             v-if="option === 'new' || option === 'processing'"
@@ -124,6 +125,13 @@
       </template>
     </my-column>
   </DataTable>
+
+  <OrderDetailCpn
+    v-if="isOrderDetail"
+    :is-order-detail="isOrderDetail"
+    :order="orderDetail"
+    @close-modal="closeModal"
+  />
 </template>
 
 <script lang="ts">
@@ -131,13 +139,19 @@ import { defineComponent, PropType, ref } from "vue";
 import { formatPrice, translateUnixTimeToFullTime } from "@/function/common";
 import { FilterMatchMode } from "primevue/api";
 import { IOrders } from "@/interface/order/order.state";
+import OrderDetailCpn from "@/components/order/OrderDetailCpn.vue";
 
 export default defineComponent({
+  components: {
+    OrderDetailCpn,
+  },
   props: {
     orders: { type: Object as PropType<IOrders[]> },
     option: { type: String },
   },
-  setup(props, { emit }) {
+  setup(_props, { emit }) {
+    const orderDetail = ref<IOrders>();
+    const isOrderDetail = ref(false);
     const columns = ref([
       { field: "orderId", header: "Mã ĐH", width: "10rem" },
       { field: "customer", header: "Khách Hàng", width: "18rem" },
@@ -158,9 +172,21 @@ export default defineComponent({
     const cancelOrder = (order: IOrders) => {
       emit("cancel-order", order.orderId);
     };
+    const handleorderDetail = (order: IOrders) => {
+      orderDetail.value = order;
+      isOrderDetail.value = true;
+    };
+    const closeModal = () => {
+      orderDetail.value = undefined;
+      isOrderDetail.value = false;
+    };
     return {
       columns,
       filters,
+      orderDetail,
+      isOrderDetail,
+      handleorderDetail,
+      closeModal,
       cancelOrder,
       completeOrder,
       deliveryOrder,
