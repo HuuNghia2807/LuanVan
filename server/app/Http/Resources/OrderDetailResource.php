@@ -23,6 +23,7 @@ class OrderDetailResource extends JsonResource
             'product_size_id' => $this->product_size_id,
             'size' => $this->getSize($this->product_size_id),
             'product' => $this->getProduct($this->product_size_id),
+            'sale' => $this->sale,
             'order_id' => $this->order_id,
         ];
         return $data;

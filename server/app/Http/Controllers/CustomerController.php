@@ -172,7 +172,7 @@ class CustomerController extends AbstractApiController
                 'last_name' => 'required',
                 'phone' => 'required',
                 'email' => 'required|email',
-                'password' => 'required|min:8|max:255'
+                'password' => 'required|min:6|max:255'
             ]
         );
         if ($validateCustomer->fails()) {
@@ -224,7 +224,7 @@ class CustomerController extends AbstractApiController
             $request->all(),
             [
                 'email' => 'required|email:filter|max:255|ends_with:gmail.com',
-                'password' => 'required|min:8|max:255'
+                'password' => 'required|min:6|max:255'
             ]
         );
         if ($validateCustomer->fails()) {

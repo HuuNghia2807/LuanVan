@@ -62,7 +62,8 @@ class OrderController extends AbstractApiController
                 'customer_id' => 'required|numeric',
                 'note' => 'nullable|string',
                 'address_order' => 'required',
-                'customer_name' => 'required|string'
+                'customer_name' => 'required|string',
+                'product_order' => 'required'
             ]
         );
         if ($validateOrder->fails()) {
@@ -85,6 +86,7 @@ class OrderController extends AbstractApiController
                 'customer_id' => $request->customer_id
             ]);
             $this->orderRepo->createOrderDetail($request->product_order, $order->id);
+            $this->orderRepo->updateQuantity($request->product_order);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();

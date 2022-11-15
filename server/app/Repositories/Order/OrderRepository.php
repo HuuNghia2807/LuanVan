@@ -6,6 +6,7 @@ use App\Models\Address;
 use App\Repositories\BaseRepository;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\ProductSize;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -35,7 +36,20 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             OrderDetail::create([
                 'product_quantity' => $product['quantity'],
                 'product_size_id' => $product['productSizeId'],
+                'sale' => $product['sale'],
                 'order_id' => $order_id,
+            ]);
+        }
+        return true;
+    }
+
+    public function updateQuantity($product_order)
+    {
+        // dd($product_order);
+        foreach ($product_order as $product) {
+            $pds = ProductSize::find($product['productSizeId']);
+            $pds->update([
+                'product_size_quantity' => $pds->product_size_quantity - $product['quantity'],
             ]);
         }
         return true;

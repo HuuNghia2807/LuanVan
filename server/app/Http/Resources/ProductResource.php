@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Discount;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
@@ -23,7 +24,7 @@ class ProductResource extends JsonResource
             'product_name' => $this->product_name,
             'product_code' => $this->product_code,
             'product_price' => $this->product_price,
-            'product_rating' => $this->product_rating,
+            'product_rating' => $this->handleRating($this->id, $this->product_rating),
             'category_id' => $this->category_id,
             'category' => $this->getCategory($this->category_id),
             'discount' => $this->getDiscount($this->discount_id),
@@ -59,5 +60,16 @@ class ProductResource extends JsonResource
     {
         $discount = Discount::find($id);
         return DiscountResource::make($discount);
+    }
+
+    public function handleRating($id, $rate_default)
+    {
+        $list_rate = Comment::where('product_id', '=', $id)->get();
+        if (!count($list_rate)) {
+            return $rate_default;
+        }
+        $total_sum = $list_rate->sum('comment_rating');
+        $count = $list_rate->count() != 0 ? $list_rate->count() : 1;
+        return $total_sum / $count;
     }
 }

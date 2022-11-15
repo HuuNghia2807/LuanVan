@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmployeeController;
@@ -34,16 +35,18 @@ Route::group(['prefix' => 'customer'], function () {
     Route::put('/update', [CustomerController::class, 'update'])->name('customer.update');
     Route::put('/password', [CustomerController::class, 'changePass']);
     Route::put('/address', [CustomerController::class, 'updateAddress']);
-    // Route::post('refresh-token', [AuthController::class, 'refresh'])->name('auth.refresh');
-    // Route::get('me', [AuthController::class, 'userProfile'])->name('auth.userProfile');
-    // Route::post('newpassword', [AuthController::class, 'changePassword'])->name('auth.changePassword');
-    // Route::get('', [AuthController::class, 'getAllUser'])->name('auth.getAllUser');
 });
 
 Route::group(['prefix' => 'employee'], function () {
     Route::get('/all', [EmployeeController::class, 'index'])->name('employee.index');
     Route::post('/add', [EmployeeController::class, 'store'])->name('employee.store');
     Route::post('/login', [EmployeeController::class, 'login'])->name('employee.login');
+});
+
+Route::group(['prefix' => 'comment'], function () {
+    Route::get('/product/{id}', [CommentController::class, 'show'])->name('comment.show');
+    Route::post('/add', [CommentController::class, 'store'])->name('comment.store');
+    // Route::post('/login', [EmployeeController::class, 'login'])->name('employee.login');
 });
 
 Route::group(['prefix' => 'province'], function () {
