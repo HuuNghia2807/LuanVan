@@ -1,126 +1,132 @@
 <template>
   <div class="header flex align-items-center justify-content-between">
-    <router-link class="h-6rem cursor-pointer" to="/">
-      <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
-    </router-link>
-    <div class="mx-8 flex flex-wrap">
-      <router-link
-        class="item-menu"
-        v-for="item in listMenu"
-        :key="item.name"
-        :to="`/${item.link}`"
-      >
-        {{ item.name }}
+    <div class="flex align-items-center justify-content-between">
+      <router-link class="h-6rem cursor-pointer" to="/">
+        <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
       </router-link>
-    </div>
-    <div class="p-input-icon-right">
-      <i class="icon-search pi pi-search" />
-      <InputText
-        type="text"
-        placeholder="Nhập sản phẩm cần tìm"
-        class="p-inputtext-lg input"
-      />
-    </div>
-    <router-link
-      to="/gio-hang"
-      class="icon-cart mx-4"
-      aria-controls="overlay_panel"
-      aria-haspopup="true"
-      @mouseover="showCart"
-      @mouseleave="hideCart"
-    >
-      <i class="icon pi pi-shopping-cart" style="font-size: 2.2rem">
-        <span class="badge-icon-cart">{{ cartQuantity.length }}</span>
-      </i>
-      <div
-        class="cart"
-        v-show="isShow"
-        @mouseleave="hideCart"
-        @mouseover="showCart"
-      >
-        <DataTable
-          :value="cartList"
-          selectionMode="single"
-          :rows="6"
-          responsiveLayout="scroll"
+      <div class="mx-8 flex flex-wrap">
+        <router-link
+          class="item-menu"
+          v-for="item in listMenu"
+          :key="item.name"
+          :to="`/${item.link}`"
         >
-          <Column field="name" header="Tên" style="width: 20%"></Column>
-          <Column header="Ảnh" style="width: 20%">
-            <template #body="slotProps">
-              <img
-                :src="slotProps.data.img"
-                :alt="slotProps.data.name"
-                class="product-image"
-              />
-            </template>
-          </Column>
-          <Column header="Size" style="width: 20%">
-            <template #body="slotProps">
-              {{ slotProps.data.size }}
-            </template>
-          </Column>
-          <Column header="Giá" sortable style="width: 20%">
-            <template #body="slotProps">
-              {{ formatPrice(slotProps.data.price) }}
-            </template>
-          </Column>
-          <Column header="Số lượng" style="width: 20%">
-            <template #body="slotProps">
-              {{ slotProps.data.quantity }}
-            </template>
-          </Column>
-        </DataTable>
+          {{ item.name }}
+        </router-link>
       </div>
-    </router-link>
-    <div class="account">
-      <div
-        class="flex align-items-center justify-content-center"
-        v-if="!customer"
-      >
-        <router-link to="/account" class="login no-underline"
-          >Đăng nhập</router-link
-        >
-        <span class="line" />
-        <router-link to="/account" class="login no-underline"
-          >Đăng ký</router-link
-        >
-      </div>
-      <div
-        class="user"
-        v-else
-        @mouseover="toggleShowSubMenu(true)"
-        @mouseleave="toggleShowSubMenu(false)"
-      >
-        <img
-          :src="
-            customer.avatar ||
-            require('@/assets/img/avatar_default/default-avatar.png')
-          "
-          class="img"
+    </div>
+
+    <div class="flex align-items-center justify-content-between">
+      <div class="p-input-icon-right">
+        <i class="icon-search pi pi-search" />
+        <InputText
+          type="text"
+          placeholder="Nhập sản phẩm cần tìm"
+          class="p-inputtext-lg input"
         />
-        <span>{{ customer.fullName }}</span>
+      </div>
+      <router-link
+        to="/gio-hang"
+        class="icon-cart mx-4"
+        aria-controls="overlay_panel"
+        aria-haspopup="true"
+        @mouseover="showCart"
+        @mouseleave="hideCart"
+      >
+        <i class="icon pi pi-shopping-cart" style="font-size: 2.2rem">
+          <span class="badge-icon-cart">{{ cartQuantity.length }}</span>
+        </i>
         <div
-          class="sub-user"
-          v-show="isShowUser"
+          class="cart-header"
+          v-show="isShow"
+          @mouseleave="hideCart"
+          @mouseover="showCart"
+        >
+          <!-- <CartView /> -->
+          <DataTable
+            :value="cartList"
+            selectionMode="single"
+            :rows="6"
+            responsiveLayout="scroll"
+          >
+            <my-column field="name" header="Tên" style="width: 20%"></my-column>
+            <my-column header="Ảnh" style="width: 20%">
+              <template #body="slotProps">
+                <img
+                  :src="slotProps.data.img"
+                  :alt="slotProps.data.name"
+                  class="product-image"
+                />
+              </template>
+            </my-column>
+            <my-column header="Size" style="width: 20%">
+              <template #body="slotProps">
+                {{ slotProps.data.size }}
+              </template>
+            </my-column>
+            <my-column header="Giá" sortable style="width: 20%">
+              <template #body="slotProps">
+                {{ formatPrice(slotProps.data.price) }}
+              </template>
+            </my-column>
+            <my-column header="Số lượng" style="width: 20%">
+              <template #body="slotProps">
+                {{ slotProps.data.quantity }}
+              </template>
+            </my-column>
+          </DataTable>
+        </div>
+      </router-link>
+      <div class="account">
+        <div
+          class="flex align-items-center justify-content-center"
+          v-if="!customer"
+        >
+          <router-link to="/account" class="login no-underline"
+            >Đăng nhập</router-link
+          >
+          <span class="line" />
+          <router-link to="/account" class="login no-underline"
+            >Đăng ký</router-link
+          >
+        </div>
+        <div
+          class="user"
+          v-else
           @mouseover="toggleShowSubMenu(true)"
           @mouseleave="toggleShowSubMenu(false)"
         >
-          <ul class="special-list flex flex-column z-100">
-            <li
-              v-for="action of subMenuItems"
-              :key="action.label"
-              class="opacity-100 z-5 control-item"
-            >
-              <a
-                href="#"
-                class="font-normal text-left"
-                @click="handleClick(action.action)"
+          <img
+            :src="
+              customer.avatar ||
+              require('@/assets/img/avatar_default/default-avatar.png')
+            "
+            class="img"
+          />
+          <span>{{ customer.fullName }}</span>
+          <div
+            class="sub-user"
+            v-show="isShowUser"
+            @mouseover="toggleShowSubMenu(true)"
+            @mouseleave="toggleShowSubMenu(false)"
+          >
+            <ul class="special-list flex flex-column z-100">
+              <li
+                v-for="action of subMenuItems"
+                :key="action.label"
+                class="opacity-100 z-5 control-item"
               >
-                <div :class="action.icon" class="text-2xl mr-2"></div>
-                {{ action.label }}
-              </a>
-            </li>
-          </ul>
+                <a
+                  href="#"
+                  class="font-normal text-left"
+                  @click="handleClick(action.action)"
+                >
+                  <div :class="action.icon" class="text-2xl mr-2"></div>
+                  {{ action.label }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -130,18 +136,18 @@
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import InputText from "primevue/inputtext";
-import Column from "primevue/column";
 import { ICart, IProduct } from "@/interface/product/product.state";
 import { getCartList } from "@/function/getCartList";
 import { formatPrice } from "@/function/common";
 import { getItemLocal } from "@/function/handleLocalStorage";
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { useRouter } from "vue-router";
+import CartView from "@/views/CartView.vue";
 
 export default defineComponent({
   components: {
     InputText,
-    Column,
+    // CartView,
   },
   setup() {
     const store = useStore();
@@ -242,7 +248,7 @@ export default defineComponent({
   height: var(--height-header);
   width: 100vw;
   top: 0;
-  z-index: 2;
+  z-index: 9999;
   padding: 0 5rem;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
@@ -317,12 +323,13 @@ export default defineComponent({
   cursor: pointer;
   position: relative;
 
-  .cart {
+  .cart-header {
     position: absolute;
     top: 100%;
     right: -300%;
     border-radius: 10px;
     min-width: 40rem;
+    height: 40rem;
   }
 
   &:hover {
@@ -334,7 +341,6 @@ export default defineComponent({
   position: relative;
   color: var(--white-color);
   padding: 10px;
-  transform: rotate(10deg);
 
   .badge-icon-cart {
     position: absolute;

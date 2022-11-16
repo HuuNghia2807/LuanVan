@@ -2,10 +2,10 @@
   <my-dialog
     header="Cập nhật địa chỉ"
     :visible="displayModal"
-    @update:visble="displayModal"
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
     :style="{ width: '50vw' }"
     :modal="true"
+    @update:visible="closeModal"
   >
     <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
       <!-- Tỉnh quận huyện -->

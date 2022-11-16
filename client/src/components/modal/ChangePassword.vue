@@ -5,6 +5,7 @@
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
     :style="{ width: '30vw' }"
     :modal="true"
+    @update:visible="closeModal"
   >
     <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
       <div class="field">

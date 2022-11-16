@@ -4,6 +4,7 @@
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
     :style="{ width: '40vw' }"
     :modal="true"
+    @update:visible="closeModal"
   >
     <div class="confirmation-content">
       <h3>Bạn có chắc muốn hủy đơn hàng này!</h3>

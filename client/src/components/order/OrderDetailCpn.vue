@@ -5,6 +5,7 @@
     :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
     :style="{ width: '55vw' }"
     :modal="true"
+    @update:visible="closeModal"
   >
     <div class="order-detail">
       <div class="head">
