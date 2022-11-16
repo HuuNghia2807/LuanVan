@@ -16,4 +16,10 @@ class Size extends Model
     protected $fillable = [
         'size',
     ];
+
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_sizes', 'id', 'id');
+    }
 }

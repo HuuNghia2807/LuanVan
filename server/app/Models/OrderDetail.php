@@ -19,4 +19,16 @@ class OrderDetail extends Model
         'sale',
         'order_id',
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function product_id()
+    {
+        $product_size = ProductSize::find($this->product_size_id);
+
+        return $product_size->product_id;
+    }
 }

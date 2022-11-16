@@ -24,4 +24,9 @@ class Order extends Model
         'customer_id',
         'employee_id',
     ];
+
+    public function order_details()
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
 }

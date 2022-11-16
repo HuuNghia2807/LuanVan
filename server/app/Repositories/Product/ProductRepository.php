@@ -5,6 +5,7 @@ namespace App\Repositories\Product;
 use App\Http\Resources\ProductResource;
 use App\Repositories\BaseRepository;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
@@ -150,8 +151,32 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
         $data = [
             'new_product' => ProductResource::collection($new_product),
+            'hot_product' => ProductResource::collection($this->getProductsHot()),
             'sale_product' => $sale_product ? ProductResource::collection($sale_product) : [],
         ];
         return $data;
+    }
+
+    public function getProductsHot()
+    {
+        $products = array();
+        $result = array();
+        $orders = Order::all();
+        foreach ($orders as $order) {
+            foreach ($order->order_details as $detail) {
+                if (!in_array($detail->product_id(), array_keys($products))) {
+                    $products[$detail->product_id()] = $detail->product_quantity;
+                } else {
+                    $products[$detail->product_id()] += $detail->product_quantity;
+                }
+            }
+        }
+        arsort($products);
+        foreach ($products as $key => $product) {
+            $product = $this->model->find($key);
+            array_push($result, $product);
+        }
+
+        return $result;
     }
 }
