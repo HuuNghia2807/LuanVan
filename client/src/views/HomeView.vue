@@ -48,7 +48,7 @@ export default defineComponent({
         "product/getHomeProduct"
       )) as IProductHome;
       newProduct.products = homeProduct.productNew;
-      hotProduct.products = homeProduct.productSale;
+      hotProduct.products = homeProduct.productHot;
       saleProduct.products = homeProduct.productSale;
     });
     return {

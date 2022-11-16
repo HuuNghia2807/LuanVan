@@ -77,8 +77,6 @@ export interface IOrderParams {
 export interface IAddressOrder {
   address: string;
   ward: number | null;
-  district: number | null;
-  city: number | null;
 }
 
 export interface IOrderResponse {

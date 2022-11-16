@@ -45,6 +45,7 @@ export const translateProductsHomeResponse = (
   return {
     productNew: translateProductsResponse(res.new_product),
     productSale: translateProductsResponse(res.sale_product),
+    productHot: translateProductsResponse(res.hot_product),
   };
 };
 

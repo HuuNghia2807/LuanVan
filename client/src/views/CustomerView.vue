@@ -81,7 +81,7 @@
               :key="add.address_id"
             >
               <div class="w-10">
-                <label class="font-semibold">Địa chỉ {{ i }}: </label>
+                <label class="font-semibold">Địa chỉ {{ i + 1 }}: </label>
                 <span class="ml-2 text-2xl">{{
                   `${add.address}, 
                 ${add.ward.ward},       
@@ -223,6 +223,7 @@ export default defineComponent({
         severity: "success",
         summary: "Thành công",
         detail: "Xử lý thành công!",
+        group: "br",
         life: 3000,
       });
       loadPage();

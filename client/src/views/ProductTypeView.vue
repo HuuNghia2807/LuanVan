@@ -3,7 +3,8 @@
     <HeaderTypeProductCpn />
     <div class="container">
       <span class="title"
-        >Trang chủ > Sản phẩm > <span style="color: red">Nike</span></span
+        >Trang chủ > Sản phẩm >
+        <span style="color: red">{{ type.toUpperCase() }}</span></span
       >
       <div class="list-product">
         <div class="products">
@@ -49,12 +50,18 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
+    const type = computed(() => {
+      return route.path.slice(1);
+    });
     const listProduct = computed(() => {
       const list = (store.getters["product/getProducts"] as IProduct[]) || [];
-      const type = route.path.slice(1);
+
       return list
         .map((ele) => {
-          if (ele.category.toLowerCase() === type) {
+          if (type.value === "sale" && ele.discountId !== 0) {
+            return ele;
+          }
+          if (ele.category.toLowerCase() === type.value) {
             return ele;
           }
         })
@@ -77,6 +84,7 @@ export default defineComponent({
     return {
       listProduct,
       newProducts,
+      type,
     };
   },
 });

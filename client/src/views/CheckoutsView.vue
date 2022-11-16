@@ -83,149 +83,156 @@
                   </small>
                 </div>
               </div>
-              <!-- Tỉnh quận huyện -->
-              <div class="flex align-items-center justify-content-between mt-3">
-                <div class="field w-19rem">
+              <div>
+                <div class="field">
                   <div class="p-float-label">
-                    <Dropdown
-                      id="city"
-                      v-model="v$.city.$model"
-                      :filter="true"
-                      :options="city"
-                      optionLabel="city"
-                      optionValue="id"
-                      @change="selectProvince('city')"
+                    <my-dropdown
+                      id="oldAddr"
+                      v-model="oldAddr"
+                      :options="listAddress"
+                      optionLabel="addFull"
+                      @change="handleChangeAddress"
                       :class="{
-                        'p-invalid': v$.city.$invalid && submitted,
-                      }"
-                    >
-                      <template #option="slotProps">
-                        <div class="text-2xl">{{ slotProps.option.city }}</div>
-                      </template>
-                    </Dropdown>
-                    <label
-                      for="city"
-                      class="label"
-                      :class="{
-                        'p-error': v$.city.$invalid && submitted,
-                      }"
-                    >
-                      Tỉnh/Thành
-                    </label>
-                  </div>
-                  <small
-                    v-if="(v$.city.$invalid && submitted) || v$.city.$pending"
-                    class="p-error"
-                  >
-                    {{ v$.city.required.$message }}
-                  </small>
-                </div>
-                <div class="field w-19rem">
-                  <div class="p-float-label">
-                    <Dropdown
-                      id="district"
-                      v-model="v$.district.$model"
-                      :options="district"
-                      :filter="true"
-                      @change="selectProvince('district')"
-                      optionLabel="district"
-                      optionValue="id"
-                      :class="{
-                        'p-invalid': v$.district.$invalid && submitted,
+                        'p-invalid': errorOldAddress(),
                       }"
                     >
                       <template #option="slotProps">
                         <div class="text-2xl">
-                          {{ slotProps.option.district }}
+                          {{ slotProps.option.addFull }}
                         </div>
                       </template>
-                    </Dropdown>
+                    </my-dropdown>
                     <label
-                      for="district"
+                      for="oldAddr"
                       class="label"
                       :class="{
-                        'p-error': v$.district.$invalid && submitted,
-                      }"
-                    >
-                      Quận/Huyện
-                    </label>
-                  </div>
-                  <small
-                    v-if="
-                      (v$.district.$invalid && submitted) ||
-                      v$.district.$pending
-                    "
-                    class="p-error"
-                  >
-                    {{ v$.district.required.$message }}
-                  </small>
-                </div>
-                <div class="field w-19rem">
-                  <div class="p-float-label">
-                    <Dropdown
-                      id="ward"
-                      v-model="v$.ward.$model"
-                      :options="ward"
-                      :filter="true"
-                      optionLabel="ward"
-                      optionValue="id"
-                      :class="{
-                        'p-invalid': v$.ward.$invalid && submitted,
-                      }"
-                    >
-                      <template #option="slotProps">
-                        <div class="text-2xl">{{ slotProps.option.ward }}</div>
-                      </template>
-                    </Dropdown>
-                    <label
-                      for="ward"
-                      class="label"
-                      :class="{
-                        'p-error': v$.ward.$invalid && submitted,
-                      }"
-                    >
-                      Phường Xã
-                    </label>
-                  </div>
-                  <small
-                    v-if="(v$.ward.$invalid && submitted) || v$.ward.$pending"
-                    class="p-error"
-                  >
-                    {{ v$.ward.required.$message }}
-                  </small>
-                </div>
-              </div>
-              <!-- Địa chỉ -->
-              <div class="flex align-items-center mt-3">
-                <div class="field flex-1">
-                  <div class="p-float-label">
-                    <InputText
-                      id="address"
-                      v-model="v$.address.$model"
-                      :class="{
-                        'p-invalid': v$.address.$invalid && submitted,
-                      }"
-                    />
-                    <label
-                      for="address"
-                      class="label"
-                      :class="{
-                        'p-error': v$.address.$invalid && submitted,
+                        'p-error': errorOldAddress(),
                       }"
                     >
                       Địa chỉ
                     </label>
                   </div>
-                  <small
-                    v-if="
-                      (v$.address.$invalid && submitted) || v$.address.$pending
-                    "
-                    class="p-error"
-                  >
-                    {{ v$.address.required.$message }}
+                  <small v-if="errorOldAddress()" class="p-error">
+                    Vui lòng chọn địa chỉ trước khi đặt hàng!
                   </small>
                 </div>
               </div>
+              <div v-if="addNewAddress">
+                <!-- Tỉnh quận huyện -->
+                <div
+                  class="flex align-items-center justify-content-between mt-3"
+                >
+                  <div class="field w-19rem">
+                    <div class="p-float-label">
+                      <my-dropdown
+                        id="city"
+                        v-model="state.city"
+                        :filter="true"
+                        :options="city"
+                        optionLabel="city"
+                        optionValue="id"
+                        @change="selectProvince('city')"
+                      >
+                        <template #option="slotProps">
+                          <div class="text-2xl">
+                            {{ slotProps.option.city }}
+                          </div>
+                        </template>
+                      </my-dropdown>
+                      <label for="city" class="label"> Tỉnh/Thành </label>
+                    </div>
+                  </div>
+                  <div class="field w-19rem">
+                    <div class="p-float-label">
+                      <my-dropdown
+                        id="district"
+                        v-model="state.district"
+                        :options="district"
+                        :filter="true"
+                        @change="selectProvince('district')"
+                        optionLabel="district"
+                        optionValue="id"
+                      >
+                        <template #option="slotProps">
+                          <div class="text-2xl">
+                            {{ slotProps.option.district }}
+                          </div>
+                        </template>
+                      </my-dropdown>
+                      <label for="district" class="label"> Quận/Huyện </label>
+                    </div>
+                  </div>
+                  <div class="field w-19rem">
+                    <div class="p-float-label">
+                      <my-dropdown
+                        id="ward"
+                        v-model="v$.ward.$model"
+                        :options="ward"
+                        :filter="true"
+                        optionLabel="ward"
+                        optionValue="id"
+                        :class="{
+                          'p-invalid': v$.ward.$invalid && submitted,
+                        }"
+                      >
+                        <template #option="slotProps">
+                          <div class="text-2xl">
+                            {{ slotProps.option.ward }}
+                          </div>
+                        </template>
+                      </my-dropdown>
+                      <label
+                        for="ward"
+                        class="label"
+                        :class="{
+                          'p-error': v$.ward.$invalid && submitted,
+                        }"
+                      >
+                        Phường Xã
+                      </label>
+                    </div>
+                    <small
+                      v-if="(v$.ward.$invalid && submitted) || v$.ward.$pending"
+                      class="p-error"
+                    >
+                      {{ v$.ward.required.$message }}
+                    </small>
+                  </div>
+                </div>
+                <!-- Địa chỉ -->
+                <div class="flex align-items-center mt-3">
+                  <div class="field flex-1">
+                    <div class="p-float-label">
+                      <InputText
+                        id="address"
+                        v-model="v$.address.$model"
+                        :class="{
+                          'p-invalid': v$.address.$invalid && submitted,
+                        }"
+                      />
+                      <label
+                        for="address"
+                        class="label"
+                        :class="{
+                          'p-error': v$.address.$invalid && submitted,
+                        }"
+                      >
+                        Địa chỉ
+                      </label>
+                    </div>
+                    <small
+                      v-if="
+                        (v$.address.$invalid && submitted) ||
+                        v$.address.$pending
+                      "
+                      class="p-error"
+                    >
+                      {{ v$.address.required.$message }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+
               <!-- Email -->
               <div class="flex align-items-center mt-3">
                 <div class="field flex-1">
@@ -385,7 +392,6 @@ import useVuelidate from "@vuelidate/core";
 import ProductCheckoutsCpn from "@/components/Product/ProductCheckoutsCpn.vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import Dropdown from "primevue/dropdown";
 import Textarea from "primevue/textarea";
 import { useToast } from "primevue/usetoast";
 import { ICart, ICartList, IProduct } from "@/interface/product/product.state";
@@ -414,7 +420,6 @@ export default defineComponent({
     ProductCheckoutsCpn,
     InputText,
     Button,
-    Dropdown,
     Textarea,
     TheLoader,
     PayPal,
@@ -427,6 +432,9 @@ export default defineComponent({
     const showLoading = ref(false);
     const router = useRouter();
     const selectedTypePay = ref();
+    const addNewAddress = ref(false);
+    const listAddress = ref([] as any[]);
+    const oldAddr = ref();
     const msgError = ref("");
     const productCheckout = computed(() => {
       const listProduct: IProduct[] =
@@ -473,12 +481,6 @@ export default defineComponent({
         maxLength: maxLength(10),
         minLengthValue: minLength(10),
       },
-      city: {
-        required: helpers.withMessage("Vui lòng chọn Tỉnh/Thành", required),
-      },
-      district: {
-        required: helpers.withMessage("Vui lòng chọn Quận/Huyện", required),
-      },
       ward: {
         required: helpers.withMessage("Vui lòng chọn Phường/Xã", required),
       },
@@ -493,7 +495,10 @@ export default defineComponent({
     const v$ = useVuelidate(rules, state);
     const handleSubmit = (isFormValid: any) => {
       submitted.value = true;
-
+      if (!addNewAddress.value) {
+        state.address = oldAddr.value.address;
+        state.ward = oldAddr.value.wardId;
+      }
       if (isFormValid) {
         payment.value = true;
         return;
@@ -546,8 +551,6 @@ export default defineComponent({
         address_order: {
           address: state.address,
           ward: state.ward,
-          district: state.district,
-          city: state.city,
         },
         product_order: productCheckout.value,
         payment_id: selectedTypePay.value,
@@ -593,13 +596,28 @@ export default defineComponent({
         address_order: {
           address: state.address,
           ward: state.ward,
-          district: state.district,
-          city: state.city,
         },
         product_order: productCheckout.value,
         payment_id: selectedTypePay.value,
       };
       order(dataOrder);
+    };
+
+    const handleChangeAddress = () => {
+      if (oldAddr.value.wardId === 0) {
+        addNewAddress.value = true;
+        return;
+      }
+      addNewAddress.value = false;
+    };
+
+    const errorOldAddress = () => {
+      return (
+        oldAddr.value &&
+        oldAddr.value.address === "" &&
+        !addNewAddress.value &&
+        submitted.value
+      );
     };
 
     onMounted(async () => {
@@ -609,6 +627,20 @@ export default defineComponent({
       payments.value = await store.dispatch("order/getPayment");
       setStateCart(store);
       setCustomerLogin(store);
+      listAddress.value =
+        customer.value.address?.map((ele) => {
+          return {
+            address: ele.address || "",
+            wardId: ele.ward.id || 0,
+            addFull: `${ele.address}, ${ele.ward.ward}, ${ele.district.district}, ${ele.city.city}`,
+          };
+        }) || [];
+      listAddress.value.push({
+        address: "",
+        wardId: 0,
+        addFull: "+ Thêm địa chỉ mới",
+      });
+      oldAddr.value = listAddress.value[0];
       showLoading.value = false;
     });
     return {
@@ -628,6 +660,12 @@ export default defineComponent({
       note,
       showLoading,
       msgError,
+      addNewAddress,
+      customer,
+      listAddress,
+      oldAddr,
+      errorOldAddress,
+      handleChangeAddress,
       orderPaypal,
       handleOrder,
       selectProvince,

@@ -53,6 +53,10 @@ const routes: Array<RouteRecordRaw> = [
         component: ProductTypeView,
       },
       {
+        path: "/sale",
+        component: ProductTypeView,
+      },
+      {
         path: "/contact",
         component: ProductTypeView,
       },

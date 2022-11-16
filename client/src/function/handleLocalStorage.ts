@@ -17,22 +17,21 @@ export const removeItemLocal = (name: string) => {
 export const addProductToCart = (item: ICart, assign?: boolean) => {
   const arrCart: ICart[] = getItemLocal("cart") || [];
   if (arrCart.length) {
-    let check = false;
-    arrCart.forEach((itemCart) => {
+    const check = arrCart.find((itemCart) => {
       if (itemCart.productSizeId === item.productSizeId) {
-        if (assign) {
-          itemCart.quantity = item.quantity;
-        } else {
-          itemCart.quantity += item.quantity;
-        }
-        check = true;
+        if (item.quantity < itemCart.maxQuantity)
+          if (assign) {
+            itemCart.quantity = item.quantity;
+          } else {
+            itemCart.quantity += item.quantity;
+          }
+        return itemCart;
       }
     });
     if (!check) {
       arrCart.push(item);
     }
     setItemLocal("cart", arrCart);
-    check = false;
     return;
   }
   setItemLocal("cart", [item]);

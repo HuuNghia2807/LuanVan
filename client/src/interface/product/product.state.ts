@@ -56,12 +56,13 @@ export interface IProductResponse {
 export interface IProductHomeResponse {
   new_product: IProductResponse[];
   sale_product: IProductResponse[];
+  hot_product: IProductResponse[];
 }
 
 export interface IProductHome {
   productNew: IProduct[];
   productSale: IProduct[];
-  // productSale: IProduct[];
+  productHot: IProduct[];
 }
 
 // product image interface
@@ -106,6 +107,7 @@ export interface ICart {
   productId: number | undefined;
   productSizeId: number;
   quantity: number;
+  maxQuantity: number;
 }
 
 export interface ICartList {

@@ -248,7 +248,7 @@ export default defineComponent({
   height: var(--height-header);
   width: 100vw;
   top: 0;
-  z-index: 9999;
+  z-index: 3;
   padding: 0 5rem;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;

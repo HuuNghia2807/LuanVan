@@ -1,12 +1,17 @@
 <template>
+  <TheLoader :is-loading="showLoading" />
   <div ref="paypal" class="paypal1"></div>
 </template>
 
 <script lang="ts">
 import { formatPrice } from "@/function/common";
 import { computed, defineComponent, onMounted, ref } from "vue";
+import TheLoader from "@/components/common/TheLoader.vue";
 
 export default defineComponent({
+  components: {
+    TheLoader,
+  },
   props: {
     totalPrice: { type: Number },
   },
@@ -14,7 +19,7 @@ export default defineComponent({
     const paidFor = ref(false);
     const loaded = ref(false);
     const paypal = ref(null);
-
+    const showLoading = ref(false);
     const USDprice = computed(() => {
       return ((props.totalPrice || 99999999) / 24815).toFixed(2);
     });
@@ -50,11 +55,13 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      showLoading.value = true;
       const script = document.createElement("script");
       script.src =
         "https://www.paypal.com/sdk/js?client-id=Aceq9OSh9s3sayfuxmXCzKoCz1m-iDD2GFhToJTYDbCLxYuAfh0M3o_VZvoLLLozApW5NjmIbo6mEv-p";
       script.addEventListener("load", setLoaded);
       document.body.appendChild(script);
+      showLoading.value = false;
     });
 
     return {
@@ -62,6 +69,7 @@ export default defineComponent({
       loaded,
       paypal,
       USDprice,
+      showLoading,
       formatPrice,
     };
   },

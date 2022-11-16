@@ -153,8 +153,9 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .main-comment {
-  padding: 3rem 12rem;
-  background-color: #ccc;
+  margin: 3rem 20rem;
+  // background-color: #ccc;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
   :deep(.p-component) {
     font-size: 1.6rem !important;
@@ -170,10 +171,9 @@ export default defineComponent({
   }
 
   .container {
-    margin: 0 12rem;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    padding: 2rem 3rem 3rem;
+    padding: 2rem 5rem 3rem;
     min-height: 70rem;
 
     .error-comment {
@@ -216,6 +216,7 @@ export default defineComponent({
             height: 5rem;
             border-radius: 50%;
             border: 1px solid #ccc;
+            object-fit: contain;
           }
         }
 

@@ -18,6 +18,7 @@ export const getCartList = (listProduct: IProduct[], cartItem: ICart[]) => {
         size: pro.sizes.find((ele) => ele.productSizeId === item.productSizeId)
           ?.size,
         quantity: item.quantity,
+        maxQuantity: item.maxQuantity,
       };
     }
   });

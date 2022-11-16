@@ -24,8 +24,8 @@
             mode="decimal"
             showButtons
             buttonLayout="horizontal"
-            :min="0"
-            :max="40"
+            :min="1"
+            :max="product?.maxQuantity"
             decrementButtonClass="p-button-secondary"
             incrementButtonClass="p-button-secondary"
             incrementButtonIcon="pi pi-plus"
@@ -84,8 +84,6 @@ export default defineComponent({
     });
 
     const handleRemove = (id: number) => {
-      console.log("here");
-
       removeProductToCart(id);
       setStateCart(store);
     };
@@ -95,6 +93,7 @@ export default defineComponent({
         productId: props.product?.productId,
         productSizeId: props.product?.productSizeId,
         quantity: quantity.value,
+        maxQuantity: props.product?.maxQuantity,
       };
       addProductToCart(item, true);
       setStateCart(store);

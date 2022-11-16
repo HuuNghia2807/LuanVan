@@ -178,6 +178,7 @@ export default defineComponent({
         productId: product.value?.productId || undefined,
         productSizeId: sizeId,
         quantity: quantity.value,
+        maxQuantity: selectedSize.value.productSizeQuantity,
       };
       addProductToCart(item);
       setStateCart(store);
