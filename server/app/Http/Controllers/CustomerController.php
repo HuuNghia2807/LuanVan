@@ -253,8 +253,8 @@ class CustomerController extends AbstractApiController
             $request->all(),
             [
                 'customer_id' => 'required|numeric',
-                'old_pass' => 'required|min:8|max:255',
-                'new_pass' => 'required|min:8|max:255|confirmed',
+                'old_pass' => 'required|min:6|max:255',
+                'new_pass' => 'required|min:6|max:255|confirmed',
             ]
         );
         if ($validateCustomer->fails()) {
