@@ -17,6 +17,7 @@ class Comment extends Model
         'comment',
         'comment_rating',
         'customer_id',
-        'product_id'
+        'product_id',
+        'created_at'
     ];
 }

@@ -22,6 +22,7 @@ class CommentResource extends JsonResource
             'comment_rating' => $this->comment_rating,
             'customer_id' => $this->customer_id,
             'customer' => $this->getCustomer($this->customer_id),
+            'time_comment' => strtotime($this->created_at)
         ];
         return $data;
     }

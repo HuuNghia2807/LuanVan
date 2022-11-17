@@ -179,4 +179,11 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
         return $result;
     }
+
+    public function search($q)
+    {
+        $products = Product::where('product_name', 'like', '%' . $q . '%')->orWhere('product_code', 'like', '%' . $q . '%')->get();
+
+        return $products;
+    }
 }

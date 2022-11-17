@@ -191,10 +191,25 @@ class ProductController extends AbstractApiController
 
     public function getHome()
     {
+        $products = $this->productRepo->getHome();
+
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('success');
         $this->setMessage('Get product success');
-        $this->setData($this->productRepo->getHome());
+        $this->setData($products);
+
+        return $this->respond();
+    }
+
+    public function search(Request $request)
+    {
+        $products = $this->productRepo->search($request->q);
+
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Search products success');
+        $this->setData(ProductResource::collection($products));
+
         return $this->respond();
     }
 }

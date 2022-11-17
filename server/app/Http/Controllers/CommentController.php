@@ -82,10 +82,11 @@ class CommentController extends AbstractApiController
      */
     public function show($id)
     {
+        $comment = Comment::where('product_id', '=', $id)->orderBy('id', 'DESC')->get();
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('Success');
         $this->setMessage('Comment success');
-        $this->setData(CommentResource::collection(Comment::where('product_id', '=', $id)->orderBy('id', 'DESC')->get()));
+        $this->setData(CommentResource::collection($comment));
         return $this->respond();
     }
 

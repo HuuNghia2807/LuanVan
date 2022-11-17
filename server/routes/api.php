@@ -78,6 +78,7 @@ Route::group(['prefix' => 'product'], function () {
     Route::post('/add', [ProductController::class, 'store'])->name('product.store');
     Route::post('/delete', [ProductController::class, 'destroy'])->name('product.destroy');
     Route::put('/update', [ProductController::class, 'update'])->name('product.update');
+    Route::get('/search', [ProductController::class, 'search'])->name('product.search');
 });
 
 Route::group(['prefix' => 'size'], function () {
