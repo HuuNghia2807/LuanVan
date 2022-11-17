@@ -58,6 +58,9 @@ export default defineComponent({
 
       return list
         .map((ele) => {
+          if (type.value === "product") {
+            return ele;
+          }
           if (type.value === "sale" && ele.discountId !== 0) {
             return ele;
           }

@@ -59,6 +59,7 @@ export const translateComment = (res: any[]): IComment[] => {
       customerId: ele.customer.id,
       customerAvatar: ele.customer.avatar,
       customerFullname: `${ele.customer.first_name} ${ele.customer.last_name}`,
+      timeComment: ele.time_comment,
     };
   });
 };

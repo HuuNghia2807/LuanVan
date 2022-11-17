@@ -33,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
         component: HomeView,
       },
       {
-        path: "/san-pham",
+        path: "/product",
         component: ProductTypeView,
       },
       {

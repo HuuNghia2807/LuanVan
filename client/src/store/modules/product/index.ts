@@ -174,6 +174,16 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async searchProduct({ commit }, searchText: string) {
+    try {
+      commit("setError", {});
+      const res = await productServices.searchProduct(searchText);
+      const productSearch = translateProductsResponse(res);
+      return productSearch;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const product = {

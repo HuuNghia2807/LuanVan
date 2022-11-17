@@ -282,7 +282,7 @@ export default defineComponent({
       .img {
         width: 59rem;
         height: 59rem;
-        object-fit: contain;
+        object-fit: cover;
       }
 
       .tag-sale {

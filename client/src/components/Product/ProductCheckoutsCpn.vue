@@ -42,7 +42,7 @@ export default defineComponent({
     .image {
       width: 7rem;
       height: 7rem;
-      object-fit: contain;
+      object-fit: cover;
 
       border: 1px solid #ccc;
       border-radius: 1rem;

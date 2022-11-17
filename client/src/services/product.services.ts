@@ -152,6 +152,16 @@ class ProductServices {
       throw handleError(error as AxiosError);
     }
   }
+  async searchProduct(searchText: string) {
+    try {
+      const path = `product/search`;
+      const params = { q: searchText };
+      const response = await http.get(path, { params });
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new ProductServices();

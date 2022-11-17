@@ -147,4 +147,5 @@ export interface IComment {
   customerId: number;
   customerAvatar: string;
   customerFullname: string;
+  timeComment: number;
 }

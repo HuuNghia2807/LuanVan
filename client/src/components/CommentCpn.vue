@@ -52,6 +52,9 @@
               />
             </div>
           </div>
+          <div class="date-time">
+            <span>{{ translateUnixTimeToFullTime(cmt.timeComment) }}</span>
+          </div>
           <div class="content">
             {{ cmt.comment }}
           </div>
@@ -73,6 +76,7 @@ import { useRouter } from "vue-router";
 import { getItemLocal } from "@/function/handleLocalStorage";
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { IComment, IProduct } from "@/interface/product/product.state";
+import { translateUnixTimeToFullTime } from "@/function/common";
 
 export default defineComponent({
   props: {
@@ -146,6 +150,7 @@ export default defineComponent({
       msgError,
       listComment,
       handleComment,
+      translateUnixTimeToFullTime,
     };
   },
 });
@@ -216,7 +221,7 @@ export default defineComponent({
             height: 5rem;
             border-radius: 50%;
             border: 1px solid #ccc;
-            object-fit: contain;
+            object-fit: cover;
           }
         }
 
@@ -231,6 +236,13 @@ export default defineComponent({
             font-size: 1.5rem;
             color: #d0011b !important;
           }
+        }
+      }
+
+      .date-time {
+        margin-left: 7rem;
+        span {
+          font-size: 1.4rem;
         }
       }
 

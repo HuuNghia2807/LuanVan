@@ -4,7 +4,7 @@
       <router-link class="h-6rem cursor-pointer" to="/">
         <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
       </router-link>
-      <div class="mx-8 flex flex-wrap">
+      <div class="mx-1 flex flex-wrap">
         <router-link
           class="item-menu"
           v-for="item in listMenu"
@@ -17,13 +17,24 @@
     </div>
 
     <div class="flex align-items-center justify-content-between">
-      <div class="p-input-icon-right">
+      <div class="p-input-icon-right relative">
         <i class="icon-search pi pi-search" />
-        <InputText
+        <!-- <AutoComplete v-model="searchText" @complete="search($event)" /> -->
+        <my-inputText
           type="text"
           placeholder="Nhập sản phẩm cần tìm"
           class="p-inputtext-lg input"
+          v-model="searchText"
+          @focus="showProductSearch"
         />
+        <!-- @blur="hideProductSearch" -->
+        <!-- @mouseover="showProductSearch" -->
+        <div v-show="displayProductSearch" class="subSearch">
+          <ProductSearch
+            :product-list="listProductSearch"
+            @hide-product-search="hideProductSearch"
+          />
+        </div>
       </div>
       <router-link
         to="/gio-hang"
@@ -42,7 +53,6 @@
           @mouseleave="hideCart"
           @mouseover="showCart"
         >
-          <!-- <CartView /> -->
           <DataTable
             :value="cartList"
             selectionMode="single"
@@ -133,26 +143,25 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
-import InputText from "primevue/inputtext";
 import { ICart, IProduct } from "@/interface/product/product.state";
 import { getCartList } from "@/function/getCartList";
 import { formatPrice } from "@/function/common";
 import { getItemLocal } from "@/function/handleLocalStorage";
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { useRouter } from "vue-router";
-import CartView from "@/views/CartView.vue";
+import ProductSearch from "./Product/ProductSearch.vue";
 
 export default defineComponent({
   components: {
-    InputText,
-    // CartView,
+    ProductSearch,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
     const listMenu = ref([
+      { name: "SẢN PHẨM", link: "product" },
       { name: "NIKE", link: "nike" },
       { name: "ADIDAS", link: "adidas" },
       { name: "JORDAN", link: "jordan" },
@@ -162,7 +171,9 @@ export default defineComponent({
     ]);
     const isShow = ref(false);
     const isShowUser = ref(false);
-
+    const searchText = ref("");
+    const listProductSearch = ref([] as IProduct[]);
+    const displayProductSearch = ref(false);
     const cartList = computed(() => {
       const listProduct: IProduct[] =
         store.getters["product/getProducts"] || [];
@@ -202,6 +213,14 @@ export default defineComponent({
       isShow.value = false;
     };
 
+    const showProductSearch = () => {
+      displayProductSearch.value = true;
+    };
+
+    const hideProductSearch = () => {
+      displayProductSearch.value = false;
+    };
+
     const handleClick = (ac: string) => {
       switch (ac) {
         case "personal":
@@ -220,6 +239,18 @@ export default defineComponent({
       isShowUser.value = show || false;
     };
 
+    watch(searchText, async () => {
+      displayProductSearch.value = true;
+      listProductSearch.value = await store.dispatch(
+        "product/searchProduct",
+        searchText.value
+      );
+      if (searchText.value === "") {
+        listProductSearch.value = [];
+        displayProductSearch.value = false;
+      }
+    });
+
     return {
       listMenu,
       cartQuantity,
@@ -228,6 +259,11 @@ export default defineComponent({
       customer,
       subMenuItems,
       isShowUser,
+      searchText,
+      listProductSearch,
+      displayProductSearch,
+      hideProductSearch,
+      showProductSearch,
       toggleShowSubMenu,
       handleClick,
       hideCart,
@@ -291,7 +327,7 @@ export default defineComponent({
 
 .input {
   height: 4rem;
-  width: 20rem;
+  width: 30rem;
   border: none;
   border-color: none;
   background-color: #f3f3f3;
@@ -316,6 +352,15 @@ export default defineComponent({
   }
 }
 
+.subSearch {
+  position: absolute;
+  top: 100%;
+  background-color: #fff;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  width: 100%;
+  min-height: 5rem;
+  border-radius: 5px;
+}
 .icon-cart {
   border: 1px solid #ccc;
   background-color: var(--black-color);

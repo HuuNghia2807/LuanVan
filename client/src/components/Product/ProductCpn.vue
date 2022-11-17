@@ -131,7 +131,7 @@ export default defineComponent({
   .img-product {
     width: 100%;
     height: 26rem;
-    object-fit: contain;
+    object-fit: cover;
   }
 
   .name-product {

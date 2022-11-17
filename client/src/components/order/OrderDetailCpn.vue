@@ -179,7 +179,7 @@ export default defineComponent({
     img {
       width: 7rem;
       height: 7rem;
-      object-fit: contain;
+      object-fit: cover;
     }
     span {
       font-weight: 600;
