@@ -14,6 +14,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +47,12 @@ Route::group(['prefix' => 'employee'], function () {
 Route::group(['prefix' => 'comment'], function () {
     Route::get('/product/{id}', [CommentController::class, 'show'])->name('comment.show');
     Route::post('/add', [CommentController::class, 'store'])->name('comment.store');
-    // Route::post('/login', [EmployeeController::class, 'login'])->name('employee.login');
+});
+
+Route::group(['prefix' => 'report'], function () {
+    Route::get('/head', [ReportController::class, 'index'])->name('report.index');
+    Route::post('/month', [ReportController::class, 'getByMonth'])->name('report.getByMonth');
+    // Route::post('/add', [ReportController::class, 'store'])->name('comment.store');
 });
 
 Route::group(['prefix' => 'province'], function () {
