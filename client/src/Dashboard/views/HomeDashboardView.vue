@@ -1,14 +1,15 @@
 <template>
-  <div class="dashboard">
-    <h2>WELCOME</h2>
-    <h4>DASHBOARD</h4>
-  </div>
+  <ReportDashboardView />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import ReportDashboardView from "./ReportDashboardView.vue";
 
 export default defineComponent({
+  components: {
+    ReportDashboardView,
+  },
   setup() {
     return {};
   },

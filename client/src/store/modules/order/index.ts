@@ -1,6 +1,10 @@
 // import axios from "axios"
 
-import { translateOrders } from "@/function/translateOrder";
+import {
+  translateHeadReport,
+  translateOrders,
+  translateReportByMonth,
+} from "@/function/translateOrder";
 import { translateProvinceResponse } from "@/function/translateProvince";
 import { IAuthentication } from "@/interface/auth/authentication.state";
 import {
@@ -104,6 +108,26 @@ const actions: ActionTree<IStateOrder, IAuthentication> = {
       const res = await orderServices.getPersonalOrder(customer_id);
       const orders = translateOrders(res.data);
       return orders;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getHeadReport({ commit }) {
+    try {
+      commit("setError", {});
+      const res = await orderServices.getHeadReport();
+      const orders = translateHeadReport(res);
+      return orders;
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getReportByMonth({ commit }, payload: any) {
+    try {
+      commit("setError", {});
+      const res = await orderServices.getReportByMonth(payload);
+      const dataMonth = translateReportByMonth(res);
+      return dataMonth;
     } catch (error) {
       commit("setError", { error });
     }

@@ -67,6 +67,22 @@ class OrderService {
       throw handleError(error as AxiosError);
     }
   }
+  async getHeadReport() {
+    try {
+      const response = await http.get("report/head");
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async getReportByMonth(payload: any) {
+    try {
+      const response = await http.post("report/month", payload);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new OrderService();

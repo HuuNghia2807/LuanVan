@@ -216,7 +216,6 @@ export default defineComponent({
         severity: "success",
         summary: "Thành công",
         detail: "Đăng ký tài khoản thành công",
-        group: "br",
         life: 3000,
       });
       clearForm();

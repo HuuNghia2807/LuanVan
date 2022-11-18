@@ -29,7 +29,11 @@
         />
         <!-- @blur="hideProductSearch" -->
         <!-- @mouseover="showProductSearch" -->
-        <div v-show="displayProductSearch" class="subSearch">
+        <div
+          v-show="displayProductSearch"
+          class="subSearch"
+          @mouseleave="hideProductSearch"
+        >
           <ProductSearch
             :product-list="listProductSearch"
             @hide-product-search="hideProductSearch"
@@ -439,6 +443,7 @@ export default defineComponent({
   span {
     margin-left: 1rem;
     font-size: 1.5rem;
+    width: 10rem;
   }
 
   .sub-user {

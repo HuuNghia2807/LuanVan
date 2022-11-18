@@ -357,7 +357,7 @@ export default defineComponent({
 .customer {
   display: flex;
   padding: 2rem 5rem;
-  background-color: #efe4d3;
+  // background-color: #efe4d3;
 
   :deep(.p-component) {
     font-size: 1.6rem !important;
@@ -372,6 +372,7 @@ export default defineComponent({
       border-radius: 10px;
       padding: 2rem;
       background-color: #fff;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
       margin-bottom: 2rem;
 
       .img {
@@ -417,6 +418,7 @@ export default defineComponent({
     border-radius: 10px;
     padding: 2rem;
     min-height: 80vh;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
     .head {
       display: flex;
@@ -464,6 +466,7 @@ export default defineComponent({
         padding: 0.5rem 1rem;
         background-color: #bdc2ff;
         border-radius: 5px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
         height: 3rem;
       }
     }

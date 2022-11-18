@@ -1,9 +1,10 @@
 <template>
   <div class="container">
+    <TheLoader :is-loading="showLoading" />
     <div class="report-header">
-      <ReportHeadCpn :info="users" />
-      <ReportHeadCpn />
-      <ReportHeadCpn />
+      <ReportCustomerHeadCpn :summary-customer="headReport?.customer" />
+      <ReportOrderHeadCpn :summary-order="headReport?.order" />
+      <ReportHeadCpn :total="headReport?.priceToday" />
     </div>
     <div class="report-chart">
       <div class="select">
@@ -15,7 +16,9 @@
           placeholder="Thống kê theo"
         >
           <template #option="slotProps">
-            <div class="option-item">{{ slotProps.option.name }}</div>
+            <div class="text-2xl">
+              {{ slotProps.option.name }}
+            </div>
           </template>
         </my-dropdown>
         <div class="mx-5">
@@ -27,23 +30,18 @@
             dateFormat="yy"
           />
           <Calendar
-            v-else-if="selectedView === 'month'"
+            v-else
             inputId="monthpicker"
             v-model="dataSort"
             view="month"
             dateFormat="mm/yy"
-          />
-          <Calendar
-            v-else
-            inputId="dateformat"
-            v-model="dataSort"
-            dateFormat="mm-dd-yy"
           />
         </div>
         <my-button
           label="View"
           class="p-button-raised p-button-text"
           icon="pi pi-search"
+          @click="handleView"
         />
       </div>
       <div class="chart-wrap">
@@ -59,66 +57,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref } from "vue";
 import Chart from "primevue/chart";
 import Calendar from "primevue/calendar";
 import ReportHeadCpn from "@/Dashboard/components/report/ReportHeadCpn.vue";
+import ReportCustomerHeadCpn from "../components/report/ReportCustomerHeadCpn.vue";
+import ReportOrderHeadCpn from "../components/report/ReportOrderHeadCpn.vue";
+import { useStore } from "vuex";
+import {
+  IDataBar,
+  IHeadReport,
+  IReportByMonth,
+} from "@/interface/order/order.state";
+import TheLoader from "@/components/common/TheLoader.vue";
 
 export default defineComponent({
   components: {
     ReportHeadCpn,
+    ReportCustomerHeadCpn,
+    ReportOrderHeadCpn,
     Chart,
     Calendar,
+    TheLoader,
   },
   setup() {
-    const users = reactive({
-      img: "@/Dashboard/assets/icon-images/users-report.png",
-    });
+    const store = useStore();
+    const showLoading = ref(false);
+    const dataLabels = ref([] as any[]);
+    const dataData = ref([] as any[]);
     const dataBar = ref({
-      labels: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
-        "21",
-        "22",
-        "23",
-        "24",
-        "25",
-        "26",
-        "27",
-        "28",
-        "29",
-        "30",
-        "31",
-      ],
+      labels: [],
       datasets: [
         {
           label: "Thu Nhập: VNĐ",
           backgroundColor: "#42A5F5",
-          data: [
-            65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56, 55, 40, 65, 59, 80,
-            81, 56, 55, 40, 65, 59, 80, 81, 56, 55, 40, 56, 55, 40,
-          ],
+          data: [],
         },
       ],
-    });
+    } as IDataBar);
     const basicOptions = ref({
       plugins: {
         legend: {
@@ -146,13 +122,12 @@ export default defineComponent({
         },
       },
     });
-
-    const dataSort = ref();
-    const selectedView = ref("year");
+    const headReport = ref<IHeadReport>();
+    const dataSort = ref(new Date());
+    const selectedView = ref("month");
     const optionView = reactive([
       { name: "Năm", code: "year" },
       { name: "Tháng", code: "month" },
-      { name: "Ngày", code: "day" },
     ]);
     const dataPie = ref({
       labels: ["Nike", "Jordan", "Puma"],
@@ -173,8 +148,81 @@ export default defineComponent({
         },
       },
     });
+
+    const handleView = () => {
+      if (selectedView.value === "month") {
+        getByMonth();
+        return;
+      }
+    };
+
+    const getByMonth = async () => {
+      dataLabels.value = [];
+      dataData.value = [];
+      const firstDay = new Date(
+        dataSort.value.getFullYear(),
+        dataSort.value.getMonth(),
+        1
+      );
+      const lastDay = new Date(
+        dataSort.value.getFullYear(),
+        dataSort.value.getMonth() + 1,
+        0
+      );
+      const fDay =
+        firstDay.getDate() < 10 ? `0${firstDay.getDate()}` : firstDay.getDate();
+      const fMonth =
+        firstDay.getMonth() + 1 < 10
+          ? `0${firstDay.getMonth() + 1}`
+          : firstDay.getMonth() + 1;
+      const lDay =
+        lastDay.getDate() < 10 ? `0${lastDay.getDate()}` : lastDay.getDate();
+      const lMonth =
+        lastDay.getMonth() + 1 < 10
+          ? `0${lastDay.getMonth() + 1}`
+          : lastDay.getMonth() + 1;
+
+      const wMonth = {
+        start_date: `${firstDay.getFullYear()}-${fMonth}-${fDay}`,
+        end_date: `${lastDay.getFullYear()}-${lMonth}-${lDay}`,
+      };
+      const dataMonth = (await store.dispatch(
+        "order/getReportByMonth",
+        wMonth
+      )) as IReportByMonth[];
+      if (dataMonth.length) {
+        dataMonth.forEach((ele) => {
+          dataLabels.value.push(ele.date);
+          dataData.value.push(ele.total);
+        });
+        assignDataBar(dataLabels.value, dataData.value);
+      } else {
+        assignDataBar([], []);
+      }
+    };
+
+    const assignDataBar = (arrLabel: string[], arrData: number[]) => {
+      dataBar.value = {
+        labels: arrLabel,
+        datasets: [
+          {
+            label: "Thu Nhập: VNĐ",
+            backgroundColor: "#42A5F5",
+            data: arrData,
+          },
+        ],
+      };
+    };
+
+    onMounted(async () => {
+      showLoading.value = true;
+      headReport.value = (await store.dispatch(
+        "order/getHeadReport"
+      )) as IHeadReport;
+      getByMonth();
+      showLoading.value = false;
+    });
     return {
-      users,
       dataBar,
       basicOptions,
       dataSort,
@@ -182,16 +230,30 @@ export default defineComponent({
       optionView,
       dataPie,
       lightOptions,
+      showLoading,
+      headReport,
+      handleView,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+:deep(.p-component) {
+  font-size: 1.4rem !important;
+}
 .container {
-  padding: 5rem 3rem;
+  padding: 4rem 3rem;
   background-color: rgb(235, 235, 235);
   height: 95vh;
+
+  :deep(.p-dropdown) {
+    width: 10rem;
+  }
+
+  :deep(.p-inputtext) {
+    font-size: 1.4rem;
+  }
 
   .report-header {
     display: flex;
@@ -202,7 +264,7 @@ export default defineComponent({
   .report-chart {
     display: flex;
     flex-direction: column;
-    margin-top: 3rem;
+    margin-top: 2rem;
     background-color: #fff;
     min-height: 50rem;
 

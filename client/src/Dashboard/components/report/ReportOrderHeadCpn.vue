@@ -4,14 +4,18 @@
       <div class="input-head">
         <img
           class="icon-image"
-          src="@/Dashboard/assets/icon-images/wallet_today.png"
+          src="@/Dashboard/assets/icon-images/received.png"
           alt=""
         />
       </div>
       <div class="content">
         <div class="detail">
-          <label>Thu Nhập Hôm nay</label>
-          <span>{{ formatPrice(total || 0) }}</span>
+          <label>Mới</label>
+          <span class="text-teal-600">{{ summaryOrder?.new }}</span>
+        </div>
+        <div class="detail">
+          <label>Đơn Hàng</label>
+          <span>{{ summaryOrder?.total }}</span>
         </div>
       </div>
     </div>
@@ -19,17 +23,15 @@
 </template>
 
 <script lang="ts">
-import { formatPrice } from "@/function/common";
-import { defineComponent } from "vue";
+import { IHead } from "@/interface/order/order.state";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   props: {
-    total: { type: Number },
+    summaryOrder: { type: Object as PropType<IHead> },
   },
   setup() {
-    return {
-      formatPrice,
-    };
+    return {};
   },
 });
 </script>

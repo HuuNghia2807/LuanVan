@@ -123,3 +123,41 @@ export interface IUpdateStatusOrderParams {
   status_id: number;
   note?: string;
 }
+
+export interface IHeadReportResponse {
+  customer: IHead;
+  order: IHead;
+  price_today: number;
+}
+
+export interface IHeadReport {
+  customer: IHead;
+  order: IHead;
+  priceToday: number;
+}
+
+export interface IHead {
+  new: number;
+  total: number;
+}
+
+export interface IReportByMonthResponse {
+  date: string;
+  total_price: number;
+}
+
+export interface IReportByMonth {
+  date: string;
+  total: number;
+}
+
+export interface IDataBar {
+  labels: string[];
+  datasets: IDatasets[];
+}
+
+export interface IDatasets {
+  label: string;
+  backgroundColor: string;
+  data: number[];
+}

@@ -1,8 +1,12 @@
 import {
+  IHeadReport,
+  IHeadReportResponse,
   IOrderDetailResponse,
   IOrderResponse,
   IOrders,
   IProductOrder,
+  IReportByMonth,
+  IReportByMonthResponse,
 } from "@/interface/order/order.state";
 import { translateCustomer } from "./translateCustomer";
 
@@ -45,6 +49,40 @@ export const translateProductOrder = (
       productOrderQuantity: ele.product_quantity,
       productSize: ele.size,
       sale: ele.sale,
+    };
+  });
+};
+
+export const translateHeadReport = (res: IHeadReportResponse): IHeadReport => {
+  return {
+    customer: res.customer,
+    order: res.order,
+    priceToday: res.price_today,
+  };
+};
+
+export const translateReportByMonth = (
+  res: IReportByMonthResponse[]
+): IReportByMonth[] => {
+  const listDate = [] as IReportByMonthResponse[];
+
+  res.forEach((ele) => {
+    const date = new Date(ele.date);
+    const dateItem = listDate.find((eleS) => {
+      const date2 = new Date(eleS.date);
+      if (date2.getDate() === date.getDate()) return eleS;
+    });
+    if (dateItem) {
+      dateItem.total_price += ele.total_price;
+    } else {
+      listDate.push(ele);
+    }
+  });
+
+  return listDate.map((ele) => {
+    return {
+      date: ele.date,
+      total: ele.total_price,
     };
   });
 };
