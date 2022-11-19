@@ -173,6 +173,14 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async deleteAddress({ commit }, address_id: number) {
+    try {
+      commit("setError", { error: null });
+      await authServices.deleteAddress(address_id);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const auth = {

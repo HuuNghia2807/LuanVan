@@ -124,6 +124,14 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async deleteAddress(address_id: number) {
+    try {
+      const path = `customer/address/${address_id}`;
+      await http.delete(path);
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();

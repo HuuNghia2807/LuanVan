@@ -38,7 +38,7 @@
         :options="sorts"
         optionLabel="name"
         optionValue="code"
-        placeholder="Chọn giá hoặc tên"
+        placeholder="Chọn giá"
       >
         <template #option="slotProps">
           <div class="option-item">{{ slotProps.option.name }}</div>
@@ -53,43 +53,71 @@
         icon="pi pi-search"
         iconPos="right"
         :loading="loading"
-        @click="load"
+        @click="handleFilter"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import Button from "primevue/button";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import { IFilterProduct } from "@/interface/product/product.state";
 
 export default defineComponent({
   components: {
     Button,
   },
-  setup() {
-    const sizes = ref([
-      { name: "37", code: 37 },
-      { name: "38", code: 38 },
-      { name: "39", code: 39 },
-    ]);
+  setup(_props, { emit }) {
+    const store = useStore();
+    const route = useRoute();
+    const type = computed(() => {
+      return route.path.slice(1);
+    });
+    const sizes = ref([] as any[]);
     const prices = ref([
-      { name: "Dưới 3 triệu", code: 3 },
-      { name: "Từ 3 đến 5 triệu", code: 4 },
+      { name: "Tất cả", code: undefined },
+      { name: "Dưới 3 triệu", code: 1 },
+      { name: "Từ 3 đến 5 triệu", code: 2 },
+      { name: "Từ 5 đến 10 triệu", code: 3 },
+      { name: "Trên 10 triệu", code: 4 },
     ]);
     const sorts = ref([
-      { name: "Giá thấp đến cao", code: "thap" },
-      { name: "Giá cao đến thấp", code: "cao" },
+      { name: "Giá thấp đến cao", code: "min" },
+      { name: "Giá cao đến thấp", code: "max" },
     ]);
     const sort = ref("");
     const size = ref();
     const price = ref();
     const loading = ref(false);
-    const load = () => {
+    const handleFilter = () => {
       loading.value = true;
-      setTimeout(() => (loading.value = false), 1000);
+      const filter = {
+        category: type.value,
+        size: size.value,
+        price: price.value,
+        sort: sort.value,
+      } as IFilterProduct;
+      emit("filter-product", filter);
+      loading.value = false;
     };
-    return { sizes, size, prices, price, sorts, sort, loading, load };
+    onMounted(async () => {
+      sizes.value = (
+        (await store.dispatch("product/getSizes")) as number[]
+      ).map((ele) => {
+        return {
+          name: ele,
+          code: ele,
+        };
+      });
+      sizes.value.unshift({
+        name: "Tất cả",
+        code: undefined,
+      });
+    });
+    return { sizes, size, prices, price, sorts, sort, loading, handleFilter };
   },
 });
 </script>

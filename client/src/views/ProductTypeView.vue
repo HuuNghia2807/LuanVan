@@ -1,6 +1,6 @@
 <template>
   <div class="product-type">
-    <HeaderTypeProductCpn />
+    <HeaderTypeProductCpn @filter-product="handleFilter" />
     <div class="container">
       <span class="title"
         >Trang chủ > Sản phẩm >
@@ -8,7 +8,9 @@
       >
       <div class="list-product">
         <div class="products">
-          <ListProductCpn :products="listProduct" />
+          <ListProductCpn
+            :products="productFilter.length ? productFilter : listProduct"
+          />
         </div>
         <div class="right-bar">
           <img
@@ -38,8 +40,9 @@ import HeaderTypeProductCpn from "@/components/Product/HeaderTypeProductCpn.vue"
 import ListProductCpn from "@/components/Product/ListProductCpn.vue";
 import ProductHorizontalCpn from "@/components/Product/ProductHorizontalCpn.vue";
 import { useStore } from "vuex";
-import { IProduct } from "@/interface/product/product.state";
+import { IFilterProduct, IProduct } from "@/interface/product/product.state";
 import { useRoute } from "vue-router";
+import { sortMax, sortMin } from "@/function/common";
 
 export default defineComponent({
   components: {
@@ -53,6 +56,7 @@ export default defineComponent({
     const type = computed(() => {
       return route.path.slice(1);
     });
+    const productFilter = ref([] as IProduct[]);
     const listProduct = computed(() => {
       const list = (store.getters["product/getProducts"] as IProduct[]) || [];
 
@@ -71,8 +75,63 @@ export default defineComponent({
         .filter((ele) => ele) as IProduct[];
     });
 
+    const handleFilter = (filter: IFilterProduct) => {
+      let result = [...listProduct.value] as IProduct[];
+      if (filter.price) {
+        const price = getPriceFilter(filter.price);
+        result = result.filter((ele) => {
+          if (
+            (ele.productPrice || 0) >= (price?.start || 0) &&
+            (ele.productPrice || 0) <= (price?.end || 0)
+          ) {
+            return ele;
+          }
+        });
+      }
+      if (filter.size) {
+        result = result.filter((ele) => {
+          if (ele.sizes.some((eleS) => eleS.size === filter.size)) {
+            return ele;
+          }
+        });
+      }
+      if (filter.sort) {
+        result = filter.sort === "min" ? sortMin(result) : sortMax(result);
+      }
+      productFilter.value = result;
+    };
+
+    const getPriceFilter = (option: number) => {
+      switch (option) {
+        case 1:
+          return {
+            start: 0,
+            end: 3000000,
+          };
+        case 2:
+          return {
+            start: 3000000,
+            end: 5000000,
+          };
+        case 3:
+          return {
+            start: 5000000,
+            end: 10000000,
+          };
+        case 4:
+          return {
+            start: 10000000,
+            end: 1000000000,
+          };
+
+        default:
+          break;
+      }
+    };
+
     const newProducts = computed(() => {
-      const list = (store.getters["product/getProducts"] as IProduct[]) || [];
+      const list =
+        (store.getters["product/getNewProducts"] as IProduct[]) || [];
       return list.map((ele) => {
         return {
           ...ele,
@@ -83,11 +142,14 @@ export default defineComponent({
 
     onMounted(async () => {
       await store.dispatch("product/getProducts");
+      await store.dispatch("product/getHomeProduct");
     });
     return {
       listProduct,
       newProducts,
       type,
+      productFilter,
+      handleFilter,
     };
   },
 });

@@ -21,6 +21,7 @@ import Checkbox from "primevue/checkbox";
 import Tooltip from "primevue/tooltip";
 import InputNumber from "primevue/inputnumber";
 import Column from "primevue/column";
+import ConfirmationService from "primevue/confirmationservice";
 
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -33,6 +34,7 @@ app.use(store);
 app.use(router);
 app.use(PrimeVue);
 app.use(ToastService);
+app.use(ConfirmationService);
 
 app.directive("badge", BadgeDirective);
 app.directive("tooltip", Tooltip);

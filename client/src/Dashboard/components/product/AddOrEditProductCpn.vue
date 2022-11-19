@@ -6,6 +6,7 @@
     :style="{ width: '60vw', fontSize: '2rem' }"
     :modal="true"
     @update:visible="closeModal"
+    appendTo="self"
   >
     <my-toast />
     <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
@@ -120,7 +121,13 @@
                     :suggestions="filterSize"
                     @complete="searchSize($event)"
                     :disabled="!isEdit"
-                  />
+                  >
+                    <template #option="slotProps">
+                      <div class="text-2xl">
+                        {{ slotProps.option }}
+                      </div>
+                    </template>
+                  </AutoComplete>
                 </div>
                 <div class="size-quantity">
                   <label>Số Lượng</label>
@@ -641,7 +648,7 @@ form {
     }
     :deep(.p-inputtext) {
       height: 4rem;
-      font-size: 1.5rem;
+      font-size: 1.5rem !important;
       padding-left: 1rem;
     }
     :deep(.p-float-label label) {

@@ -4,12 +4,15 @@
       <router-link class="h-6rem cursor-pointer" to="/">
         <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
       </router-link>
-      <div class="mx-1 flex flex-wrap">
+      <div class="ml-4 flex flex-wrap">
         <router-link
           class="item-menu"
+          :class="{
+            active: routePath.toLowerCase() === item.link.toLowerCase(),
+          }"
           v-for="item in listMenu"
           :key="item.name"
-          :to="`/${item.link}`"
+          :to="{ name: 'category', params: { branch: item.link } }"
         >
           {{ item.name }}
         </router-link>
@@ -147,14 +150,18 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { ICart, IProduct } from "@/interface/product/product.state";
+import {
+  ICart,
+  ICategoryRouting,
+  IProduct,
+} from "@/interface/product/product.state";
 import { getCartList } from "@/function/getCartList";
 import { formatPrice } from "@/function/common";
 import { getItemLocal } from "@/function/handleLocalStorage";
 import { ICustomer } from "@/interface/auth/authentication.state";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import ProductSearch from "./Product/ProductSearch.vue";
 
 export default defineComponent({
@@ -164,14 +171,15 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const listMenu = ref([
-      { name: "SẢN PHẨM", link: "product" },
-      { name: "NIKE", link: "nike" },
-      { name: "ADIDAS", link: "adidas" },
-      { name: "JORDAN", link: "jordan" },
-      { name: "YEZZY", link: "yezzy" },
-      { name: "SALE", link: "sale" },
-    ]);
+      // { name: "SẢN PHẨM", link: "product" },
+      // { name: "NIKE", link: "nike" },
+      // { name: "ADIDAS", link: "adidas" },
+      // { name: "JORDAN", link: "jordan" },
+      // { name: "YEZZY", link: "yezzy" },
+      // { name: "SALE", link: "sale" },
+    ] as ICategoryRouting[]);
     const isShow = ref(false);
     const isShowUser = ref(false);
     const searchText = ref("");
@@ -183,6 +191,10 @@ export default defineComponent({
       const cartItem: ICart[] = store.getters["auth/getCart"] || [];
 
       return getCartList(listProduct, cartItem);
+    });
+
+    const routePath = computed(() => {
+      return route.path.slice(1);
     });
 
     const subMenuItems = [
@@ -254,6 +266,19 @@ export default defineComponent({
       }
     });
 
+    onMounted(async () => {
+      const cate = (await store.dispatch("product/getCategories")) as string[];
+      listMenu.value = cate.map((ele) => {
+        return {
+          name: ele.toUpperCase(),
+          link: ele.toLowerCase(),
+        };
+      });
+      listMenu.value.unshift({ name: "SẢN PHẨM", link: "product" });
+      listMenu.value.push({ name: "SALE", link: "sale" });
+      store.commit("product/setCategories", listMenu.value);
+    });
+
     return {
       listMenu,
       cartQuantity,
@@ -265,6 +290,7 @@ export default defineComponent({
       searchText,
       listProductSearch,
       displayProductSearch,
+      routePath,
       hideProductSearch,
       showProductSearch,
       toggleShowSubMenu,
@@ -284,7 +310,7 @@ export default defineComponent({
 }
 .header {
   position: fixed;
-  height: var(--height-header);
+  min-height: var(--height-header);
   width: 100vw;
   top: 0;
   z-index: 3;
@@ -323,9 +349,16 @@ export default defineComponent({
 
   &:hover {
     background-color: var(--primary-color);
+    opacity: 0.7;
     color: var(--white-color);
     animation: fill-color 0.5s linear forwards;
   }
+}
+
+.active {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  animation: fill-color 0.5s linear forwards;
 }
 
 .input {

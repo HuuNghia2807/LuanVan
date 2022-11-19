@@ -19,7 +19,8 @@ import { ActionTree, GetterTree, MutationTree } from "vuex";
 const initDefaultState = (): IStateProduct => {
   return {
     products: null,
-    productName: "",
+    categories: null,
+    newProducts: null,
     productRating: null,
     error: null,
   };
@@ -28,7 +29,8 @@ const initDefaultState = (): IStateProduct => {
 const state = initDefaultState();
 const getters: GetterTree<IStateProduct, IAuthentication> = {
   getProducts: (state) => state.products,
-  getUserName: (state) => state.productName,
+  getNewProducts: (state) => state.newProducts,
+  getCategories: (state) => state.categories,
   getError: (state) => state.error,
 };
 
@@ -38,6 +40,12 @@ const mutations: MutationTree<IStateProduct> = {
   },
   setProducts(state, payload) {
     state.products = payload;
+  },
+  setNewProducts(state, payload) {
+    state.newProducts = payload;
+  },
+  setCategories(state, payload) {
+    state.categories = payload;
   },
 };
 const actions: ActionTree<IStateProduct, IAuthentication> = {
@@ -84,6 +92,7 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       commit("setError", {});
       const res = await productServices.getHomeProduct();
       const products = translateProductsHomeResponse(res);
+      commit("setNewProducts", products.productNew);
       return products;
     } catch (error) {
       commit("setError", { error });

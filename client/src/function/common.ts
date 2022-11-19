@@ -1,3 +1,4 @@
+import { IProduct } from "@/interface/product/product.state";
 import { AxiosError } from "axios";
 import moment from "moment";
 
@@ -23,4 +24,26 @@ export const translateUnixTimeToFullTime = (unixTime: number) => {
 
 export const caculatorSale = (price: number, sale: number) => {
   return (price * (100 - sale)) / 100;
+};
+
+export const sortMax = (array: IProduct[]) => {
+  for (let i = 0; i < array.length; i++) {
+    for (let x = 0; x < array.length - 1 - i; x++) {
+      if ((array[x].productPrice || 0) < (array[x + 1].productPrice || 0)) {
+        [array[x], array[x + 1]] = [array[x + 1], array[x]];
+      }
+    }
+  }
+  return array;
+};
+
+export const sortMin = (array: IProduct[]) => {
+  for (let i = 0; i < array.length; i++) {
+    for (let x = 0; x < array.length - 1 - i; x++) {
+      if ((array[x].productPrice || 0) > (array[x + 1].productPrice || 0)) {
+        [array[x], array[x + 1]] = [array[x + 1], array[x]];
+      }
+    }
+  }
+  return array;
 };

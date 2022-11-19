@@ -33,31 +33,8 @@ const routes: Array<RouteRecordRaw> = [
         component: HomeView,
       },
       {
-        path: "/product",
-        component: ProductTypeView,
-      },
-      {
-        path: "/nike",
-        component: ProductTypeView,
-      },
-      {
-        path: "/adidas",
-        component: ProductTypeView,
-      },
-      {
-        path: "/jordan",
-        component: ProductTypeView,
-      },
-      {
-        path: "/yezzy",
-        component: ProductTypeView,
-      },
-      {
-        path: "/sale",
-        component: ProductTypeView,
-      },
-      {
-        path: "/contact",
+        path: "/:branch",
+        name: "category",
         component: ProductTypeView,
       },
       {
@@ -141,3 +118,51 @@ const router = createRouter({
 });
 
 export default router;
+
+// children: [
+//   {
+//     path: "",
+//     component: HomeView,
+//   },
+//   {
+//     path: "/product",
+//     component: ProductTypeView,
+//   },
+//   {
+//     path: "/nike",
+//     component: ProductTypeView,
+//   },
+//   {
+//     path: "/adidas",
+//     component: ProductTypeView,
+//   },
+//   {
+//     path: "/jordan",
+//     component: ProductTypeView,
+//   },
+//   {
+//     path: "/yezzy",
+//     component: ProductTypeView,
+//   },
+//   {
+//     path: "/sale",
+//     component: ProductTypeView,
+//   },
+//   {
+//     path: "/contact",
+//     component: ProductTypeView,
+//   },
+//   {
+//     path: "/san-pham/:code",
+//     name: "showDetail",
+//     component: ProductDetail,
+//   },
+//   {
+//     path: "/gio-hang",
+//     component: CartView,
+//   },
+//   {
+//     path: "/profile",
+//     component: CustomerView,
+//   },
+// ],

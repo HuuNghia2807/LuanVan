@@ -14,7 +14,6 @@ import { setCustomerLogin, setStateCart } from "@/function/handleLocalStorage";
 import HeaderCpn from "@/components/HeaderCpn.vue";
 import FooterCpn from "@/components/FooterCpn.vue";
 import TheLoader from "@/components/common/TheLoader.vue";
-
 export default defineComponent({
   components: {
     HeaderCpn,

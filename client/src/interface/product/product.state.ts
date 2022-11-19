@@ -3,7 +3,8 @@ import { Nullable } from "primevue/ts-helpers";
 // interface state
 export interface IStateProduct {
   products: any[] | null;
-  productName: string;
+  categories: any[] | null;
+  newProducts: any[] | null;
   productRating: Nullable<number>;
   error: Nullable<any>;
 }
@@ -65,6 +66,13 @@ export interface IProductHome {
   productHot: IProduct[];
 }
 
+export interface IFilterProduct {
+  category: string;
+  size: number;
+  price: number;
+  sort: string;
+}
+
 // product image interface
 
 export interface IProductImageResponse {
@@ -99,6 +107,11 @@ export interface ISizeParams {
 export interface ICategoryResponse {
   id: number;
   category_name: string;
+}
+
+export interface ICategoryRouting {
+  name: string;
+  link: string;
 }
 
 // cart interface

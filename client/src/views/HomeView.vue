@@ -48,7 +48,11 @@ export default defineComponent({
         "product/getHomeProduct"
       )) as IProductHome;
       newProduct.products = homeProduct.productNew;
-      hotProduct.products = homeProduct.productHot;
+      hotProduct.products = homeProduct.productHot.filter((ele, i) => {
+        if (i <= 9) {
+          return ele;
+        }
+      });
       saleProduct.products = homeProduct.productSale;
     });
     return {

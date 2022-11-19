@@ -89,16 +89,26 @@
                 ${add.city.city}`
                 }}</span>
               </div>
-              <span
-                class="text-2xl text-teal-500 w-2 text-right cursor-pointer"
-                @click="openModalUpdateAddress(add)"
-                >Thay đổi</span
+              <div
+                class="flex align-items-center justify-content-between w-3 ml-3"
               >
+                <span
+                  class="text-2xl text-teal-500 w-7 cursor-pointer"
+                  @click="openModalUpdateAddress(add)"
+                  >Thay đổi</span
+                >
+                <span
+                  class="text-2xl text-red w-4 cursor-pointer text-right"
+                  @click="handleDeleteAddress($event, add.address_id)"
+                  >Xóa</span
+                >
+              </div>
             </div>
           </form>
         </div>
       </div>
     </div>
+    <ConfirmDialog> </ConfirmDialog>
     <UploadAddress
       v-if="isUpdateAddress"
       :display-modal="isUpdateAddress"
@@ -160,6 +170,8 @@ import EditInfomation from "@/components/modal/EditInfomation.vue";
 import ChangePassword from "@/components/modal/ChangePassword.vue";
 import ConfirmCancelOrder from "@/components/modal/ConfirmCancelOrder.vue";
 import OrderDetailCpn from "@/components/order/OrderDetailCpn.vue";
+import ConfirmDialog from "primevue/confirmdialog";
+import { useConfirm } from "primevue/useconfirm";
 
 export default defineComponent({
   components: {
@@ -171,11 +183,13 @@ export default defineComponent({
     ChangePassword,
     ConfirmCancelOrder,
     OrderDetailCpn,
+    ConfirmDialog,
   },
   setup() {
     const router = useRouter();
     const store = useStore();
     const toast = useToast();
+    const confirm = useConfirm();
     const showLoading = ref(false);
     const personalOrder = ref([] as IOrders[]);
     const isUpdateAddress = ref(false);
@@ -311,6 +325,33 @@ export default defineComponent({
       isOrderDetail.value = true;
     };
 
+    const handleDeleteAddress = (event: any, address_id: number) => {
+      confirm.require({
+        target: event.currentTarget,
+        message: "Bạn muốn xóa địa chỉ này?",
+        icon: "pi pi-exclamation-triangle",
+        acceptClass: "p-button-danger",
+        accept: async () => {
+          await store.dispatch("auth/deleteAddress", address_id);
+          toast.add({
+            severity: "success",
+            summary: "Thành công",
+            detail: "Xóa địa chỉ thành công",
+            life: 3000,
+          });
+          loadPage();
+        },
+        reject: () => {
+          // toast.add({
+          //   severity: "error",
+          //   summary: "Rejected",
+          //   detail: "You have rejected",
+          //   life: 3000,
+          // });
+        },
+      });
+    };
+
     const loadPage = async () => {
       showLoading.value = true;
       personalOrder.value = await store.dispatch(
@@ -338,6 +379,7 @@ export default defineComponent({
       isConfirm,
       isOrderDetail,
       orderDetail,
+      handleDeleteAddress,
       handleOrderDetail,
       handleCancelOrder,
       handleChangePass,
@@ -363,9 +405,16 @@ export default defineComponent({
     font-size: 1.6rem !important;
   }
 
+  .p-confirm-dialog {
+    font-size: 1.6rem !important;
+  }
+
+  .p-confirm-popup {
+    font-size: 1.6rem !important;
+  }
   .left-info {
     width: 60%;
-    margin-right: 1rem;
+    margin-right: 2rem;
 
     .avt-wrap {
       display: flex;
@@ -420,6 +469,9 @@ export default defineComponent({
     min-height: 80vh;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
+    .text-red {
+      color: red;
+    }
     .head {
       display: flex;
       align-items: center;
