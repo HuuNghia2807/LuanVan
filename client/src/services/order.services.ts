@@ -75,9 +75,9 @@ class OrderService {
       throw handleError(error as AxiosError);
     }
   }
-  async getReportByMonth(payload: any) {
+  async getReport(payload: any) {
     try {
-      const response = await http.post("report/month", payload);
+      const response = await http.post("report", payload);
       return response.data.data;
     } catch (error) {
       throw handleError(error as AxiosError);

@@ -57,6 +57,19 @@
         :exportable="false"
       ></my-column>
       <my-column field="id" header="Mã" style="width: 8rem"></my-column>
+      <my-column
+        v-if="selectUser === 'customer'"
+        header="Trạng Thái"
+        field="status"
+        :style="{ width: '15rem' }"
+        sortable
+      >
+        <template #body="slotProps">
+          <span :class="'customer-badge status-' + slotProps.data.status">{{
+            slotProps.data.status.toUpperCase()
+          }}</span>
+        </template>
+      </my-column>
       <my-column header="Ảnh" style="width: 8rem">
         <template #body="slotProps">
           <img
@@ -95,7 +108,7 @@
           <my-button
             icon="pi pi-trash"
             class="p-button-rounded p-button-warning"
-            @click="confirmDeleteProduct(slotProps.data)"
+            @click="confirmDeleteUser(slotProps.data)"
           />
         </template>
       </my-column>
@@ -175,7 +188,6 @@ export default defineComponent({
         return [
           { field: "fullName", header: "Tên", width: "20rem" },
           { field: "email", header: "Email", width: "15rem" },
-          { field: "status", header: "Trạng Thái", width: "15rem" },
           { field: "phone", header: "Số Điện Thoại", width: "15rem" },
           { field: "birth", header: "Ngày Sinh", width: "15rem" },
           { field: "gender", header: "Giới tính", width: "15rem" },
@@ -216,46 +228,14 @@ export default defineComponent({
       deleteUserDialog.value = true;
     };
 
-    const editProduct = (prod: any) => {
-      product.value = { ...prod };
-      productDialog.value = true;
-    };
-
     const deleteProduct = () => {
       if (selectedUsers.value.length) {
-        deleteSelectedProducts();
+        console.log(selectedUsers.value);
       }
-
-      // users.value = users.value.filter((val) => val.id !== product.value.id);
-      deleteUserDialog.value = false;
-      product.value = {};
-      toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Deleted",
-        group: "tr",
-        life: 3000,
-      });
     };
 
-    const deleteSelectedProducts = () => {
-      // users.value = users.value.filter(
-      //   (val) => !selectedUsers.value.includes(val)
-      // );
-      deleteProductsDialog.value = false;
-      selectedUsers.value = [];
-      toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Products Deleted",
-        group: "tr",
-        life: 3000,
-      });
-    };
-
-    const confirmDeleteProduct = (prod: any) => {
-      product.value = prod;
-      deleteUserDialog.value = true;
+    const confirmDeleteUser = (data: any) => {
+      console.log(data);
     };
 
     const handleAddEmployee = () => {
@@ -287,10 +267,8 @@ export default defineComponent({
       closeModalAddEmployee,
       handleAddEmployee,
       confirmDeleteSelected,
-      editProduct,
       deleteProduct,
-      deleteSelectedProducts,
-      confirmDeleteProduct,
+      confirmDeleteUser,
       selectUser,
       userType,
     };
@@ -299,6 +277,34 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+.customer-badge.status-retired {
+  background-color: #a1a2ed;
+  color: #373ec6;
+}
+
+.customer-badge.status-active {
+  background-color: #aaf5b8;
+  color: #1ccb16;
+}
+
+.customer-badge.status-new {
+  background-color: #edee9a;
+  color: #cbbf16;
+}
+
+.customer-badge.status-blocked {
+  background-color: #fddde0;
+  color: #c63737;
+}
 .card {
   background: var(--surface-card);
   padding: 2rem;

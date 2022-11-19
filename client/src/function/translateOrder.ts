@@ -5,8 +5,10 @@ import {
   IOrderResponse,
   IOrders,
   IProductOrder,
-  IReportByMonth,
-  IReportByMonthResponse,
+  IReport,
+  IReportBar,
+  IReportByBarResponse,
+  IReportResponse,
 } from "@/interface/order/order.state";
 import { translateCustomer } from "./translateCustomer";
 
@@ -61,12 +63,10 @@ export const translateHeadReport = (res: IHeadReportResponse): IHeadReport => {
   };
 };
 
-export const translateReportByMonth = (
-  res: IReportByMonthResponse[]
-): IReportByMonth[] => {
-  const listDate = [] as IReportByMonthResponse[];
+export const translateReport = (res: IReportResponse): IReport => {
+  const listDate = [] as IReportByBarResponse[];
 
-  res.forEach((ele) => {
+  res.bar.forEach((ele) => {
     const date = new Date(ele.date);
     const dateItem = listDate.find((eleS) => {
       const date2 = new Date(eleS.date);
@@ -79,10 +79,42 @@ export const translateReportByMonth = (
     }
   });
 
+  return {
+    bar: listDate.map((ele) => {
+      return {
+        date: ele.date,
+        total: ele.total_price,
+      };
+    }),
+    pie: res.pie.map((ele) => {
+      return {
+        category: ele.category,
+        total: ele.total,
+      };
+    }),
+  };
+};
+
+export const translateForYear = (res: IReportBar[]): IReportBar[] => {
+  const listDate = [] as IReportBar[];
+
+  res.forEach((ele) => {
+    const date = new Date(ele.date);
+    const dateItem = listDate.find((eleS) => {
+      const date2 = new Date(eleS.date);
+      if (date2.getMonth() === date.getMonth()) return eleS;
+    });
+    if (dateItem) {
+      dateItem.total += ele.total;
+    } else {
+      listDate.push(ele);
+    }
+  });
+
   return listDate.map((ele) => {
     return {
-      date: ele.date,
-      total: ele.total_price,
+      date: ele.date.slice(0, 7),
+      total: ele.total,
     };
   });
 };

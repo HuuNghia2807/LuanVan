@@ -171,7 +171,6 @@ export default defineComponent({
       { name: "JORDAN", link: "jordan" },
       { name: "YEZZY", link: "yezzy" },
       { name: "SALE", link: "sale" },
-      { name: "LIÊN HỆ", link: "contact" },
     ]);
     const isShow = ref(false);
     const isShowUser = ref(false);

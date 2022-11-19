@@ -3,7 +3,7 @@
 import {
   translateHeadReport,
   translateOrders,
-  translateReportByMonth,
+  translateReport,
 } from "@/function/translateOrder";
 import { translateProvinceResponse } from "@/function/translateProvince";
 import { IAuthentication } from "@/interface/auth/authentication.state";
@@ -122,12 +122,12 @@ const actions: ActionTree<IStateOrder, IAuthentication> = {
       commit("setError", { error });
     }
   },
-  async getReportByMonth({ commit }, payload: any) {
+  async getReport({ commit }, payload: any) {
     try {
       commit("setError", {});
-      const res = await orderServices.getReportByMonth(payload);
-      const dataMonth = translateReportByMonth(res);
-      return dataMonth;
+      const res = await orderServices.getReport(payload);
+      const data = translateReport(res);
+      return data;
     } catch (error) {
       commit("setError", { error });
     }

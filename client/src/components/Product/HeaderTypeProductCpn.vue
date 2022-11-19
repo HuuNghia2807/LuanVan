@@ -80,8 +80,6 @@ export default defineComponent({
     const sorts = ref([
       { name: "Giá thấp đến cao", code: "thap" },
       { name: "Giá cao đến thấp", code: "cao" },
-      { name: "Tên A - Z", code: "A" },
-      { name: "Tên Z - A", code: "Z" },
     ]);
     const sort = ref("");
     const size = ref();
@@ -106,6 +104,12 @@ export default defineComponent({
   background-color: #f1f1f1;
   padding: 0 5rem;
 
+  :deep(.p-inputtext) {
+    font-size: 1.6rem;
+    height: 4rem;
+    line-height: 1.6;
+    padding-left: 1rem;
+  }
   .option-search {
     display: flex;
     flex: 1;

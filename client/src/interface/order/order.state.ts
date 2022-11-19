@@ -141,13 +141,31 @@ export interface IHead {
   total: number;
 }
 
-export interface IReportByMonthResponse {
+export interface IReportResponse {
+  bar: IReportByBarResponse[];
+  pie: IReportByPieResponse[];
+}
+
+export interface IReportByBarResponse {
   date: string;
   total_price: number;
 }
 
-export interface IReportByMonth {
+export interface IReportByPieResponse {
+  category: string;
+  total: number;
+}
+
+export interface IReport {
+  bar: IReportBar[];
+  pie: IReportPie[];
+}
+export interface IReportBar {
   date: string;
+  total: number;
+}
+export interface IReportPie {
+  category: string;
   total: number;
 }
 

@@ -57,19 +57,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 import Chart from "primevue/chart";
 import Calendar from "primevue/calendar";
 import ReportHeadCpn from "@/Dashboard/components/report/ReportHeadCpn.vue";
 import ReportCustomerHeadCpn from "../components/report/ReportCustomerHeadCpn.vue";
 import ReportOrderHeadCpn from "../components/report/ReportOrderHeadCpn.vue";
 import { useStore } from "vuex";
-import {
-  IDataBar,
-  IHeadReport,
-  IReportByMonth,
-} from "@/interface/order/order.state";
+import { IDataBar, IHeadReport, IReport } from "@/interface/order/order.state";
 import TheLoader from "@/components/common/TheLoader.vue";
+import { translateForYear } from "@/function/translateOrder";
+import { PIE_COLOR, PIE_COLOR_HOVER } from "@/constant/color";
 
 export default defineComponent({
   components: {
@@ -85,6 +83,8 @@ export default defineComponent({
     const showLoading = ref(false);
     const dataLabels = ref([] as any[]);
     const dataData = ref([] as any[]);
+    const dataLabelsPie = ref([] as any[]);
+    const dataDataPie = ref([] as any[]);
     const dataBar = ref({
       labels: [],
       datasets: [
@@ -130,12 +130,12 @@ export default defineComponent({
       { name: "Tháng", code: "month" },
     ]);
     const dataPie = ref({
-      labels: ["Nike", "Jordan", "Puma"],
+      labels: [],
       datasets: [
         {
-          data: [300, 50, 100],
-          backgroundColor: ["#42A5F5", "#66BB6A", "#FFA726"],
-          hoverBackgroundColor: ["#64B5F6", "#81C784", "#FFB74D"],
+          data: [],
+          backgroundColor: [],
+          hoverBackgroundColor: [],
         },
       ],
     });
@@ -154,11 +154,11 @@ export default defineComponent({
         getByMonth();
         return;
       }
+      getByYear();
     };
 
     const getByMonth = async () => {
-      dataLabels.value = [];
-      dataData.value = [];
+      resetData();
       const firstDay = new Date(
         dataSort.value.getFullYear(),
         dataSort.value.getMonth(),
@@ -186,18 +186,49 @@ export default defineComponent({
         start_date: `${firstDay.getFullYear()}-${fMonth}-${fDay}`,
         end_date: `${lastDay.getFullYear()}-${lMonth}-${lDay}`,
       };
-      const dataMonth = (await store.dispatch(
-        "order/getReportByMonth",
-        wMonth
-      )) as IReportByMonth[];
-      if (dataMonth.length) {
-        dataMonth.forEach((ele) => {
+      showLoading.value = true;
+      const dataMonth = getReport(wMonth);
+      showLoading.value = false;
+      if ((await dataMonth).bar.length) {
+        (await dataMonth).bar.forEach((ele) => {
           dataLabels.value.push(ele.date);
           dataData.value.push(ele.total);
         });
+        (await dataMonth).pie.forEach((ele) => {
+          dataLabelsPie.value.push(ele.category);
+          dataDataPie.value.push(ele.total);
+        });
         assignDataBar(dataLabels.value, dataData.value);
+        assignDataPie(dataLabelsPie.value, dataDataPie.value);
       } else {
         assignDataBar([], []);
+        assignDataPie([], []);
+      }
+    };
+
+    const getByYear = async () => {
+      resetData();
+      const year = {
+        start_date: `${dataSort.value.getFullYear()}-01-01`,
+        end_date: `${dataSort.value.getFullYear()}-12-31`,
+      };
+      const dataYear = getReport(year);
+      const dataChart = translateForYear((await dataYear).bar);
+
+      if (dataChart.length) {
+        dataChart.forEach((ele) => {
+          dataLabels.value.push(ele.date);
+          dataData.value.push(ele.total);
+        });
+        (await dataYear).pie.forEach((ele) => {
+          dataLabelsPie.value.push(ele.category);
+          dataDataPie.value.push(ele.total);
+        });
+        assignDataBar(dataLabels.value, dataData.value);
+        assignDataPie(dataLabelsPie.value, dataDataPie.value);
+      } else {
+        assignDataBar([], []);
+        assignDataPie([], []);
       }
     };
 
@@ -212,6 +243,44 @@ export default defineComponent({
           },
         ],
       };
+    };
+
+    const assignDataPie = (arrLabel: any, arrData: any) => {
+      const color = [] as any;
+      const colorHover = [] as any;
+      arrLabel.forEach(() => {
+        const rand = Math.floor(Math.random() * PIE_COLOR.length);
+        color.push(PIE_COLOR[rand]);
+        PIE_COLOR.splice(rand, 1);
+        const ranColorHover = PIE_COLOR_HOVER[rand];
+        colorHover.push(ranColorHover);
+        PIE_COLOR_HOVER.splice(rand, 1);
+      });
+
+      dataPie.value = {
+        labels: arrLabel,
+        datasets: [
+          {
+            data: arrData,
+            backgroundColor: color,
+            hoverBackgroundColor: colorHover,
+          },
+        ],
+      };
+    };
+
+    const resetData = () => {
+      dataLabels.value = [];
+      dataData.value = [];
+      dataLabelsPie.value = [];
+      dataDataPie.value = [];
+    };
+
+    const getReport = async (data: any) => {
+      showLoading.value = true;
+      const result = await store.dispatch("order/getReport", data);
+      showLoading.value = false;
+      return result as IReport;
     };
 
     onMounted(async () => {
