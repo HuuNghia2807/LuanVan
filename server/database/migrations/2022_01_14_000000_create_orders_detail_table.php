@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('product_size_id')->unsigned();
             $table->foreign('product_size_id')->references('id')->on('product_sizes');
             $table->integer('order_id')->unsigned();
-            $table->foreign('order_id')->references('id')->on('orders');
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

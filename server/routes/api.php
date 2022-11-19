@@ -51,8 +51,7 @@ Route::group(['prefix' => 'comment'], function () {
 
 Route::group(['prefix' => 'report'], function () {
     Route::get('/head', [ReportController::class, 'index'])->name('report.index');
-    Route::post('/month', [ReportController::class, 'getByMonth'])->name('report.getByMonth');
-    // Route::post('/add', [ReportController::class, 'store'])->name('comment.store');
+    Route::post('/', [ReportController::class, 'getByMonth'])->name('report.getByMonth');
 });
 
 Route::group(['prefix' => 'province'], function () {

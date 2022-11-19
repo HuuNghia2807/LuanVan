@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Order;
+use App\Repositories\Order\OrderRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,13 @@ class ReportController extends AbstractApiController
      *
      * @return \Illuminate\Http\Response
      */
+    protected $orderRepo;
+
+    public function __construct(OrderRepositoryInterface $orderRepo)
+    {
+        $this->orderRepo = $orderRepo;
+    }
+
     public function index()
     {
         $order_today = Order::whereDate('order_time', '=', Carbon::today()->toDateString())->get();
@@ -119,18 +127,20 @@ class ReportController extends AbstractApiController
             return $this->respond();
         };
 
-        $orders = Order::whereBetween('order_time', [$request->start_date, $request->end_date])->orderBy('order_time', 'ASC')->get();
-        $result = array();
-        foreach ($orders as $key => $val) {
-            $result[] = array(
-                'date' => Carbon::create($val->order_time)->toDateString(),
-                'total_price' => $val->order_total_price
-            );
-        }
+        $orders = Order::where('order_status_id', '=', 4)->whereBetween('order_time', [$request->start_date, $request->end_date])->orderBy('order_time', 'ASC')->get();
+
+        $bar = $this->orderRepo->getDataBar($orders);
+        $pie = $this->orderRepo->getDataPie($orders);
+
+        $data = [
+            'bar' => $bar ? $bar : [],
+            'pie' => $pie ? $pie : []
+        ];
+
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('Success');
         $this->setMessage('Get success');
-        $this->setData($result ? $result : []);
+        $this->setData($data);
         return $this->respond();
     }
 }

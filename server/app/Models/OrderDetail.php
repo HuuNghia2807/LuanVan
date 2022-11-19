@@ -31,4 +31,11 @@ class OrderDetail extends Model
 
         return $product_size->product_id;
     }
+
+    public function category_id()
+    {
+        $product_size = ProductSize::find($this->product_size_id);
+        $product = Product::find($product_size->product_id);
+        return $product->category_id;
+    }
 }
