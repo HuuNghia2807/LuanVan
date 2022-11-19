@@ -36,6 +36,7 @@ Route::group(['prefix' => 'customer'], function () {
     Route::put('/update', [CustomerController::class, 'update'])->name('customer.update');
     Route::put('/password', [CustomerController::class, 'changePass']);
     Route::put('/address', [CustomerController::class, 'updateAddress']);
+    Route::delete('/address/{id}', [CustomerController::class, 'deleteAddresss']);
 });
 
 Route::group(['prefix' => 'employee'], function () {

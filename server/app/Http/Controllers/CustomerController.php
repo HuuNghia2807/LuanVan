@@ -311,4 +311,14 @@ class CustomerController extends AbstractApiController
         $this->setMessage('Update success');
         return $this->respond();
     }
+
+    public function deleteAddresss($id)
+    {
+        $address = Address::find($id);
+        $address->delete();
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Update success');
+        return $this->respond();
+    }
 }
