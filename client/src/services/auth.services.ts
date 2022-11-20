@@ -132,6 +132,20 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async updateInfoEmployee(payload: any) {
+    try {
+      const response = await http.put("employee/update", payload);
+      if (response.data.data) {
+        const employee = translateEmployee(response.data.data);
+        setItemLocal("userDashboard", employee);
+        return employee;
+      } else {
+        throw new Error("Wrong credential");
+      }
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();

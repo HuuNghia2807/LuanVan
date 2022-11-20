@@ -1,5 +1,6 @@
 <template>
   <TheLoader :is-loading="showLoading" />
+  <my-toast position="top-right" group="tr" />
   <div class="container-product">
     <div class="card">
       <Toolbar class="mb-4">
@@ -19,6 +20,12 @@
           />
         </template>
         <template #end>
+          <my-button
+            label="Danh Mục Sản Phẩm"
+            icon="pi pi-table"
+            class="p-button-warning mr-2"
+            @click="handleCategory"
+          />
           <my-button
             label="Tạo Khuyến Mãi"
             icon="pi pi-plus"
@@ -198,12 +205,17 @@
     @close-modal="closeProductModal"
   />
 
+  <CategoryModal
+    v-if="isCategoryModal"
+    :is-category-modal="isCategoryModal"
+    @close-modal="closeCategoryModal"
+  />
+
   <DiscountModal
     v-if="isDiscountModal"
     :is-discount-modal="isDiscountModal"
     @close-modal-discount="closeModalDiscount"
   />
-  <my-toast position="top-right" group="tr" />
 </template>
 
 <script lang="ts">
@@ -220,6 +232,7 @@ import { useStore } from "vuex";
 import { caculatorSale, formatPrice } from "@/function/common";
 import TheLoader from "@/components/common/TheLoader.vue";
 import DiscountModal from "@/Dashboard/components/modal/DiscountModal.vue";
+import CategoryModal from "@/Dashboard/components/modal/CategoryModal.vue";
 
 export default defineComponent({
   components: {
@@ -230,6 +243,7 @@ export default defineComponent({
     Column,
     TheLoader,
     DiscountModal,
+    CategoryModal,
   },
   setup() {
     const store = useStore();
@@ -237,6 +251,7 @@ export default defineComponent({
     const selectedProducts = ref([] as any[]);
     const showLoading = ref(false);
     const isDiscountModal = ref(false);
+    const isCategoryModal = ref(false);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
@@ -311,6 +326,14 @@ export default defineComponent({
       isProductModal.value = false;
     };
 
+    const handleCategory = () => {
+      isCategoryModal.value = true;
+    };
+
+    const closeCategoryModal = () => {
+      isCategoryModal.value = false;
+    };
+
     const stockClass = (data: IProduct) => {
       return [
         {
@@ -340,6 +363,9 @@ export default defineComponent({
       listProduct,
       showLoading,
       isDiscountModal,
+      isCategoryModal,
+      closeCategoryModal,
+      handleCategory,
       caculatorSale,
       stockClass,
       closeProductModal,

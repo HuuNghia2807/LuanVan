@@ -1,144 +1,278 @@
 <template>
-  <form class="personal">
-    <div class="information">
-      <div class="head">
-        <h2>THÔNG TIN CÁ NHÂN</h2>
-      </div>
-      <div class="p-fluid formgrid">
-        <div class="field">
-          <label for="username">Họ và tên: </label>
-          <my-inputText
-            id="username"
-            type="username"
-            v-model="info.name"
-            :disabled="!canEdit"
-          />
-        </div>
-        <div class="gender field">
-          <div
-            v-for="gender in genders"
-            :key="gender.key"
-            class="field-radiobutton mr-4"
-          >
-            <RadioButton
-              :inputId="gender.key"
-              name="gender"
-              :value="gender.key"
-              v-model="info.gender"
-              :disabled="!canEdit"
-            />
-            <label :for="gender.key">{{ gender.name }}</label>
+  <div class="personal">
+    <TheLoader :is-loading="showLoading" />
+    <my-toast />
+    <form @submit.prevent="handleSubmit(!v$.$invalid)" class="personal">
+      <div class="flex">
+        <div class="information">
+          <div class="p-fluid formgrid">
+            <div class="flex align-items-center">
+              <div class="field w-6 mr-3">
+                <label
+                  for="firstName"
+                  :class="{ 'p-error': v$.firstName.$invalid && submitted }"
+                >
+                  Họ *
+                </label>
+                <my-inputText
+                  id="firstName"
+                  v-model="v$.firstName.$model"
+                  :class="{ 'p-invalid': v$.firstName.$invalid && submitted }"
+                />
+                <small
+                  v-if="
+                    (v$.firstName.$invalid && submitted) ||
+                    v$.firstName.$pending
+                  "
+                  class="p-error"
+                  >{{ v$.firstName.required.$message }}</small
+                >
+              </div>
+              <div class="field w-6">
+                <label
+                  for="lastName"
+                  :class="{ 'p-error': v$.lastName.$invalid && submitted }"
+                >
+                  Tên *
+                </label>
+                <my-inputText
+                  id="lastName"
+                  v-model="v$.lastName.$model"
+                  :class="{ 'p-invalid': v$.lastName.$invalid && submitted }"
+                />
+                <small
+                  v-if="
+                    (v$.lastName.$invalid && submitted) || v$.lastName.$pending
+                  "
+                  class="p-error"
+                  >{{ v$.lastName.required.$message }}</small
+                >
+              </div>
+            </div>
+            <div class="gender field">
+              <div
+                v-for="gender in genders"
+                :key="gender.name"
+                class="field-radiobutton mr-4"
+              >
+                <RadioButton
+                  :inputId="gender.name"
+                  name="gender"
+                  :value="gender.name"
+                  v-model="state.gender"
+                />
+                <label :for="gender.name">{{ gender.name }}</label>
+              </div>
+            </div>
+            <div class="field">
+              <label for="birth">Ngày Sinh</label>
+              <my-inputText id="birth" v-model="state.birth" />
+            </div>
+            <div class="field">
+              <label
+                for="firstName"
+                :class="{ 'p-error': v$.firstName.$invalid && submitted }"
+              >
+                Số điện thoại *
+              </label>
+              <my-inputText
+                id="phone"
+                v-model="v$.phone.$model"
+                type="number"
+                :class="{ 'p-invalid': v$.phone.$invalid && submitted }"
+              />
+              <small
+                v-if="(v$.phone.$invalid && submitted) || v$.phone.$pending"
+                class="p-error"
+                >{{ v$.phone.required.$message }}</small
+              >
+            </div>
+            <!-- <div class="field">
+              <label for="phone">Số điện thoại: </label>
+              <my-inputText id="phone" v-model="state.phone" />
+            </div> -->
+            <div class="field">
+              <label for="email">Email: </label>
+              <my-inputText
+                id="email"
+                type="email"
+                v-model="state.email"
+                disabled
+              />
+            </div>
           </div>
         </div>
-        <div class="field">
-          <label for="dateformat">Ngày sinh: </label>
-          <my-inputText
-            id="dateformat"
-            v-model="info.birth"
-            :disabled="!canEdit"
-          />
-        </div>
-        <div class="field">
-          <label for="phone">Số điện thoại: </label>
-          <my-inputText id="phone" v-model="info.phone" :disabled="!canEdit" />
-        </div>
-        <div class="field">
-          <label for="email">Email: </label>
-          <my-inputText
-            id="email"
-            type="email"
-            v-model="info.email"
-            :disabled="!canEdit"
-          />
-        </div>
-        <div class="field">
-          <label for="address">Địa chỉ: </label>
-          <Textarea
-            id="address"
-            v-model="info.address"
-            :autoResize="true"
-            rows="5"
-            cols="30"
-            :disabled="!canEdit"
-          />
-        </div>
-      </div>
-    </div>
-    <div class="avatar">
-      <div class="flex justify-content-between">
-        <div class="avt-wrap">
-          <div class="img">
-            <img src="@/assets/img/background-login.jpg" />
-            <label class="upload" for="avatar" v-if="canEdit">
-              <i class="pi pi-camera" style="font-size: 5rem"></i>
-              <input id="avatar" type="file" class="hidden" />
-            </label>
+        <div class="avatar">
+          <div class="flex justify-content-between">
+            <div class="avt-wrap">
+              <div class="img">
+                <img
+                  :src="
+                    state?.avatar ||
+                    require('@/assets/img/avatar_default/default-avatar.png')
+                  "
+                />
+                <label class="upload" for="avatar">
+                  <i class="pi pi-camera" style="font-size: 5rem"></i>
+                  <input
+                    id="avatar"
+                    type="file"
+                    class="hidden"
+                    @change="onUpload($event)"
+                  />
+                </label>
+              </div>
+              <span class="name">{{
+                `${state.firstName} ${state.lastName}`
+              }}</span>
+              <span class="email">{{ state.email }}</span>
+              <span class="role">{{ employee.role }}</span>
+            </div>
           </div>
-          <span class="name">{{ info.name }}</span>
-          <span class="email">{{ info.email }}</span>
-        </div>
-        <div class="btn-edit" @click="handleEdit" :class="{ active: canEdit }">
-          <img
-            src="@/assets/img/icons/edit-personal.png"
-            width="25"
-            alt="edit-personal"
-          />
         </div>
       </div>
-      <div class="btn" v-if="canEdit">
-        <my-button label="Lưu Thông tin" class="p-button-raised" />
+      <div class="flex justify-content-end mt-8">
         <my-button
-          label="Hủy Bỏ"
-          class="p-button-raised p-button-danger"
-          @click="handleEdit"
+          type="submit"
+          label="Update"
+          icon="pi pi-check"
+          autofocus
+          class="w-2 ml-3"
         />
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, reactive, ref } from "vue";
 import RadioButton from "primevue/radiobutton";
-import Textarea from "primevue/textarea";
+import useVuelidate from "@vuelidate/core";
+import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
+import { IEmployee } from "@/interface/auth/authentication.state";
+import { convertToBase64 } from "@/function/convertImage";
+import { useStore } from "vuex";
+import { getItemLocal } from "@/function/handleLocalStorage";
+import TheLoader from "@/components/common/TheLoader.vue";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   components: {
     RadioButton,
-    Textarea,
+    TheLoader,
   },
-  setup() {
-    const canEdit = ref(false);
-    const info = reactive({
-      name: "Nguyễn Hoàng Thanh Toàn",
-      phone: "0123456789",
-      email: "toan@gmail.com",
-      gender: "woman",
-      birth: "01-01-2000",
-      address: "Hẻm nào đó, Xã Gì Đó, Quận Gì Đó, TP Cần Thơ",
+  setup(_props, { emit }) {
+    const store = useStore();
+    const submitted = ref(false);
+    const showLoading = ref(false);
+    const toast = useToast();
+
+    const employee = computed(() => {
+      return (store.getters["auth/getUserDashboard"] ||
+        getItemLocal("userDashboard") ||
+        null) as IEmployee;
+    });
+    const state = reactive({
+      firstName: employee.value?.firstName,
+      lastName: employee.value?.lastName,
+      phone: employee.value?.phone,
+      email: employee.value?.email,
+      gender: employee.value?.gender,
+      birth: employee.value?.birth,
+      avatar: employee.value?.avatar,
     });
     const genders = ref([
       {
         name: "Nam",
-        key: "man",
       },
       {
         name: "Nữ",
-        key: "woman",
       },
       {
         name: "Khác",
-        key: "other",
       },
     ]);
-    const handleEdit = () => {
-      canEdit.value = !canEdit.value;
+
+    const rules = {
+      firstName: {
+        required: helpers.withMessage("Tên không được trống", required),
+      },
+      lastName: {
+        required: helpers.withMessage("Tên không được trống", required),
+      },
+      phone: {
+        required: helpers.withMessage(
+          "Số điện thoại không được trống và có 10 số",
+          required
+        ),
+        maxLength: maxLength(10),
+        minLengthValue: minLength(10),
+      },
+    };
+    const v$ = useVuelidate(rules, state);
+    const handleSubmit = (isFormValid: any) => {
+      submitted.value = true;
+
+      if (isFormValid) {
+        updateInfo();
+        return;
+      }
+    };
+
+    const updateInfo = async () => {
+      showLoading.value = true;
+      await store.dispatch("auth/updateInfoEmployee", {
+        employee_id: employee.value.id,
+        info: {
+          first_name: state.firstName,
+          last_name: state.lastName,
+          email: state.email,
+          gender: state.gender,
+          birth: state.birth,
+          phone: state.phone,
+          avatar: state.avatar,
+        },
+      });
+      if (store.getters["auth/getError"]) {
+        toast.add({
+          severity: "error",
+          summary: "Thất bại",
+          detail: "Cập nhật bị lỗi vui lòng kiểm tra và thử lại",
+          life: 3000,
+        });
+        showLoading.value = false;
+        return;
+      }
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Cập nhật thông tin thành công",
+        life: 3000,
+      });
+      showLoading.value = false;
+    };
+
+    const onUpload = (e: any) => {
+      const target = e.target.files[0];
+      // const img = URL.createObjectURL(target);
+      convertToBase64(target).then((res) => {
+        state.avatar = res as string;
+      });
+    };
+
+    const closeModal = () => {
+      emit("close-modal");
     };
     return {
-      info,
       genders,
-      canEdit,
-      handleEdit,
+      v$,
+      state,
+      submitted,
+      employee,
+      showLoading,
+      onUpload,
+      closeModal,
+      handleSubmit,
     };
   },
 });
@@ -148,6 +282,11 @@ export default defineComponent({
 .personal {
   display: flex;
   margin: 3rem 5rem;
+  flex-direction: column;
+
+  :deep(.p-component) {
+    font-size: 1.6rem !important;
+  }
 
   .head {
     display: flex;
@@ -170,15 +309,26 @@ export default defineComponent({
 
     .field {
       margin: 1rem 0;
+
+      label {
+        font-size: 1.6rem;
+      }
+
+      small {
+        font-size: 1.2rem;
+      }
+
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
     }
 
     :deep(.p-inputtext) {
       font-size: 1.6rem !important;
     }
-
-    :deep(.p-component:disabled) {
-      opacity: 0.8 !important;
-    }
+  }
+  :deep(.p-component:disabled) {
+    opacity: 0.9 !important;
   }
 
   .avatar {
@@ -249,6 +399,16 @@ export default defineComponent({
     .email {
       color: #888;
       font-size: 1.7rem;
+    }
+
+    .role {
+      text-transform: uppercase;
+      display: block;
+      margin-top: 1rem;
+      padding: 0.6rem 2.5rem;
+      background-color: rgb(255, 86, 117);
+      color: #fff;
+      font-weight: 600;
     }
 
     .btn {

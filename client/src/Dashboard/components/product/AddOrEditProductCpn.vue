@@ -232,6 +232,7 @@ import {
 
 import { useStore } from "vuex";
 import {
+  ICategory,
   IProduct,
   IProductParams,
   ISizeParams,
@@ -260,7 +261,7 @@ export default defineComponent({
     const toast = useToast();
     const store = useStore();
     const submitted = ref(false);
-    const category = ref([]);
+    const category = ref([] as string[]);
     const filterCategory = ref([] as any[]);
     const filterSize = ref([] as ISizeParams[]);
     const showLoading = ref(false);
@@ -314,8 +315,10 @@ export default defineComponent({
       },
       category: {
         required: helpers.withMessage(
-          "Vui lòng chọn danh mục sản phẩm",
-          required
+          "Tên danh mục không được bỏ trống và không có khoảng cách!",
+          (value: string) =>
+            // eslint-disable-next-line
+            /^[a-zA-Z0-9_]*$/i.test(value)
         ),
       },
       price: {
@@ -531,7 +534,9 @@ export default defineComponent({
 
     onMounted(async () => {
       sizes.value = await store.dispatch("product/getSizes");
-      category.value = await store.dispatch("product/getCategories");
+      category.value = (
+        (await store.dispatch("product/getCategories")) as ICategory[]
+      ).map((ele) => ele.categoryName);
     });
 
     return {

@@ -181,6 +181,14 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async updateInfoEmployee({ commit }, payload: any) {
+    try {
+      commit("setError", { error: null });
+      await authServices.updateInfoEmployee(payload);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const auth = {

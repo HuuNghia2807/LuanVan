@@ -4,9 +4,9 @@
       <router-link class="h-6rem cursor-pointer" to="/">
         <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
       </router-link>
-      <div class="ml-4 flex flex-wrap">
+      <div class="ml-4 flex flex-wrap justify-content-center">
         <router-link
-          class="item-menu"
+          class="item-menu my-1"
           :class="{
             active: routePath.toLowerCase() === item.link.toLowerCase(),
           }"
@@ -154,6 +154,7 @@ import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import {
   ICart,
+  ICategory,
   ICategoryRouting,
   IProduct,
 } from "@/interface/product/product.state";
@@ -267,11 +268,13 @@ export default defineComponent({
     });
 
     onMounted(async () => {
-      const cate = (await store.dispatch("product/getCategories")) as string[];
+      const cate = (await store.dispatch(
+        "product/getCategories"
+      )) as ICategory[];
       listMenu.value = cate.map((ele) => {
         return {
-          name: ele.toUpperCase(),
-          link: ele.toLowerCase(),
+          name: ele.categoryName.toUpperCase(),
+          link: ele.categoryName.toLowerCase(),
         };
       });
       listMenu.value.unshift({ name: "SẢN PHẨM", link: "product" });

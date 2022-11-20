@@ -23,3 +23,7 @@ export const PIE_COLOR_HOVER = [
   "#303350",
   "#95af98",
 ];
+
+// export const CATEGORY_COLOR = [
+
+// ]

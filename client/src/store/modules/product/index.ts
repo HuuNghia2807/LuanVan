@@ -68,6 +68,30 @@ const actions: ActionTree<IStateProduct, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async addCategory({ commit }, category: string) {
+    try {
+      commit("setError", {});
+      await productServices.addCategory(category);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async deleteCategory({ commit }, category_id: number) {
+    try {
+      commit("setError", {});
+      await productServices.deleteCategory(category_id);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async updateCategory({ commit }, payload: any) {
+    try {
+      commit("setError", {});
+      await productServices.updateCategory(payload);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
   async addProduct({ commit }, payload: IProductParams) {
     try {
       commit("setError", {});

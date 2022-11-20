@@ -28,6 +28,35 @@ class ProductServices {
       throw handleError(error as AxiosError);
     }
   }
+  async addCategory(category: string) {
+    try {
+      const response = await http.post("category/add", {
+        category_name: category,
+      });
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async deleteCategory(category_id: number) {
+    try {
+      const path = `category/${category_id}`;
+      const response = await http.delete(path);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async updateCategory(payload: any) {
+    try {
+      const path = `category/${payload.category_id}`;
+      const body = { category_name: payload.category_name };
+      const response = await http.post(path, body);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
   async addProduct(product: IProductParams) {
     try {
       const path = "product/add";

@@ -109,6 +109,11 @@ export interface ICategoryResponse {
   category_name: string;
 }
 
+export interface ICategory {
+  categoryId: number;
+  categoryName: string;
+}
+
 export interface ICategoryRouting {
   name: string;
   link: string;
