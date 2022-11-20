@@ -6,6 +6,7 @@ use App\Http\Resources\CustomerResource;
 use App\Http\Resources\EmployeeResource;
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\UserDetail;
 use App\Repositories\Employee\EmployeeRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -140,9 +141,45 @@ class EmployeeController extends AbstractApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'employee_id' => 'required',
+            'info' => 'required',
+        ]);
+        if (!$validated) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+        $employee_id = $request->employee_id;
+        $data = $request->info;
+        DB::beginTransaction();
+        try {
+            $emp = Employee::find($employee_id);
+            UserDetail::find($emp->user_detail_id)->update([
+                'user_first_name' => $data['first_name'],
+                'user_last_name' => $data['last_name'],
+                'user_phone' => $data['phone'],
+                'user_birth' => $data['birth'],
+                'user_gender' => $data['gender'],
+                'user_avatar' => $data['avatar'],
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('Failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
+        }
+
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('Success');
+        $this->setMessage('Update info success');
+        $this->setData(EmployeeResource::make($emp));
+        return $this->respond();
     }
 
     /**

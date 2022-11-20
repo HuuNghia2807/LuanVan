@@ -43,6 +43,7 @@ Route::group(['prefix' => 'employee'], function () {
     Route::get('/all', [EmployeeController::class, 'index'])->name('employee.index');
     Route::post('/add', [EmployeeController::class, 'store'])->name('employee.store');
     Route::post('/login', [EmployeeController::class, 'login'])->name('employee.login');
+    Route::put('/update', [EmployeeController::class, 'update'])->name('employee.update');
 });
 
 Route::group(['prefix' => 'comment'], function () {

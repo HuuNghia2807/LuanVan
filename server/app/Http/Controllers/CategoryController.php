@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
+use App\Models\Product;
 use App\Repositories\Category\CategoryRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
@@ -53,14 +54,26 @@ class CategoryController extends AbstractApiController
     public function store(Request $request)
     {
         //
-        $data = $request->all();
+        $data = $request->category_name;
         DB::beginTransaction();
         try {
-            $category = $this->categoryRepo->create($data);
+            $category_check = Category::where('category_name', '=', $data)->first();
+            if ($category_check) {
+                $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+                $this->setStatus('failed');
+                $this->setMessage('Danh mục đã tồn tại!');
+                return $this->respond();
+            }
+            $category = Category::create([
+                'category_name' => $data,
+            ]);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json($th->getMessage(), 500);
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
@@ -108,14 +121,19 @@ class CategoryController extends AbstractApiController
     public function update(Request $request, $id)
     {
         //
-        $data = $request->all();
         DB::beginTransaction();
         try {
-            $category = $this->categoryRepo->update($id, $data);
+            $category = Category::find($id);
+            $category->update([
+                'category_name' => $request->category_name
+            ]);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json('error', 500);
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
         }
 
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
@@ -136,13 +154,22 @@ class CategoryController extends AbstractApiController
         //
         DB::beginTransaction();
         try {
-            $category = $this->categoryRepo->delete($id);
+            $category_check = Product::where('category_id', '=', $id)->first();
+            if ($category_check) {
+                $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+                $this->setStatus('failed');
+                $this->setMessage('Có sản phẩm thuộc danh mục này không thể xóa!');
+                return $this->respond();
+            }
+            Category::find($id)->delete();
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json('error', 500);
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage($th->getMessage());
+            return $this->respond();
         }
-
         $this->setStatusCode(JsonResponse::HTTP_CREATED);
         $this->setStatus('success');
         $this->setMessage('Delete category success');
