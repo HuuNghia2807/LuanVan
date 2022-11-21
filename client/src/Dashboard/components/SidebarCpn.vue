@@ -12,14 +12,14 @@
       <div class="avatar">
         <img
           :src="
-            employee.avatar ||
+            employee?.avatar ||
             require('@/assets/img/avatar_default/default-avatar.png')
           "
           alt="avatar"
         />
       </div>
       <div class="name">
-        <span>{{ employee.fullName }}</span>
+        <span>{{ employee?.fullName }}</span>
         <router-link to="/dashboard/personal" class="no-underline">
           <i
             class="pi pi-cog text-white"
@@ -36,6 +36,7 @@
         :to="item.link"
         :key="i"
         class="item"
+        v-show="item.accept.includes(employee.role || '')"
       >
         <i :class="item.icon" style="font-size: 2.4rem"></i>
         <span class="text">{{ item.name }}</span>
@@ -48,33 +49,44 @@
 import { getItemLocal } from "@/function/handleLocalStorage";
 import { IEmployee } from "@/interface/auth/authentication.state";
 import { computed, defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 export default defineComponent({
   components: {},
   setup() {
+    const router = useRouter();
     const store = useStore();
     const menuSidebar = ref([
-      { name: "Dashboard", icon: "pi pi-home", link: "/dashboard" },
+      {
+        name: "Dashboard",
+        icon: "pi pi-home",
+        link: "/dashboard",
+        accept: ["Admin", "Manage"],
+      },
       {
         name: "Products",
         icon: "pi pi-shopping-bag",
         link: "/dashboard/products",
+        accept: ["Admin", "Manage"],
       },
       {
         name: "Users",
         icon: "pi pi-user",
         link: "/dashboard/user",
+        accept: ["Admin"],
       },
       {
         name: "Orders",
         icon: "pi pi-money-bill",
         link: "/dashboard/order",
+        accept: ["Admin", "Manage", "Employee"],
       },
       {
         name: "Report",
         icon: "pi pi-chart-bar",
         link: "/dashboard/report",
+        accept: ["Admin", "Manage"],
       },
     ]);
     const employee = computed(() => {
@@ -82,6 +94,7 @@ export default defineComponent({
         getItemLocal("userDashboard") ||
         null) as IEmployee;
     });
+
     return {
       menuSidebar,
       employee,

@@ -67,7 +67,7 @@ import { computed, defineComponent, reactive, ref } from "vue";
 import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useStore } from "vuex";
-import { ILoginParams } from "@/interface/auth/authentication.state";
+import { IEmployee, ILoginParams } from "@/interface/auth/authentication.state";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -145,7 +145,15 @@ export default defineComponent({
         showLoading.value = false;
       } else {
         showLoading.value = false;
-        router.push("/dashboard");
+        const permission = store.getters["auth/getUserDashboard"] as IEmployee;
+        if (permission?.role === "Admin" || permission?.role === "Manager") {
+          router.push("/dashboard");
+          return;
+        }
+        if (permission?.role === "employee") {
+          router.push("/dashboard/order");
+          return;
+        }
       }
     };
 

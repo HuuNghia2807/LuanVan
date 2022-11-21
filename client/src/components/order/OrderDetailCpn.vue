@@ -98,16 +98,19 @@
           </my-column>
         </DataTable>
       </div>
-      <div class="prices">
-        <div class="price">
-          <label>Phí vận chuyển:</label>
-          <span class="text-red">{{ formatPrice(20000) }}</span>
-        </div>
-        <div class="price">
-          <label>Tổng hóa đơn:</label>
-          <span class="text-red font-bold">{{
-            formatPrice(order?.totalPrice || 9999999)
-          }}</span>
+      <div class="flex justify-content-between mt-2">
+        <span class="w-6 text-2xl">Note: {{ order?.orderNote }}</span>
+        <div class="prices w-6">
+          <div class="price">
+            <label>Phí vận chuyển:</label>
+            <span class="text-red">{{ formatPrice(20000) }}</span>
+          </div>
+          <div class="price">
+            <label>Tổng hóa đơn:</label>
+            <span class="text-red font-bold">{{
+              formatPrice(order?.totalPrice || 9999999)
+            }}</span>
+          </div>
         </div>
       </div>
     </div>

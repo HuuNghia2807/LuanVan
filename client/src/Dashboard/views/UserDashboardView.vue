@@ -89,22 +89,15 @@
         :key="col.field"
         :style="{ width: col.width }"
       >
-        <template v-if="col.field === 'address'" #body="slotProps">
-          <div>
-            <span>{{
-              slotProps.data.address?.length
-                ? `${slotProps.data.address[0].address}, 
-                ${slotProps.data.address[0].ward.ward},       
-                ${slotProps.data.address[0].district.district},
-                ${slotProps.data.address[0].city.city}`
-                : ""
-            }}</span>
-          </div>
-        </template>
       </my-column>
 
-      <my-column :exportable="false" style="min-width: 8rem">
+      <my-column :exportable="false" style="min-width: 15rem">
         <template #body="slotProps">
+          <my-button
+            icon="pi pi-info"
+            class="p-button-rounded mr-4"
+            @click="handleViewInfo(slotProps.data)"
+          />
           <my-button
             icon="pi pi-trash"
             class="p-button-rounded p-button-warning"
@@ -146,8 +139,22 @@
     </template>
   </my-dialog>
   <AddEmployee
+    v-if="isAddEmployee"
     :is-add-employee="isAddEmployee"
     @close-modal-add-employee="closeModalAddEmployee"
+  />
+  <UserInformation
+    v-if="isShowInfoCustomer"
+    :customer="customer"
+    :is-show-customer="isShowInfoCustomer"
+    @close-modal="closeModal"
+  />
+
+  <EmployeeInformation
+    v-if="isShowEmployee"
+    :is-show-employee="isShowEmployee"
+    :employee="employee"
+    @close-modal="closeModal"
   />
   <my-toast position="top-right" group="tr" />
 </template>
@@ -161,12 +168,16 @@ import store from "@/store";
 import AddEmployee from "../components/modal/AddEmployee.vue";
 import TheLoader from "@/components/common/TheLoader.vue";
 import { IAllUser } from "@/interface/auth/authentication.state";
+import UserInformation from "@/Dashboard/components/modal/UserInformation.vue";
+import EmployeeInformation from "@/Dashboard/components/modal/EmployeeInformation.vue";
 
 export default defineComponent({
   components: {
     InputText,
     AddEmployee,
     TheLoader,
+    UserInformation,
+    EmployeeInformation,
   },
   setup() {
     const users = ref<IAllUser>();
@@ -182,7 +193,10 @@ export default defineComponent({
         code: "employee",
       },
     ]);
-
+    const isShowInfoCustomer = ref(false);
+    const customer = ref();
+    const isShowEmployee = ref(false);
+    const employee = ref();
     const columns = computed(() => {
       if (selectUser.value === "customer") {
         return [
@@ -191,7 +205,6 @@ export default defineComponent({
           { field: "phone", header: "Số Điện Thoại", width: "15rem" },
           { field: "birth", header: "Ngày Sinh", width: "15rem" },
           { field: "gender", header: "Giới tính", width: "15rem" },
-          { field: "address", header: "Địa chỉ", width: "30rem" },
         ];
       }
       return [
@@ -201,7 +214,6 @@ export default defineComponent({
         { field: "phone", header: "Số Điện Thoại", width: "15rem" },
         { field: "birth", header: "Ngày Sinh", width: "15rem" },
         { field: "gender", header: "Giới tính", width: "15rem" },
-        { field: "address", header: "Địa chỉ", width: "30rem" },
       ];
     });
     const selectedUsers = ref([] as any[]);
@@ -246,6 +258,23 @@ export default defineComponent({
       isAddEmployee.value = false;
     };
 
+    const handleViewInfo = (user: any) => {
+      if (selectUser.value === "customer") {
+        customer.value = user;
+        isShowInfoCustomer.value = true;
+        return;
+      }
+      employee.value = user;
+      isShowEmployee.value = true;
+    };
+
+    const closeModal = () => {
+      customer.value = undefined;
+      isShowInfoCustomer.value = false;
+      employee.value = undefined;
+      isShowEmployee.value = false;
+    };
+
     onMounted(async () => {
       showLoading.value = true;
       users.value = await store.dispatch("auth/getAllUser");
@@ -264,6 +293,12 @@ export default defineComponent({
       isAddEmployee,
       showLoading,
       columns,
+      customer,
+      isShowInfoCustomer,
+      isShowEmployee,
+      employee,
+      closeModal,
+      handleViewInfo,
       closeModalAddEmployee,
       handleAddEmployee,
       confirmDeleteSelected,

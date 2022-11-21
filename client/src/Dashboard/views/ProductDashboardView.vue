@@ -152,8 +152,12 @@
           <template #body="slotProps">
             <my-button
               icon="pi pi-cog"
-              class="p-button-rounded p-button-success mr-2"
+              class="p-button-rounded p-button-success"
               @click="editProduct(slotProps.data)"
+            />
+            <my-button
+              icon="pi pi-comments"
+              class="p-button-rounded p-button mx-2"
             />
             <my-button
               icon="pi pi-trash"
@@ -209,6 +213,7 @@
     v-if="isCategoryModal"
     :is-category-modal="isCategoryModal"
     @close-modal="closeCategoryModal"
+    @edit-category-success="loadProduct"
   />
 
   <DiscountModal

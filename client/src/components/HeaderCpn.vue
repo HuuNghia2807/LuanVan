@@ -21,17 +21,18 @@
 
     <div class="flex align-items-center justify-content-between">
       <div class="p-input-icon-right relative">
-        <i class="icon-search pi pi-search" />
-        <!-- <AutoComplete v-model="searchText" @complete="search($event)" /> -->
+        <i
+          class="icon-search pi pi-microphone"
+          :class="{ 'voice-active': isVoice }"
+          @click="handleSearchByVoice"
+        />
         <my-inputText
           type="text"
-          placeholder="Nhập sản phẩm cần tìm"
+          :placeholder="isVoice ? 'Đang lắng nghe...' : 'Nhập sản phẩm cần tìm'"
           class="p-inputtext-lg input"
           v-model="searchText"
           @focus="showProductSearch"
         />
-        <!-- @blur="hideProductSearch" -->
-        <!-- @mouseover="showProductSearch" -->
         <div
           v-show="displayProductSearch"
           class="subSearch"
@@ -173,16 +174,10 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
-    const listMenu = ref([
-      // { name: "SẢN PHẨM", link: "product" },
-      // { name: "NIKE", link: "nike" },
-      // { name: "ADIDAS", link: "adidas" },
-      // { name: "JORDAN", link: "jordan" },
-      // { name: "YEZZY", link: "yezzy" },
-      // { name: "SALE", link: "sale" },
-    ] as ICategoryRouting[]);
+    const listMenu = ref([] as ICategoryRouting[]);
     const isShow = ref(false);
     const isShowUser = ref(false);
+    const isVoice = ref(false);
     const searchText = ref("");
     const listProductSearch = ref([] as IProduct[]);
     const displayProductSearch = ref(false);
@@ -255,6 +250,46 @@ export default defineComponent({
       isShowUser.value = show || false;
     };
 
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    const SpeechGrammarList =
+      (window as any).SpeechGrammarList ||
+      (window as any).webkitSpeechGrammarList;
+
+    const grammar = "#JSGF V1.0;";
+
+    const recognition = new SpeechRecognition();
+    const speechRecognitionList = new SpeechGrammarList();
+    speechRecognitionList.addFromString(grammar, 1);
+    recognition.grammars = speechRecognitionList;
+    recognition.lang = "vi-VN";
+    recognition.interimResults = false;
+
+    recognition.onresult = async (event: any) => {
+      var lastResult = event.results.length - 1;
+      var content = event.results[lastResult][0].transcript;
+      searchText.value = content;
+      listProductSearch.value = await store.dispatch(
+        "product/searchProduct",
+        searchText.value
+      );
+    };
+
+    recognition.onspeechend = () => {
+      recognition.stop();
+      isVoice.value = false;
+    };
+
+    recognition.onerror = (event: any) => {
+      searchText.value = "Error occurred in recognition: " + event.error;
+    };
+
+    const handleSearchByVoice = () => {
+      recognition.start();
+      isVoice.value = true;
+    };
+
     watch(searchText, async () => {
       displayProductSearch.value = true;
       listProductSearch.value = await store.dispatch(
@@ -294,6 +329,8 @@ export default defineComponent({
       listProductSearch,
       displayProductSearch,
       routePath,
+      isVoice,
+      handleSearchByVoice,
       hideProductSearch,
       showProductSearch,
       toggleShowSubMenu,
@@ -382,13 +419,23 @@ export default defineComponent({
 
 .icon-search {
   font-size: 1.4rem;
-  padding-right: 8px;
   color: #000;
   cursor: pointer;
+  border-radius: 50%;
+  padding: 1rem;
 
   &:hover {
     color: var(--primary-color);
   }
+}
+
+.voice-active {
+  background-color: rgb(255, 179, 117);
+  color: blue;
+}
+
+:deep(.p-input-icon-right > i) {
+  top: 18%;
 }
 
 .subSearch {

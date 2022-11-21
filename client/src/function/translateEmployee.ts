@@ -18,7 +18,6 @@ export const translateEmployee = (emp: IUserResponse): IEmployee => {
     phone: emp.phone,
     role: emp.role || null,
     avatar: emp.avatar,
-    address: translateAddress(emp.address),
   };
 };
 

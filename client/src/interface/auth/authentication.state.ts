@@ -58,7 +58,6 @@ export interface IEmployee {
   birth: string | null;
   gender: string | null;
   avatar: string;
-  address: IAddressCustomer[];
 }
 
 export interface IAddressCustomerResponse {

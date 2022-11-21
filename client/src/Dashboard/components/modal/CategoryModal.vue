@@ -218,6 +218,7 @@ export default defineComponent({
       });
       closeModalUpdate();
       loadCategories();
+      emit("edit-category-success");
     };
 
     const handleCancel = () => {
