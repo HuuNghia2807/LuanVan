@@ -121,6 +121,10 @@ class CommentController extends AbstractApiController
      */
     public function destroy($id)
     {
-        //
+        Comment::find($id)->delete();
+        $this->setStatusCode(JsonResponse::HTTP_CREATED);
+        $this->setStatus('success');
+        $this->setMessage('Delete success');
+        return $this->respond();
     }
 }

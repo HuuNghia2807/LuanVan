@@ -49,6 +49,7 @@ Route::group(['prefix' => 'employee'], function () {
 Route::group(['prefix' => 'comment'], function () {
     Route::get('/product/{id}', [CommentController::class, 'show'])->name('comment.show');
     Route::post('/add', [CommentController::class, 'store'])->name('comment.store');
+    Route::delete('/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
 });
 
 Route::group(['prefix' => 'report'], function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderResource;
+use App\Models\Comment;
 use App\Models\Order;
 use App\Repositories\Order\OrderRepositoryInterface;
 use Carbon\Carbon;
@@ -145,7 +146,6 @@ class OrderController extends AbstractApiController
      */
     public function destroy($id)
     {
-        //
     }
 
     /**
