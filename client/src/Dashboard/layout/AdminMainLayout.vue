@@ -32,8 +32,6 @@ export default defineComponent({
     const router = useRouter();
 
     onMounted(() => {
-      console.log("here");
-
       setEmployeeLogin(store);
       if (!store.getters["auth/getIsloggedDashboard"]) {
         router.push("/login");

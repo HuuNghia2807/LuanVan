@@ -146,6 +146,14 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async deleteComment(comment_id: number) {
+    try {
+      const response = await http.delete(`comment/${comment_id}`);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();

@@ -33,22 +33,31 @@
           v-for="cmt in listComment"
           :key="`cmt${cmt.commentId}`"
         >
-          <div class="header">
-            <div class="avatar">
-              <img
-                :src="
-                  cmt.customerAvatar ||
-                  require('@/assets/img/avatar_default/default-avatar.png')
-                "
-                alt="avt"
-              />
+          <div class="flex justify-content-between">
+            <div class="header">
+              <div class="avatar">
+                <img
+                  :src="
+                    cmt.customerAvatar ||
+                    require('@/assets/img/avatar_default/default-avatar.png')
+                  "
+                  alt="avt"
+                />
+              </div>
+              <div class="name-rating">
+                <span>{{ cmt.customerFullname }}</span>
+                <Rating
+                  :modelValue="cmt.commentRating"
+                  :readonly="true"
+                  :cancel="false"
+                />
+              </div>
             </div>
-            <div class="name-rating">
-              <span>{{ cmt.customerFullname }}</span>
-              <Rating
-                :modelValue="cmt.commentRating"
-                :readonly="true"
-                :cancel="false"
+            <div v-if="customer.id === cmt.customerId">
+              <my-button
+                icon="pi pi-times"
+                class="p-button-rounded p-button-danger p-button-text"
+                @click="handleDeleteComment($event, cmt.commentId)"
               />
             </div>
           </div>
@@ -65,6 +74,8 @@
       </div>
     </div>
   </div>
+  <ConfirmPopup />
+  <my-toast />
 </template>
 
 <script lang="ts">
@@ -77,6 +88,9 @@ import { getItemLocal } from "@/function/handleLocalStorage";
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { IComment, IProduct } from "@/interface/product/product.state";
 import { translateUnixTimeToFullTime } from "@/function/common";
+import ConfirmPopup from "primevue/confirmpopup";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   props: {
@@ -85,9 +99,12 @@ export default defineComponent({
   components: {
     Textarea,
     Rating,
+    ConfirmPopup,
   },
   setup(props, { emit }) {
     const store = useStore();
+    const confirm = useConfirm();
+    const toast = useToast();
     const router = useRouter();
     const comment = ref("");
     const rating = ref(0);
@@ -136,11 +153,37 @@ export default defineComponent({
       rating.value = 0;
     };
 
-    onMounted(async () => {
+    const handleDeleteComment = (event: any, comment_id: number) => {
+      confirm.require({
+        target: event.currentTarget,
+        message: "Do you want to delete this record?",
+        icon: "pi pi-info-circle",
+        acceptClass: "p-button-danger",
+        accept: async () => {
+          await store.dispatch("auth/deleteComment", comment_id);
+          toast.add({
+            severity: "success",
+            summary: "Thành Công",
+            detail: "Xóa thành công",
+            life: 3000,
+          });
+          loadComment();
+        },
+        reject: () => {
+          // toast.add({severity:'error', summary:'Rejected', detail:'You have rejected', life: 3000});
+        },
+      });
+    };
+
+    const loadComment = async () => {
       listComment.value = await store.dispatch(
         "product/getComment",
         props.product?.productId
       );
+    };
+
+    onMounted(() => {
+      loadComment();
     });
 
     return {
@@ -149,6 +192,8 @@ export default defineComponent({
       showLoading,
       msgError,
       listComment,
+      customer,
+      handleDeleteComment,
       handleComment,
       translateUnixTimeToFullTime,
     };

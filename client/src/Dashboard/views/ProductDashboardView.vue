@@ -158,6 +158,7 @@
             <my-button
               icon="pi pi-comments"
               class="p-button-rounded p-button mx-2"
+              @click="showCommentManage(slotProps.data)"
             />
             <my-button
               icon="pi pi-trash"
@@ -221,6 +222,13 @@
     :is-discount-modal="isDiscountModal"
     @close-modal-discount="closeModalDiscount"
   />
+
+  <ManageComment
+    v-if="isShowComment"
+    :is-show-comment="isShowComment"
+    :product="product"
+    @close-modal="closeModalComment"
+  />
 </template>
 
 <script lang="ts">
@@ -238,6 +246,7 @@ import { caculatorSale, formatPrice } from "@/function/common";
 import TheLoader from "@/components/common/TheLoader.vue";
 import DiscountModal from "@/Dashboard/components/modal/DiscountModal.vue";
 import CategoryModal from "@/Dashboard/components/modal/CategoryModal.vue";
+import ManageComment from "../components/modal/ManageComment.vue";
 
 export default defineComponent({
   components: {
@@ -249,6 +258,7 @@ export default defineComponent({
     TheLoader,
     DiscountModal,
     CategoryModal,
+    ManageComment,
   },
   setup() {
     const store = useStore();
@@ -262,6 +272,7 @@ export default defineComponent({
     });
     const deleteProductDialog = ref(false);
     const isProductModal = ref(false);
+    const isShowComment = ref(false);
     const product = ref<IProduct>();
     const toast = useToast();
     const deleteProductsDialog = ref(false);
@@ -347,6 +358,16 @@ export default defineComponent({
       ];
     };
 
+    const showCommentManage = (prod: IProduct) => {
+      isShowComment.value = true;
+      product.value = prod;
+    };
+
+    const closeModalComment = () => {
+      isShowComment.value = false;
+      product.value = undefined;
+    };
+
     const loadProduct = async () => {
       showLoading.value = true;
       await store.dispatch("product/getProducts");
@@ -369,6 +390,9 @@ export default defineComponent({
       showLoading,
       isDiscountModal,
       isCategoryModal,
+      isShowComment,
+      showCommentManage,
+      closeModalComment,
       closeCategoryModal,
       handleCategory,
       caculatorSale,
