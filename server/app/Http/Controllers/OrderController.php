@@ -85,8 +85,9 @@ class OrderController extends AbstractApiController
                 'order_status_id' => 1,
                 'customer_id' => $request->customer_id
             ]);
-            $this->orderRepo->createOrderDetail($request->product_order, $order->id);
+            $order_details = $this->orderRepo->createOrderDetail($request->product_order, $order->id);
             $this->orderRepo->updateQuantity($request->product_order);
+            $this->orderRepo->sendMail($order_details, $order);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -169,7 +170,7 @@ class OrderController extends AbstractApiController
         // dd($request->all());
         if ($request->status_id === 4) {
             $time = Carbon::now('Asia/Ho_Chi_Minh');
-            Order::find($request->order_id)->update([
+            $order = Order::find($request->order_id)->update([
                 'order_status_id' => $request->status_id,
                 'receive_time' => $time->toDateTimeString()
             ]);

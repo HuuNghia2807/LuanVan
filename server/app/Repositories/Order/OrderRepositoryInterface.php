@@ -11,4 +11,5 @@ interface OrderRepositoryInterface extends RepositoryInterface
     public function updateQuantity($product_order);
     public function getDataBar($orders);
     public function getDataPie($orders);
+    public function sendMail($order_details, $order);
 }

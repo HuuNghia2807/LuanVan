@@ -4,11 +4,18 @@ namespace App\Repositories\Order;
 
 use App\Models\Address;
 use App\Models\Category;
+use App\Models\Customer;
 use App\Repositories\BaseRepository;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductSize;
 use Carbon\Carbon;
+use App\Mail\SendMail;
+
+use App\Models\Product;
+use App\Models\Size;
+use App\Models\UserDetail;
+use Mail;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -34,15 +41,17 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function createOrderDetail($product_order, $order_id)
     {
         // dd($product_order);
+        $cart_list = array();
         foreach ($product_order as $product) {
-            OrderDetail::create([
+            $value = OrderDetail::create([
                 'product_quantity' => $product['quantity'],
                 'product_size_id' => $product['productSizeId'],
                 'sale' => $product['sale'],
                 'order_id' => $order_id,
             ]);
+            array_push($cart_list, $value);
         }
-        return true;
+        return $cart_list;
     }
 
     public function updateQuantity($product_order)
@@ -90,5 +99,35 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
 
         return $result;
+    }
+    public function sendMail($order_details, $order)
+    {
+        $user = Customer::find($order->customer_id);
+        $user_detail = UserDetail::find($user->user_detail_id);
+        $email = $user->email;
+        $data = array();
+        foreach ($order_details as $order_detail) {
+            $product_size = ProductSize::find($order_detail->product_size_id);
+            $product = Product::find($product_size->product_id);
+            $size = Size::find($product_size->size_id);
+            $value = [
+                "product_name" => $product->product_name,
+                "product_size" => $size->size,
+                "product_quantity" => $order_detail->product_quantity,
+                "product_price" => $product->product_price,
+            ];
+            array_push($data, $value);
+        }
+        $mailData = [
+            'greeting' => 'Hi ' . $user_detail->user_last_name,
+            'body' => $data,
+            'order_id' => $order->id,
+            'total_price' => $order->order_total_price,
+            'actiontext' => 'Liên hệ cửa hàng',
+            'actionurl' => 'http://localhost:8080',
+            'lastline' => 'Cảm ơn bạn đã mua hàng. Nếu có thắc mắc, vui lòng gọi: 0859255277',
+        ];
+        Mail::to($email)->send(new SendMail($mailData));
+        return $mailData;
     }
 }
