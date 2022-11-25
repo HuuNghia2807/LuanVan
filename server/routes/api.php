@@ -28,11 +28,13 @@ use App\Http\Controllers\ReportController;
 */
 
 Route::group(['prefix' => 'customer'], function () {
+    Route::get('/status', [CustomerController::class, 'getStatus'])->name('customer.getStatus');
     Route::get('/{id}', [CustomerController::class, 'show'])->name('customer.show');
     Route::get('/address/{id}', [CustomerController::class, 'getCustomerAddress']);
     Route::post('/register', [CustomerController::class, 'register'])->name('customer.register');
     Route::post('/login', [CustomerController::class, 'login'])->name('customer.login');
     Route::post('/delete', [CustomerController::class, 'destroy'])->name('customer.destroy');
+    Route::post('/status', [CustomerController::class, 'setStatusCustomer'])->name('customer.setStatusCustomer');
     Route::put('/update', [CustomerController::class, 'update'])->name('customer.update');
     Route::put('/password', [CustomerController::class, 'changePass']);
     Route::put('/address', [CustomerController::class, 'updateAddress']);
@@ -41,9 +43,11 @@ Route::group(['prefix' => 'customer'], function () {
 
 Route::group(['prefix' => 'employee'], function () {
     Route::get('/all', [EmployeeController::class, 'index'])->name('employee.index');
+    Route::get('/role', [EmployeeController::class, 'getRole'])->name('employee.getRole');
     Route::post('/add', [EmployeeController::class, 'store'])->name('employee.store');
     Route::post('/login', [EmployeeController::class, 'login'])->name('employee.login');
     Route::put('/update', [EmployeeController::class, 'update'])->name('employee.update');
+    Route::put('/role', [EmployeeController::class, 'delegateEmp'])->name('employee.delegateEmp');
 });
 
 Route::group(['prefix' => 'comment'], function () {

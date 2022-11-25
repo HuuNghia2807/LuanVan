@@ -6,6 +6,7 @@ use App\Http\Resources\CustomerResource;
 use App\Models\Address;
 use App\Models\Customer;
 use App\Models\UserDetail;
+use App\Models\UserStatus;
 use App\Repositories\Customer\CustomerRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -319,6 +320,44 @@ class CustomerController extends AbstractApiController
         $this->setStatusCode(JsonResponse::HTTP_OK);
         $this->setStatus('success');
         $this->setMessage('Update success');
+        return $this->respond();
+    }
+
+    public function setStatusCustomer(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+
+                'customer_id' => 'required|numeric',
+                'user_status_id' => 'required|numeric',
+            ]
+        );
+        if ($validate->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+
+        Customer::find($request->customer_id)->update([
+            'user_status_id' => $request->user_status_id
+        ]);
+
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Update success');
+        return $this->respond();
+    }
+
+
+    public function getStatus()
+    {
+        $status = UserStatus::all();
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Get success');
+        $this->setData($status);
         return $this->respond();
     }
 }

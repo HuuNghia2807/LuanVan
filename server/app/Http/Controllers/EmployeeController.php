@@ -6,6 +6,7 @@ use App\Http\Resources\CustomerResource;
 use App\Http\Resources\EmployeeResource;
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\Role;
 use App\Models\UserDetail;
 use App\Repositories\Employee\EmployeeRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -219,6 +220,41 @@ class EmployeeController extends AbstractApiController
         $this->setStatus('success');
         $this->setMessage('Login success');
         $this->setData(EmployeeResource::make($employee));
+        return $this->respond();
+    }
+
+    public function getRole()
+    {
+        $roles = Role::all();
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('Login success');
+        $this->setData($roles);
+        return $this->respond();
+    }
+
+    public function delegateEmp(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'employee_id' => 'required',
+                'role_id' => 'required'
+            ]
+        );
+        if ($validate->fails()) {
+            $this->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
+            $this->setStatus('failed');
+            $this->setMessage('Validation error');
+            return $this->respond();
+        };
+
+        Employee::find($request->employee_id)->update([
+            'role_id' => $request->role_id
+        ]);
+        $this->setStatusCode(JsonResponse::HTTP_OK);
+        $this->setStatus('success');
+        $this->setMessage('delegate success');
         return $this->respond();
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\OrderResource;
 use App\Models\Comment;
 use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Repositories\Order\OrderRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -174,6 +175,8 @@ class OrderController extends AbstractApiController
                 'order_status_id' => $request->status_id,
                 'receive_time' => $time->toDateTimeString()
             ]);
+            $order_details = OrderDetail::where('order_id', '=', $order->id);
+            $this->orderRepo->sendMail($order_details, $order);
         } else if ($request->status_id === 5 && $request->note) {
             Order::find($request->order_id)->update([
                 'order_status_id' => $request->status_id,
