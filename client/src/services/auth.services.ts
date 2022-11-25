@@ -154,6 +154,38 @@ class AuthService {
       throw handleError(error as AxiosError);
     }
   }
+  async getStatusCustomer() {
+    try {
+      const response = await http.get(`customer/status`);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async setStatusCustomer(payload: any) {
+    try {
+      const response = await http.post(`customer/status`, payload);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async getPermissionEmp() {
+    try {
+      const response = await http.get(`employee/role`);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
+  async delegateEmp(payload: any) {
+    try {
+      const response = await http.put(`employee/role`, payload);
+      return response.data.data;
+    } catch (error) {
+      throw handleError(error as AxiosError);
+    }
+  }
 }
 
 export default new AuthService();

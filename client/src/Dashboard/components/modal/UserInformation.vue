@@ -159,16 +159,19 @@
                   v-if="customer?.status !== 'active'"
                   label="Active"
                   class="p-button-success p-button-text"
+                  @click="updateStatus(2)"
                 />
                 <my-button
                   v-if="customer?.status !== 'blocked'"
                   label="Block"
                   class="p-button-danger p-button-text"
+                  @click="updateStatus(3)"
                 />
                 <my-button
                   v-if="customer?.status !== 'retired'"
                   label="Retire"
                   class="p-button-warning p-button-text"
+                  @click="updateStatus(4)"
                 />
               </div>
             </div>
@@ -180,13 +183,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, ref } from "vue";
+import { defineComponent, onMounted, PropType, reactive, ref } from "vue";
 import RadioButton from "primevue/radiobutton";
 import useVuelidate from "@vuelidate/core";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { convertToBase64 } from "@/function/convertImage";
 import ScrollPanel from "primevue/scrollpanel";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -199,6 +203,8 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const submitted = ref(false);
+    const status = ref([]);
+    const store = useStore();
     const state = reactive({
       firstName: props.customer?.firstName,
       lastName: props.customer?.lastName,
@@ -246,6 +252,11 @@ export default defineComponent({
       }
     };
 
+    const updateStatus = (status_id: number) => {
+      emit("change-status-customer", status_id, props.customer?.id);
+      // console.log("----", status_id, props.customer?.id);
+    };
+
     const onUpload = (e: any) => {
       const target = e.target.files[0];
       // const img = URL.createObjectURL(target);
@@ -257,11 +268,16 @@ export default defineComponent({
     const closeModal = () => {
       emit("close-modal");
     };
+
+    // onMounted(async () => {
+    //   await store.dispatch("auth/getStatusCustomer");
+    // });
     return {
       genders,
       v$,
       state,
       submitted,
+      updateStatus,
       onUpload,
       closeModal,
       handleSubmit,

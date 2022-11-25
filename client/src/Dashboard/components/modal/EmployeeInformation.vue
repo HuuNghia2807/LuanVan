@@ -135,6 +135,30 @@
               }}</span>
               <span class="email mb-2">{{ state.email }}</span>
               <span class="role">{{ employee?.role }}</span>
+              <div
+                class="flex justify-content-between mt-8"
+                v-if="employeeDash?.role === 'Admin'"
+              >
+                <my-dropdown
+                  :filter="true"
+                  v-model="idSelect"
+                  :options="roles"
+                  optionLabel="role"
+                  optionValue="id"
+                  placeholder="Chọn chức vụ"
+                  class="dropdown"
+                >
+                  <template #option="slotProps">
+                    <div class="option-item">{{ slotProps.option.role }}</div>
+                  </template>
+                </my-dropdown>
+                <my-button
+                  label="Phân quyền"
+                  class="p-button-success ml-4"
+                  @click="delegation"
+                  :disabled="!idSelect"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -144,13 +168,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, ref } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  PropType,
+  reactive,
+  ref,
+} from "vue";
 import RadioButton from "primevue/radiobutton";
 import useVuelidate from "@vuelidate/core";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import { IEmployee } from "@/interface/auth/authentication.state";
 import { convertToBase64 } from "@/function/convertImage";
 import ScrollPanel from "primevue/scrollpanel";
+import store from "@/store";
+import { getItemLocal } from "@/function/handleLocalStorage";
 
 export default defineComponent({
   props: {
@@ -163,6 +196,8 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const submitted = ref(false);
+    const roles = ref([] as any[]);
+    const idSelect = ref();
     const state = reactive({
       firstName: props.employee?.firstName,
       lastName: props.employee?.lastName,
@@ -221,11 +256,30 @@ export default defineComponent({
     const closeModal = () => {
       emit("close-modal");
     };
+
+    const delegation = () => {
+      if (!idSelect.value) return;
+      emit("delegate-employee", idSelect.value, props.employee?.id);
+    };
+
+    const employeeDash = computed(() => {
+      return (store.getters["auth/getUserDashboard"] ||
+        getItemLocal("userDashboard") ||
+        null) as IEmployee;
+    });
+
+    onMounted(async () => {
+      roles.value = await store.dispatch("auth/getPermissionEmp");
+    });
     return {
       genders,
       v$,
       state,
       submitted,
+      roles,
+      idSelect,
+      employeeDash,
+      delegation,
       onUpload,
       closeModal,
       handleSubmit,
@@ -244,6 +298,17 @@ export default defineComponent({
     font-size: 1.6rem !important;
   }
 
+  .dropdown {
+    min-width: 20rem;
+  }
+
+  :deep(.p-inputtext) {
+    font-size: 1.6rem;
+    height: 4rem;
+    line-height: 1.6;
+    padding-left: 1rem;
+  }
+
   .role {
     text-transform: uppercase;
     display: block;
@@ -252,6 +317,10 @@ export default defineComponent({
     background-color: rgb(255, 86, 117);
     color: #fff;
     font-weight: 600;
+  }
+
+  .option-item {
+    font-size: 1.6rem !important;
   }
 
   .head {

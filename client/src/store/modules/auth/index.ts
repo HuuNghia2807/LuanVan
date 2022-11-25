@@ -197,6 +197,38 @@ const actions: ActionTree<IAuthentication, IAuthentication> = {
       commit("setError", { error });
     }
   },
+  async getStatusCustomer({ commit }) {
+    try {
+      commit("setError", { error: null });
+      const res = await authServices.getStatusCustomer();
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async setStatusCustomer({ commit }, payload: any) {
+    try {
+      commit("setError", { error: null });
+      const res = await authServices.setStatusCustomer(payload);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async getPermissionEmp({ commit }) {
+    try {
+      commit("setError", { error: null });
+      return await authServices.getPermissionEmp();
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
+  async delegateEmp({ commit }, payload: any) {
+    try {
+      commit("setError", { error: null });
+      return await authServices.delegateEmp(payload);
+    } catch (error) {
+      commit("setError", { error });
+    }
+  },
 };
 
 const auth = {

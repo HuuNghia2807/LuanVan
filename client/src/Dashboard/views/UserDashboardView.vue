@@ -1,5 +1,6 @@
 <template>
   <TheLoader :is-loading="showLoading" />
+  <my-toast />
   <div class="card">
     <DataTable
       :value="userList"
@@ -148,6 +149,7 @@
     :customer="customer"
     :is-show-customer="isShowInfoCustomer"
     @close-modal="closeModal"
+    @change-status-customer="changeStatuscus"
   />
 
   <EmployeeInformation
@@ -155,6 +157,7 @@
     :is-show-employee="isShowEmployee"
     :employee="employee"
     @close-modal="closeModal"
+    @delegate-employee="delegateEmp"
   />
   <my-toast position="top-right" group="tr" />
 </template>
@@ -275,10 +278,48 @@ export default defineComponent({
       isShowEmployee.value = false;
     };
 
-    onMounted(async () => {
+    const changeStatuscus = async (status_id: number, cus_id: number) => {
+      showLoading.value = true;
+      await store.dispatch("auth/setStatusCustomer", {
+        customer_id: cus_id,
+        user_status_id: status_id,
+      });
+      showLoading.value = false;
+      closeModal();
+      await loadUser();
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Đổi trạng thái thành công",
+        life: 3000,
+      });
+    };
+
+    const delegateEmp = async (role_id: number, emp_id: number) => {
+      showLoading.value = true;
+      await store.dispatch("auth/delegateEmp", {
+        employee_id: emp_id,
+        role_id,
+      });
+      showLoading.value = false;
+      closeModal();
+      await loadUser();
+      toast.add({
+        severity: "success",
+        summary: "Thành công",
+        detail: "Phân quyền thành công",
+        life: 3000,
+      });
+    };
+
+    const loadUser = async () => {
       showLoading.value = true;
       users.value = await store.dispatch("auth/getAllUser");
       showLoading.value = false;
+    };
+
+    onMounted(async () => {
+      await loadUser();
     });
 
     return {
@@ -297,6 +338,8 @@ export default defineComponent({
       isShowInfoCustomer,
       isShowEmployee,
       employee,
+      delegateEmp,
+      changeStatuscus,
       closeModal,
       handleViewInfo,
       closeModalAddEmployee,
