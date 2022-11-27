@@ -195,7 +195,7 @@ export default defineComponent({
           dataData.value.push(ele.total);
         });
         (await dataMonth).pie.forEach((ele) => {
-          dataLabelsPie.value.push(ele.category);
+          dataLabelsPie.value.push(`${ele.category} [ ${ele.total} ]`);
           dataDataPie.value.push(ele.total);
         });
         assignDataBar(dataLabels.value, dataData.value);
@@ -221,7 +221,7 @@ export default defineComponent({
           dataData.value.push(ele.total);
         });
         (await dataYear).pie.forEach((ele) => {
-          dataLabelsPie.value.push(ele.category);
+          dataLabelsPie.value.push(`${ele.category} [ ${ele.total} ]`);
           dataDataPie.value.push(ele.total);
         });
         assignDataBar(dataLabels.value, dataData.value);

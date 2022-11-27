@@ -240,7 +240,7 @@ export default defineComponent({
         group: "br",
         life: 3000,
       });
-      loadPage();
+      await loadPage();
     };
     const openModalEdit = () => {
       isEditInfo.value = true;
@@ -275,7 +275,7 @@ export default defineComponent({
         detail: "Cập nhật thông tin thành công",
         life: 3000,
       });
-      loadPage();
+      await loadPage();
     };
     const updateInfo = async (data: any) => {
       showLoading.value = true;
@@ -339,7 +339,7 @@ export default defineComponent({
             detail: "Xóa địa chỉ thành công",
             life: 3000,
           });
-          loadPage();
+          await loadPage();
         },
         reject: () => {
           // toast.add({
@@ -365,8 +365,8 @@ export default defineComponent({
       }
       showLoading.value = false;
     };
-    onMounted(() => {
-      loadPage();
+    onMounted(async () => {
+      await loadPage();
     });
     return {
       customer,
