@@ -48,7 +48,11 @@
         >
           <small class="p-error">{{ v$.password.required.$message }}</small>
         </div>
-        <div class="my-4 flex justify-content-center" v-if="!!errorMsg">
+        <div
+          id="error-login"
+          class="my-4 flex justify-content-center"
+          v-if="!!errorMsg"
+        >
           <small class="p-error">{{ errorMsg }}</small>
         </div>
         <my-button
@@ -56,6 +60,7 @@
           type="submit"
           label="Đăng Nhập"
           class="mt-2"
+          id="btn-submit-login"
         />
       </form>
     </div>

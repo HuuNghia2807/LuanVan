@@ -66,4 +66,13 @@ export default defineComponent({
     letter-spacing: 0.08em;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 1rem !important;
+  }
+  .sup__title {
+    font-size: 4rem !important;
+  }
+}
 </style>

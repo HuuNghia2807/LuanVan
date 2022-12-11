@@ -31,7 +31,7 @@
         <div
           class="item-cmt"
           v-for="cmt in listComment"
-          :key="`cmt${cmt.commentId}`"
+          :key="`cmt-${cmt.commentId}`"
         >
           <div class="flex justify-content-between">
             <div class="header">
@@ -53,7 +53,7 @@
                 />
               </div>
             </div>
-            <div v-if="customer.id === cmt.customerId">
+            <div v-if="customer?.id === cmt.customerId">
               <my-button
                 icon="pi pi-times"
                 class="p-button-rounded p-button-danger p-button-text"
@@ -134,7 +134,7 @@ export default defineComponent({
       }
       showLoading.value = true;
       const cmt = {
-        customer_id: customer.value.id,
+        customer_id: customer.value?.id,
         product_id: props.product?.productId,
         comment: comment.value,
         rating: rating.value,
@@ -182,8 +182,10 @@ export default defineComponent({
       );
     };
 
-    onMounted(() => {
-      loadComment();
+    onMounted(async () => {
+      if (props.product?.productId) {
+        await loadComment();
+      }
     });
 
     return {
@@ -297,6 +299,14 @@ export default defineComponent({
         font-size: 1.7rem;
       }
     }
+  }
+}
+@media screen and (min-width: 1px) and (max-width: 1179px) {
+  .main-comment {
+    margin: 0 !important;
+  }
+  :deep(.p-inputtextarea-resizable) {
+    height: auto !important;
   }
 }
 </style>

@@ -88,7 +88,7 @@
         <div class="field">
           <div class="p-float-label">
             <my-password
-              id="password"
+              id="password-register"
               v-model="v$.password.$model"
               :class="{ 'p-invalid': v$.password.$invalid && submitted }"
               toggleMask
@@ -105,7 +105,7 @@
               </template>
             </my-password>
             <label
-              for="password"
+              for="password-register"
               :class="{ 'p-error': v$.password.$invalid && submitted }"
               >Mật khẩu *</label
             >
@@ -123,6 +123,7 @@
           type="submit"
           label="Đăng Ký"
           class="mt-2"
+          id="btn-submit-register"
           :loading="showLoading"
           v-tooltip="'Kiểm tra kỹ mật khẩu trước khi đăng ký'"
         />

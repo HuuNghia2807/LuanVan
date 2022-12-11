@@ -46,12 +46,17 @@
       </my-dropdown>
     </div>
     <div class="option-search">
-      <Button
-        class="p-button-lg p-button-warning"
-        type="button"
+      <my-button
+        class="p-button-lg p-button-warning default"
         label="Tìm Giày Ngay"
         icon="pi pi-search"
         iconPos="right"
+        :loading="loading"
+        @click="handleFilter"
+      />
+      <my-button
+        class="p-button-rounded p-button-warning responsive"
+        icon="pi pi-search"
         :loading="loading"
         @click="handleFilter"
       />
@@ -61,15 +66,11 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
-import Button from "primevue/button";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { IFilterProduct } from "@/interface/product/product.state";
 
 export default defineComponent({
-  components: {
-    Button,
-  },
   setup(_props, { emit }) {
     const store = useStore();
     const route = useRoute();
@@ -137,6 +138,7 @@ export default defineComponent({
     height: 4rem;
     line-height: 1.6;
     padding-left: 1rem;
+    width: 100%;
   }
   .option-search {
     display: flex;
@@ -144,6 +146,10 @@ export default defineComponent({
     flex-direction: column;
     justify-content: center;
     margin: 0 2rem;
+  }
+
+  .responsive {
+    display: none;
   }
 
   .title {
@@ -171,5 +177,39 @@ export default defineComponent({
 }
 .option-item {
   font-size: 1.6rem !important;
+}
+
+@media screen and (min-width: 1px) and (max-width: 1179px) {
+  .default {
+    display: none;
+  }
+  .responsive {
+    display: flex !important;
+    font-size: 2rem !important;
+    width: 5rem !important;
+    height: 5rem !important;
+
+    :deep(.pi) {
+      font-size: 2rem !important;
+    }
+  }
+  .option-search {
+    align-items: center;
+  }
+  :deep(.p-dropdown) {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .header-type {
+    flex-direction: column;
+  }
+  .header-type {
+    height: auto;
+  }
+  .option-search {
+    margin: 1rem 0 !important;
+  }
 }
 </style>

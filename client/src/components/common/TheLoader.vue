@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed surface-100 opacity-80 top-0 bottom-0 right-0 left-0 flex align-items-center z-3 loader"
+    class="fixed surface-100 opacity-80 top-0 bottom-0 right-0 left-0 flex align-items-center loader"
     v-if="isLoading"
   >
     <ProgressSpinner strokeWidth="1" animationDuration=".5s" />
@@ -26,5 +26,6 @@ export default defineComponent({
 <style scoped>
 .loader {
   position: absolute !important;
+  z-index: 9999;
 }
 </style>

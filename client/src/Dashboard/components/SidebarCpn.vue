@@ -82,12 +82,12 @@ export default defineComponent({
         link: "/dashboard/order",
         accept: ["Admin", "Manage", "Employee"],
       },
-      {
-        name: "Report",
-        icon: "pi pi-chart-bar",
-        link: "/dashboard/report",
-        accept: ["Admin", "Manage"],
-      },
+      // {
+      //   name: "Report",
+      //   icon: "pi pi-chart-bar",
+      //   link: "/dashboard/report",
+      //   accept: ["Admin", "Manage"],
+      // },
     ]);
     const employee = computed(() => {
       return (store.getters["auth/getUserDashboard"] ||

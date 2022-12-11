@@ -133,6 +133,7 @@ export default defineComponent({
     };
 
     const updateStatus = async (data: IUpdateStatusOrderParams) => {
+      showLoading.value = true;
       await store.dispatch("order/handleStatusOrder", data);
       const error = store.getters["order/getError"];
       if (error) {
@@ -150,6 +151,7 @@ export default defineComponent({
         detail: "Xử lý thành công!",
         life: 3000,
       });
+      showLoading.value = false;
       getOrders();
     };
 

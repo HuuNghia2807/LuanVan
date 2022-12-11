@@ -178,4 +178,14 @@ export default defineComponent({
     color: #bcbcbc;
   }
 }
+@media screen and (min-width: 769px) and (max-width: 1179px) {
+  .product {
+    width: 50% !important;
+  }
+}
+@media screen and (max-width: 768px) {
+  .product {
+    width: 100% !important;
+  }
+}
 </style>

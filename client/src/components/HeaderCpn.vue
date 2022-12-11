@@ -1,10 +1,33 @@
 <template>
   <div class="header flex align-items-center justify-content-between">
     <div class="flex align-items-center justify-content-between">
-      <router-link class="h-6rem cursor-pointer" to="/">
-        <img src="@/assets/img/logo.png" alt="logo" class="h-6rem" />
+      <div class="side-responsive">
+        <my-button
+          icon="pi pi-align-justify"
+          @click="visibleLeft = true"
+          class="mr-4 p-button-rounded p-button-secondary p-button-outlined"
+        />
+        <Sidebar v-model:visible="visibleLeft" :baseZIndex="10000">
+          <div class="categories-responsive">
+            <router-link
+              class="item-menu my-1"
+              :class="{
+                active: routePath.toLowerCase() === item.link.toLowerCase(),
+              }"
+              v-for="item in listMenu"
+              :key="item.name"
+              :to="{ name: 'category', params: { branch: item.link } }"
+              @click="visibleLeft = false"
+            >
+              {{ item.name }}
+            </router-link>
+          </div>
+        </Sidebar>
+      </div>
+      <router-link class="logo-home cursor-pointer" to="/">
+        <img src="@/assets/img/logo-store.jpg" alt="logo" />
       </router-link>
-      <div class="ml-4 flex flex-wrap justify-content-center">
+      <div class="categories">
         <router-link
           class="item-menu my-1"
           :class="{
@@ -27,6 +50,7 @@
           @click="handleSearchByVoice"
         />
         <my-inputText
+          id="search-text"
           type="text"
           :placeholder="isVoice ? 'Đang lắng nghe...' : 'Nhập sản phẩm cần tìm'"
           class="p-inputtext-lg input"
@@ -43,6 +67,12 @@
             @hide-product-search="hideProductSearch"
           />
         </div>
+      </div>
+      <div class="search-responsive">
+        <my-button
+          icon="pi pi-search"
+          class="p-button-rounded p-button-secondary p-button-outlined"
+        />
       </div>
       <router-link
         to="/gio-hang"
@@ -96,20 +126,29 @@
         </div>
       </router-link>
       <div class="account">
-        <div
-          class="flex align-items-center justify-content-center"
-          v-if="!customer"
-        >
-          <router-link to="/account" class="login no-underline"
+        <div class="account-responsive" v-if="!customer">
+          <my-button
+            id="login-link-responsive"
+            label="Login"
+            class="p-button-raised p-button-secondary p-button-text"
+            @click="goToLoginPage"
+          />
+        </div>
+        <div class="menu-account" v-if="!customer">
+          <router-link to="/account" class="login no-underline" id="login-link"
             >Đăng nhập</router-link
           >
           <span class="line" />
-          <router-link to="/account" class="login no-underline"
+          <router-link
+            to="/account"
+            class="login no-underline"
+            id="register-link"
             >Đăng ký</router-link
           >
         </div>
         <div
           class="user"
+          id="user-login"
           v-else
           @mouseover="toggleShowSubMenu(true)"
           @mouseleave="toggleShowSubMenu(false)"
@@ -121,7 +160,7 @@
             "
             class="img"
           />
-          <span>{{ customer.fullName }}</span>
+          <span class="full-name">{{ customer.fullName }}</span>
           <div
             class="sub-user"
             v-show="isShowUser"
@@ -165,15 +204,18 @@ import { getItemLocal } from "@/function/handleLocalStorage";
 import { ICustomer } from "@/interface/auth/authentication.state";
 import { useRoute, useRouter } from "vue-router";
 import ProductSearch from "./Product/ProductSearch.vue";
+import Sidebar from "primevue/sidebar";
 
 export default defineComponent({
   components: {
     ProductSearch,
+    Sidebar,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
+    const visibleLeft = ref(false);
     const listMenu = ref([] as ICategoryRouting[]);
     const isShow = ref(false);
     const isShowUser = ref(false);
@@ -290,6 +332,10 @@ export default defineComponent({
       isVoice.value = true;
     };
 
+    const goToLoginPage = () => {
+      router.push("/account");
+    };
+
     watch(searchText, async () => {
       displayProductSearch.value = true;
       listProductSearch.value = await store.dispatch(
@@ -330,6 +376,8 @@ export default defineComponent({
       displayProductSearch,
       routePath,
       isVoice,
+      visibleLeft,
+      goToLoginPage,
       handleSearchByVoice,
       hideProductSearch,
       showProductSearch,
@@ -362,6 +410,27 @@ export default defineComponent({
   :deep(.p-overlaypanel) {
     font-size: 1.6rem !important;
   }
+}
+
+.side-responsive {
+  display: none;
+}
+
+.logo-home {
+  height: 6rem;
+
+  img {
+    height: 6rem;
+    width: 16rem;
+    object-fit: cover;
+  }
+}
+
+.categories {
+  margin-left: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 @keyframes fill-color {
@@ -434,6 +503,10 @@ export default defineComponent({
   color: blue;
 }
 
+.search-responsive {
+  display: none;
+}
+
 :deep(.p-input-icon-right > i) {
   top: 18%;
 }
@@ -491,7 +564,16 @@ export default defineComponent({
   }
 }
 
+.account-responsive {
+  display: none;
+}
+
 .account {
+  .menu-account {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .line {
     border-right: 2px solid var(--black-color);
     height: 20px;
@@ -563,6 +645,61 @@ export default defineComponent({
 
   .z-100 {
     z-index: 100;
+  }
+}
+
+@media screen and (min-width: 1px) and (max-width: 1179px) {
+  .full-name {
+    display: none;
+  }
+  .user {
+    min-width: 0;
+  }
+  .categories-responsive {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .menu-account {
+    display: none !important;
+  }
+  .account-responsive {
+    display: block;
+  }
+  .side-responsive {
+    display: block;
+  }
+  .header {
+    padding: 0 2rem;
+  }
+  .categories {
+    display: none;
+  }
+  .sub-user {
+    right: 235%;
+  }
+  .special-list {
+    width: 15rem;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1179px) {
+}
+
+@media screen and (max-width: 768px) {
+  :deep(.p-input-icon-right) {
+    display: none;
+  }
+
+  .icon {
+    font-size: 1.3rem !important;
+  }
+  .badge-icon-cart {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .search-responsive {
+    display: block;
   }
 }
 </style>

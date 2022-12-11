@@ -107,4 +107,22 @@ export default defineComponent({
     margin-right: auto;
   }
 }
+
+@media screen and (min-width: 769px) and (max-width: 1179px) {
+  .slider {
+    height: auto;
+  }
+  .swiper-slide img {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .slider {
+    height: auto;
+  }
+  .swiper-slide img {
+    width: 100%;
+  }
+}
 </style>

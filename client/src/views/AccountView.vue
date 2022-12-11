@@ -2,10 +2,10 @@
   <div class="account">
     <div class="container">
       <TabView ref="tabview1">
-        <TabPanel header="ĐĂNG NHẬP">
+        <TabPanel header="ĐĂNG NHẬP" id="tab-login">
           <LoginCpn />
         </TabPanel>
-        <TabPanel header="ĐĂNG KÝ">
+        <TabPanel header="ĐĂNG KÝ" id="tab-register">
           <RegisterCpn />
         </TabPanel>
       </TabView>

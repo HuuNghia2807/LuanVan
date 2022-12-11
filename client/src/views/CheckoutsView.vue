@@ -584,7 +584,9 @@ export default defineComponent({
       });
       removeItemLocal("cart");
       showLoading.value = false;
-      router.push("/profile");
+      setTimeout(() => {
+        router.push("/profile");
+      }, 2000);
     };
 
     const orderPaypal = async () => {

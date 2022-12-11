@@ -208,4 +208,14 @@ export default defineComponent({
     }
   }
 }
+
+@media screen and (min-width: 1px) and (max-width: 1179px) {
+  .right-bar {
+    display: none;
+  }
+
+  .products {
+    width: 100% !important;
+  }
+}
 </style>

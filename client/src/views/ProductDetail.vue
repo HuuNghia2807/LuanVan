@@ -96,13 +96,13 @@
             <my-button
               label="Thêm vào giỏ hàng"
               icon="pi pi-shopping-cart"
-              class="p-button-lg p-button-warning p-button-rounded"
+              class="p-button-lg p-button-warning p-button-rounded mt-2"
               @click="addCart"
             />
             <my-button
               label="Mua Ngay"
               icon="pi pi-chevron-right"
-              class="p-button-lg p-button-danger p-button-rounded"
+              class="p-button-lg p-button-danger p-button-rounded mt-2"
               iconPos="right"
               @click="goToCart"
             />
@@ -445,6 +445,56 @@ export default defineComponent({
         color: var(--primary-color);
       }
     }
+  }
+}
+
+@media screen and (min-width: 1px) and (max-width: 1179px) {
+  .container {
+    flex-direction: column;
+    padding: 4rem 0 !important;
+  }
+  .list-img-wrap {
+    width: 100% !important;
+  }
+  ::v-deep(.p-scrollpanel) {
+    &.custombar1 {
+      height: auto !important;
+      color: blue;
+    }
+  }
+  .imgs {
+    width: 20% !important;
+    margin: 0 1rem !important;
+  }
+  .list-img {
+    flex-direction: row !important;
+    margin: 1rem 0;
+    width: 100rem;
+  }
+  .show-img {
+    text-align: center;
+    width: 100% !important;
+  }
+  .content {
+    width: 100% !important;
+    padding: 0 4rem !important;
+    margin: 2rem 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .imgs {
+    height: 10rem !important;
+    width: 10rem !important;
+    margin: 0 0.5rem !important;
+  }
+  .list-img {
+    width: 60rem !important;
+  }
+  .img {
+    width: 40rem !important;
+    height: 40rem !important;
+    margin: 0 0.5rem !important;
   }
 }
 </style>
