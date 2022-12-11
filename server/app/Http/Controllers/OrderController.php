@@ -171,11 +171,12 @@ class OrderController extends AbstractApiController
         // dd($request->all());
         if ($request->status_id === 4) {
             $time = Carbon::now('Asia/Ho_Chi_Minh');
-            $order = Order::find($request->order_id)->update([
+            $order = Order::find($request->order_id);
+            $order->update([
                 'order_status_id' => $request->status_id,
                 'receive_time' => $time->toDateTimeString()
             ]);
-            $order_details = OrderDetail::where('order_id', '=', $order->id);
+            $order_details = OrderDetail::where('order_id', '=', $order->id)->get();
             $this->orderRepo->sendMail($order_details, $order);
         } else if ($request->status_id === 5 && $request->note) {
             Order::find($request->order_id)->update([
